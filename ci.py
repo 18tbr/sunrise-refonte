@@ -4,10 +4,6 @@ import sys
 from subprocess import run
 from pathlib import Path
 
-
-if __name__ == '__main__':
-    maj()
-
 def main():
     print("---! Ceci est le script d'intégration continue.\nIl n'est pas encore prêt à être utilisé.")
     input("Que souhaitez-vous faire ? Vous pouvez répondre avec l'un de :\n"
@@ -52,3 +48,7 @@ def nouveau():
 
 def info():
     pass
+
+
+if __name__ == '__main__':
+    maj()
