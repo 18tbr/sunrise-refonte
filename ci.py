@@ -2,6 +2,7 @@
 import os
 import sys
 from subprocess import run
+from pathlib import Path
 
 
 if __name__ == '__main__':
@@ -14,7 +15,8 @@ def main():
     )
 
 def identifiant():
-    pass
+    prenomId = input("Identifiant ?\n")
+    Path(".identifiant").touch(exist_ok=True)
 
 def maj():
     pass
@@ -26,7 +28,9 @@ def statut():
     pass
 
 def groupe():
-    pass
+    nomGroupe = input("Nom du groupe à créer ?\n")
+    nomRepertoire = os.path.join("taches", nomGroupe)
+    os.makedirs(nomRepertoire, exist_ok=True)
 
 def fusion():
     pass
