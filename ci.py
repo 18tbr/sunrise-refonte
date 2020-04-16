@@ -24,9 +24,9 @@ def maj():
         branch = branchFile.read();
     gitProcess = run(f"git checkout {branch}", shell=True)
     if gitProcess.returncode != 0:
-        print("---X git n'a pas pu être lancé correctement.\nEtes-vous certain que git est bien accessible ?", file=sys.stderr)
+        print("---X git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?", file=sys.stderr)
     # else...
-    gitProcess = run(f"git pull origin master", shell=True)
+    gitProcess = run("git pull origin master", shell=True)
     if gitProcess.returncode != 0:
         print("---X Un conflit semble être apparu dans l'usage de git. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider.", file=sys.stderr)
     # else...
@@ -47,7 +47,17 @@ def groupe():
     return 0
 
 def fusion():
-    pass
+    nomBranche = input("Nom de la branche à fusionner :\n>> ")
+    gitProcess = run("git checkout master", shell=True)
+    if gitProcess.returncode != 0:
+        print("---X git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?", file=sys.stderr)
+    # else...
+    gitProcess = run(f"git pull --rebase origin {nomBranche}", shell=True)
+    if gitProcess.returncode != 0:
+        print("---X Un conflit semble être apparu dans l'usage de git. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider.", file=sys.stderr)
+    # else...
+    print(f"---> Fusion de {nomBranche} effectuée avec succès")
+    return 0
 
 def nouveau():
     pass
@@ -57,4 +67,4 @@ def info():
 
 
 if __name__ == '__main__':
-    maj()
+    fusion()
