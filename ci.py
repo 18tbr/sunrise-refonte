@@ -63,11 +63,14 @@ def fini():
         pass
     elif tache["type"] == "code":
         typeTravail = input(f"Sur quoi avez-vous travaillé pour la tache {nomTache} ? Les valeurs possibles sont :\n>> test\n>> code\n>> revue\nVotre réponse :\n>> ")
+        while typeTravail not in ["test", "code", "revue"]:
+            print(f"---! La valeur {typeTravail} n'est pas connue.", file=sys.stderr)
+            typeTravail = input(f"Sur quoi avez-vous travaillé pour la tache {nomTache} ? Les valeurs possibles sont :\n>> test\n>> code\n>> revue\nVotre réponse :\n>> ")
         if typeTravail == "test":
             tache["etat"] = "test"
         elif typeTravail == "code":
             if tache["etat"] == "incomplet":
-                print(f"Vous devez écrire des tests de la fonction {nomTache} avant d'écrire la fonction en elle-même.", file = sys.stderr)
+                print(f"Vous devez écrire des tests de la fonction {nomTache} avant d'écrire la fonction en elle-même.", file=sys.stderr)
                 return 1
             # else...
             tache["etat"] = "code"
@@ -77,6 +80,8 @@ def fini():
                 return 1
             # else...
             tache["etat"] = "complet"
+        else:
+            print("")
 
     # Récupération du texte du rapport
     with open("message_ci_tmp", 'w') as messageTemp:
