@@ -26,7 +26,7 @@ def main(richInput):
             f"Votre demande {demande} n'a pas été comprise, vous ne pouvez utiliser que l'une des demandes proposées."
         )
         demande = richInput.wideInput(
-            "Que souhaitez-vous faire ? Vous pouvez répondre avec l'un de :\n>> identifiant\n>> maj\n>> fini\n>> statut\n>> nouveau\n>> info\nVotre demande :\n>> "
+            "Que souhaitez-vous faire ? Vous pouvez répondre avec l'un de :\n---- identifiant\n---- maj\n---- fini\n---- statut\n---- nouveau\n---- info\nVotre demande :\n>> "
         )
 
     print()  # A blank line for the style :-)
@@ -96,9 +96,7 @@ def fini(richInput):
         )
         groupe = richInput.wideInput("Nom du groupe :\n>> ")
     # Récupération de la tâche
-    nomTache = richInput.wideInput(
-        "Sur quelle tâche avez-vous travaillé ?\n>> "
-    )
+    nomTache = richInput.wideInput("Sur quelle tâche avez-vous travaillé ?\n>> ")
     cheminTache = f"taches/{groupe}/{nomTache}.json"
     while not os.path.exists(cheminTache):
         print(
@@ -106,15 +104,12 @@ def fini(richInput):
             file=sys.stderr,
         )
         print(
-            f"Les taches qui existent pour le groupe {groupe} sont :",
-            file=sys.stderr,
+            f"Les taches qui existent pour le groupe {groupe} sont :", file=sys.stderr,
         )
         listeTaches = os.listdir(f"taches/{groupe}")
         for tachePossible in listeTaches:
             print(f">> {tachePossible[:-5]}", file=sys.stderr)
-        nomTache = richInput.wideInput(
-            "Sur quelle tâche avez-vous travaillé ?\n>> "
-        )
+        nomTache = richInput.wideInput("Sur quelle tâche avez-vous travaillé ?\n>> ")
         cheminTache = f"taches/{groupe}/{nomTache}.json"
     # Lecture du fichier JSON pour voir les valeurs à demander
     with open(cheminTache, "r") as jsonFile:
@@ -123,9 +118,7 @@ def fini(richInput):
     messageEditeur = ""
     if tache["type"] == "general":
         # On a juste besoin d'un rapport, pas de plus que cela
-        messageEditeur = (
-            "---> Inscrivez votre rapport concernant la tâche en dessous"
-        )
+        messageEditeur = "---> Inscrivez votre rapport concernant la tâche en dessous"
         tache["etat"] = "complet"
     elif tache["type"] == "code":
         typeTravail = richInput.wideInput(
@@ -133,8 +126,7 @@ def fini(richInput):
         )
         while typeTravail not in ["test", "code", "revue"]:
             print(
-                f"---! La valeur {typeTravail} n'est pas connue.",
-                file=sys.stderr,
+                f"---! La valeur {typeTravail} n'est pas connue.", file=sys.stderr,
             )
             typeTravail = richInput.wideInput(
                 f"Sur quoi avez-vous travaillé pour la tache {nomTache} ?\nLes valeurs possibles sont :\n>> test\n>> code\n>> revue\nVotre réponse :\n>> "
@@ -155,7 +147,9 @@ def fini(richInput):
             # else...
             if tache["etat"] == "test":
                 tache["etat"] = "code"
-            messageEditeur = "---> Inscrivez votre message concernant l'écriture du code en dessous"
+            messageEditeur = (
+                "---> Inscrivez votre message concernant l'écriture du code en dessous"
+            )
         elif typeTravail == "revue":
             if tache["etat"] == "incomplet" or tache["etat"] == "test":
                 print(
@@ -166,7 +160,9 @@ def fini(richInput):
             # else...
             if tache["etat"] == "code":
                 tache["etat"] = "complet"
-            messageEditeur = "---> Inscrivez votre message concernant la revue du code en dessous"
+            messageEditeur = (
+                "---> Inscrivez votre message concernant la revue du code en dessous"
+            )
 
     tacheRapport = tache["rapport"]
     tacheType = tache["type"]
@@ -208,9 +204,7 @@ def fini(richInput):
 def statut(richInput):
     branch = richInput.user()
     # Récupération du groupe
-    groupe = richInput.wideInput(
-        "Sur quel groupe voulez avoir un rapport ?\n>> "
-    )
+    groupe = richInput.wideInput("Sur quel groupe voulez avoir un rapport ?\n>> ")
     while groupe not in [
         "UI",
         "AI",
@@ -389,8 +383,7 @@ def info(richInput):
             file=sys.stderr,
         )
         print(
-            f"Les taches qui existent pour le groupe {groupe} sont :",
-            file=sys.stderr,
+            f"Les taches qui existent pour le groupe {groupe} sont :", file=sys.stderr,
         )
         listeTaches = os.listdir(f"taches/{groupe}")
         for tachePossible in listeTaches:
