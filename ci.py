@@ -106,11 +106,10 @@ def fini():
     # Lecture du message enregistré
     with open("message_ci_tmp", 'r') as messageFile:
         tache["rapport"] = messageFile.read()
-    print(tache["rapport"])
     # Suppression du fichier temporaire
     os.remove("message_ci_tmp")
     # Mise à jour du fichier de la tâche
-    with open(cheminTache) as tacheFile:
+    with open(cheminTache, 'w') as tacheFile:
         json.dumps(tache)
     branch = ""
     if not os.path.exists(".identifiant"):
@@ -230,4 +229,5 @@ def info():
 
 
 if __name__ == '__main__':
+    nouveau()
     fini()
