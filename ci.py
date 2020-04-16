@@ -121,6 +121,7 @@ def fini():
     if gitProcess.returncode != 0:
         print("---X Le travail que vous avez fait n'a pas pu être ajouté. Demandez de l'aide au groupe DevOps pour régler le problème.", file=sys.stderr)
         return 1
+
     # Validation du travail effectué
     tacheRapport = tache["rapport"]
     gitProcess = run(f"git commit -m \"{tacheRapport}\"", shell=True)
