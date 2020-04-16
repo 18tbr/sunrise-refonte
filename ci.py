@@ -104,6 +104,7 @@ def fini():
         return 1
     # else...
     # Lecture du message enregistré
+    run("cat message_ci_tmp", shell=True)
     with open("message_ci_tmp", 'r') as messageFile:
         tache["rapport"] = messageFile.read()
     # Suppression du fichier temporaire
