@@ -163,23 +163,23 @@ def fusion():
     return 0
 
 def nouveau():
-
-    pass
-
-def info():
     data = {}
     # nom de la tâche
-    data["nom"] = input("Nom de la tâche :\n>> ")
+    nomTache = input("Nom de la tâche :\n>> ")
+    while ascii(nomTache)[1:-1] != nomTache or ' ' in nomTache:
+        print("---X Le nom de la tâche n'est pas valide. Il ne doit contenir ni caractère spécial ni espace. Un nom valide est par exemple 'nom_de_tache'.", file=sys.stderr)
+        nomTache = input("Nom de la tâche :\n>> ")
+    data["nom"] = nomTache
     # nom du groupe
     groupe = input("Nom du groupe :\n>> ")
-    while group not in ["UI", "AI", "Arduino", "Simulation", "Grille", "SunRise", "Arduino", "DevOps"]:
-        print("Le nom de groupe rentré n'est pas reconnu. Les noms de groupe possibles sont : 'UI', 'AI', 'Arduino', 'Simulation', 'Grille', 'SunRise', 'Arduino', et 'DevOps'.", file=sys.stderr)
+    while groupe not in ["UI", "AI", "Arduino", "Simulation", "Grille", "SunRise", "Arduino", "DevOps"]:
+        print("---X Le nom de groupe rentré n'est pas reconnu. Les noms de groupe possibles sont : 'UI', 'AI', 'Arduino', 'Simulation', 'Grille', 'SunRise', 'Arduino', et 'DevOps'.", file=sys.stderr)
         groupe = input("Nom du groupe :\n>> ")
     data["groupe"] = groupe
     # type de la tâche
     typeTache = input("Type de la tâche :\n>> ")
     while typeTache not in ["general", "code"]:
-        print("Le type de tâche rentré n'est pas reconnu. Les 2 types de tâches possibles sont 'general' (pour une tâche générale) et 'code' (pour une fonction ou méthode).", file=sys.stderr)
+        print("---X Le type de tâche rentré n'est pas reconnu. Les 2 types de tâches possibles sont 'general' (pour une tâche générale) et 'code' (pour une fonction ou méthode).", file=sys.stderr)
         typeTache = input("Type de la tâche :\n>> ")
     data["type"] = typeTache
 
@@ -187,18 +187,39 @@ def info():
         # description
         data["desc"] = input("Description de la tâche :\n>> ")
         # état
-        etat = input("Etat de la tâche :\n>> ")
+        etat = input("Etat de la tâche :\n>> ") or "incomplet"
         while etat not in ["incomplet", "complet"]:
-            print("L'état rentré n'est pas reconnu. Les états possibles pour une tâche sont 'incomplet' et 'complet'.", file=sys.stderr)
-            etat = input("Etat de la tâche :\n>> ")
-        # rapport
+            print("---X L'état rentré n'est pas reconnu. Les états possibles pour une tâche sont 'incomplet' et 'complet'.", file=sys.stderr)
+            etat = input("Etat de la tâche :\n>> ") or "incomplet"
+        data["etat"] = etat
+
+    else:
+        # arguments
+        data["arguments"] = input("Description des arguments de la fonction :\n>> ")
+        # retour
+        data["retour"] = input("Description de ce que la fonction renvoie :\n>> ")
+        # description
+        data["desc"] = input("Description de la tâche :\n>> ")
+        # état
+        etat = input("Etat de la tâche :\n>> ") or "incomplet"
+        while etat not in ["incomplet", "test", "code", "complet"]:
+            print("---X L'état rentré n'est pas reconnu. Les états possibles pour une tâche sont 'incomplet', 'test', 'code', 'revue' et 'complet'.", file=sys.stderr)
+            etat = input("Etat de la tâche :\n>> ") or "incomplet"
+            data["etat"] = etat
+
+    # rapport
+    data["rapport"] = ""
+
+    directory = os.path.join("taches", data["groupe"])
+    fileName = os.path.join(directory, "".join([data["nom"], ".json"]))
+    with open(fileName, 'w') as tacheFile:
+        json.dump(data, tacheFile)
+    return 0
 
 
-
-
-    else:  # code
-        pass
+def info():
     pass
+
 
 
 if __name__ == '__main__':
