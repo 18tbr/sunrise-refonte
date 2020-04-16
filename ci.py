@@ -38,22 +38,50 @@ def maj():
     return 0
 
 def fini():
-    branch = ""
-    if not os.path.exists(".identifiant"):
-        print("Vous devez utiliser identifiant au moins une fois avant de pouvoir faire des modifications de code.", file=sys.stderr)
-        return 1
-    with open(".identifiant", 'r') as branchFile:
-        branch = branchFile.read();
-    gitProcess = run(f"git checkout {branch}", shell=True)
-    if gitProcess.returncode != 0:
-        print("---X git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?", file=sys.stderr)
-        return 1
-    # Ajout de tout le travail fait depuis le dernier commit
-    gitProcess = run("git add .", shell=True)
-    if gitProcess.returncode != 0:
-        print("---X Le travail que vous avez fait n'a pas pu être ajouté. Demandez de l'aide au groupe DevOps pour régler le problème.", file=sys.stderr)
-        return 1
+    # Récupération du groupe
+    groupe = input("Pour quel groupe avez-vous travaillé ?\n>> ")
+    while groupe not in ["UI", "AI", "Arduino", "Simulation", "Grille", "SunRise", "Arduino", "DevOps"]:
+        print("Le nom de groupe rentré n'est pas reconnu. Les noms de groupe possibles sont : 'UI', 'AI', 'Arduino', 'Simulation', 'Grille', 'SunRise', 'Arduino', et 'DevOps'.", file=sys.stderr)
+        groupe = input("Nom du groupe :\n>> ")
+    # Récupération de la tâche
+    nomTache = input("Sur quelle tâche avez-vous travaillé ?\n>> ")
+    cheminTache = f"taches/{groupe}/{nomTache}.json"
+    while not os.path.exists(cheminTache):
+        print(f"La tâche {nomTache} n'existe pas pour le groupe {groupe}.", file=sys.stderr)
+        print(f"Les taches qui existent pour le groupe {groupe} sont :", file=sys.stderr)
+        listeTaches = os.listdir(f"taches/{groupe}")
+        for tachePossible in listeTaches:
+            print(f">> {tachePossible[:-5]}", file=sys.stderr)
+        nomTache = input("Sur quelle tâche avez-vous travaillé ?\n>> ")
+        cheminTache = f"taches/{groupe}/{nomTache}.json"
+    # Lecture du fichier JSON pour voir les valeurs à demander
+    with open(cheminTache, 'r') as jsonFile:
+        tache = json.load(jsonFile)
+    nomTache = tache["nom"]
+    if tache["type"] == "general":
+        # On a juste besoin d'un rapport, pas de plus que cela
+        pass
+    elif tache["type"] == "code":
+        typeTravail = input(f"Sur quoi avez-vous travaillé pour la tache {nomTache} ? Les valeurs possibles sont :\n>> test\n>> code\n>> revue\nVotre réponse :\n>> ")
+        if typeTravail == "test":
+            tache["etat"] = "test"
+        elif typeTravail == "code":
+            if tache["etat"] == "incomplet":
+                print(f"Vous devez écrire des tests de la fonction {nomTache} avant d'écrire la fonction en elle-même.", file = sys.stderr)
+                return 1
+            # else...
+            tache["etat"] = "code"
+        elif typeTravail == "revue":
+            if tache["etat"] == "incomplet" or tache["etat"] == "test":
+                print("Il faut que vous écriviez la fonction avant de vérifier si elle est correcte.", file=sys.stderr)
+                return 1
+            # else...
+            tache["etat"] = "complet"
+
     # Récupération du texte du rapport
+    with open("message_ci_tmp", 'w') as messageTemp:
+        messageTemp.write(tache["rapport"])
+        messageTemp.write("---> Inscrivez votre message en dessous\n")
     open("message_ci_tmp", 'w').close()
     print("---> Inscrivez une phrase de rapport dans votre éditeur de texte")
     editor = ""
@@ -71,11 +99,31 @@ def fini():
         return 1
     # else...
     # Lecture du message enregistré
-    message = ""
     with open("message_ci_tmp", 'r') as messageFile:
-        message = messageFile.read()
+        tache["rapport"] = messageFile.read()
+    # Suppression du fichier temporaire
+    os.remove("message_ci_tmp")
+    # Mise à jour du fichier de la tâche
+    with open(cheminTache) as tacheFile:
+        json.dumps(tache)
+    branch = ""
+    if not os.path.exists(".identifiant"):
+        print("Vous devez utiliser identifiant au moins une fois avant de pouvoir faire des modifications de code.", file=sys.stderr)
+        return 1
+    with open(".identifiant", 'r') as branchFile:
+        branch = branchFile.read();
+    gitProcess = run(f"git checkout {branch}", shell=True)
+    if gitProcess.returncode != 0:
+        print("---X git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?", file=sys.stderr)
+        return 1
+    # Ajout de tout le travail fait depuis le dernier commit
+    gitProcess = run("git add .", shell=True)
+    if gitProcess.returncode != 0:
+        print("---X Le travail que vous avez fait n'a pas pu être ajouté. Demandez de l'aide au groupe DevOps pour régler le problème.", file=sys.stderr)
+        return 1
     # Validation du travail effectué
-    gitProcess = run(f"git commit -m \"{message}\"", shell=True)
+    tacheRapport = tache["rapport"]
+    gitProcess = run(f"git commit -m \"{tacheRapport}\"", shell=True)
     if gitProcess.returncode != 0:
         print("---X Le travail que vous avez fait n'a pas pu être validé. Demandez de l'aide au groupe DevOps pour régler le problème.", file=sys.stderr)
         return 1
@@ -154,4 +202,4 @@ def info():
 
 
 if __name__ == '__main__':
-    fusion()
+    fini()
