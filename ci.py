@@ -104,9 +104,9 @@ def fini():
         return 1
     # else...
     # Lecture du message enregistré
-    run("cat message_ci_tmp", shell=True)
     with open("message_ci_tmp", 'r') as messageFile:
         tache["rapport"] = messageFile.read()
+    print(tache["rapport"])
     # Suppression du fichier temporaire
     os.remove("message_ci_tmp")
     # Mise à jour du fichier de la tâche
