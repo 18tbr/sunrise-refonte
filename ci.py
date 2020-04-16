@@ -87,7 +87,7 @@ def fini():
     with open("message_ci_tmp", 'w') as messageTemp:
         messageTemp.write(tache["rapport"])
         messageTemp.write("---> Inscrivez votre message en dessous\n")
-    open("message_ci_tmp", 'w').close()
+
     print("---> Inscrivez une phrase de rapport dans votre éditeur de texte")
     editor = ""
     if sys.platform == 'linux':
