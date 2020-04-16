@@ -12,10 +12,9 @@ def main():
 
 def identifiant():
     prenomId = input("Identifiant :\n>> ")
-    Path(".identifiant").touch(exist_ok=True)
     with open(".identifiant", 'w') as idFile:
         idFile.write(prenomId)
-    print("---> Identifiant stocké avec succès")
+    print("---> Mise à jour effectuée avec succès")
     return 0
 
 def maj():
