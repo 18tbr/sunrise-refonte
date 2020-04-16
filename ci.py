@@ -20,6 +20,9 @@ def identifiant():
 
 def maj():
     branch = ""
+    if not os.path.exists(".identifiant"):
+        print("Vous devez utiliser identifiant au moins une fois avant de pouvoir faire des modifications de code.", file=sys.stderr)
+        return 1
     with open(".identifiant", 'r') as branchFile:
         branch = branchFile.read();
     gitProcess = run(f"git checkout {branch}", shell=True)
