@@ -25,10 +25,12 @@ def maj():
     gitProcess = run(f"git checkout {branch}", shell=True)
     if gitProcess.returncode != 0:
         print("---X git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?", file=sys.stderr)
+        return 1
     # else...
     gitProcess = run("git pull origin master", shell=True)
     if gitProcess.returncode != 0:
         print("---X Un conflit semble être apparu dans l'usage de git. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider.", file=sys.stderr)
+        return 1
     # else...
     print("---> Mise à jour effectuée avec succès")
     return 0
@@ -51,10 +53,12 @@ def fusion():
     gitProcess = run("git checkout master", shell=True)
     if gitProcess.returncode != 0:
         print("---X git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?", file=sys.stderr)
+        return 1
     # else...
     gitProcess = run(f"git pull --rebase origin {nomBranche}", shell=True)
     if gitProcess.returncode != 0:
         print("---X Un conflit semble être apparu dans l'usage de git. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider.", file=sys.stderr)
+        return 1
     # else...
     print(f"---> Fusion de {nomBranche} effectuée avec succès")
     return 0
