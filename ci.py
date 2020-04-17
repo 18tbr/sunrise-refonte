@@ -49,10 +49,39 @@ def main(richInput):
 
 
 def identifiant(richInput):
+    listePrenoms = [
+        "theo",
+        "tbr",
+        "thibault",
+        "pierre",
+        "maud",
+        "lucie",
+        "alicia",
+        "camille",
+        "arthur",
+        "vitor",
+        "felipe",
+        "litao",
+        "martin",
+        "shao-hen",
+    ]
+    print("Les identifiants possibles sont :\n")
+    for prenom in listePrenoms:
+        print(f"---- {prenom}")
+    print("\n")
     prenomId = richInput.wideInput("Identifiant :\n>> ")
+    while prenomId not in listePrenoms:
+        print(
+            "L'identifiant que vous avez rentré n'est pas valable, veulliez rentrer un des identifiants possibles.",
+            file=stderr,
+        )
+        print("Les identifiants possibles sont :\n")
+        for prenom in listePrenoms:
+            print(f"---- {prenom}")
+        print("\n")
     with open(".identifiant", "w") as idFile:
         idFile.write(prenomId)
-    print("---> Identifiaction réalisée avec succès")
+    print(f"---> Identification réalisée avec succès, bienvenue {prenomId} :-)")
 
 
 def maj(richInput):
@@ -114,6 +143,7 @@ def fini(richInput):
     # Lecture du fichier JSON pour voir les valeurs à demander
     with open(cheminTache, "r") as jsonFile:
         tache = json.load(jsonFile)
+    # Mise à jour de nomTache avec sa vraie valeur
     nomTache = tache["nom"]
     messageEditeur = ""
     if tache["type"] == "general":
@@ -171,33 +201,60 @@ def fini(richInput):
         f"{tacheRapport}({branch}) {messageEditeur}\n",
     )
 
+    # Création d'un message de commit synthétique
+    messageCommit = ""
+    if tacheType == "general":
+        messageCommit = (
+            f"{branch} (groupe {groupe}) a fini la tache générale {nomTache}."
+        )
+    else:
+        if typeTravail == "test":
+            messageCommit = (
+                f"{branch} (groupe {groupe}) a fini les tests de {nomTache}."
+            )
+        elif typeTravail == "code":
+            messageCommit = f"{branch} (groupe {groupe}) a fini le code de {nomTache}."
+        else:
+            messageCommit = f"{branch} (groupe {groupe}) a fini la revue de {nomTache}."
+
     # Mise à jour du fichier de la tâche
     with open(cheminTache, "w") as tacheFile:
         json.dump(tache, tacheFile, sort_keys=True, indent=4)
 
-    # with open(".identifiant", 'r') as branchFile:
-    #     branch = branchFile.read();
-    # gitProcess = run(f"git checkout {branch}", shell=True)
-    # if gitProcess.returncode != 0:
-    #     print("---X git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?", file=sys.stderr)
-    #     return 1
-    # # Ajout de tout le travail fait depuis le dernier commit
-    # gitProcess = run("git add .", shell=True)
-    # if gitProcess.returncode != 0:
-    #     print("---X Le travail que vous avez fait n'a pas pu être ajouté. Demandez de l'aide au groupe DevOps pour régler le problème.", file=sys.stderr)
-    #     return 1
-    #
-    # # Validation du travail effectué
-    # tacheRapport = tache["rapport"]
-    # gitProcess = run(f"git commit -m \"{tacheRapport}\"", shell=True)
-    # if gitProcess.returncode != 0:
-    #     print("---X Le travail que vous avez fait n'a pas pu être validé. Demandez de l'aide au groupe DevOps pour régler le problème.", file=sys.stderr)
-    #     return 1
-    # # Envoi du travail effectué
-    # gitProcess = run(f"git push", shell=True)
-    # if gitProcess.returncode != 0:
-    #     print("---X Le travail que vous avez fait n'a pas pu être enregisté. Demandez de l'aide au groupe DevOps pour régler le problème.", file=sys.stderr)
-    #     return 1
+    with open(".identifiant", "r") as branchFile:
+        branch = branchFile.read()
+    gitProcess = run(f"git checkout {branch}", shell=True)
+    if gitProcess.returncode != 0:
+        print(
+            "---X git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?",
+            file=sys.stderr,
+        )
+        return 1
+    # Ajout de tout le travail fait depuis le dernier commit
+    gitProcess = run("git add .", shell=True)
+    if gitProcess.returncode != 0:
+        print(
+            "---X Le travail que vous avez fait n'a pas pu être ajouté. Demandez de l'aide au groupe DevOps pour régler le problème.",
+            file=sys.stderr,
+        )
+        return 1
+
+    # Validation du travail effectué
+    gitProcess = run(f'git commit -m "{messageCommit}"', shell=True)
+    if gitProcess.returncode != 0:
+        print(
+            "---X Le travail que vous avez fait n'a pas pu être validé. Demandez de l'aide au groupe DevOps pour régler le problème.",
+            file=sys.stderr,
+        )
+        return 1
+    # Envoi du travail effectué
+    gitProcess = run(f"git push", shell=True)
+    if gitProcess.returncode != 0:
+        print(
+            "---X Le travail que vous avez fait n'a pas pu être enregisté. Demandez de l'aide au groupe DevOps pour régler le problème.",
+            file=sys.stderr,
+        )
+        return 1
     print("---> Votre travail a bien été enregistré.")
 
 
@@ -222,7 +279,14 @@ def statut(richInput):
         groupe = richInput.wideInput("Nom du groupe :\n>> ")
     listeTaches = os.listdir(f"taches/{groupe}")
     aFinir = []
+    correction = (
+        0  # Compte les fichiers non JSON a supprimer dans le décompte des tâches
+    )
     for fichierTache in listeTaches:
+        if fichierTache == ".gitignore":
+            # We skip gitignore files
+            correction += 1
+            continue
         with open(f"taches/{groupe}/{fichierTache}", "r") as tacheFile:
             tache = json.load(tacheFile)
             if tache["etat"] == "complet":
@@ -230,17 +294,40 @@ def statut(richInput):
             # else...
             aFinir.append(tache)
     print("\nNom du groupe :", groupe)
-    print(f"Total des taches de {groupe} :", len(listeTaches))
+    print(f"Total des taches de {groupe} :", len(listeTaches) - correction)
     print(f"Taches en cours de {groupe} :", len(aFinir))
     if len(aFinir) > 0:
         print("\nListe des taches à finir :\n")
         for tache in aFinir:
-            print("----", tache["nom"], ":", tache["etat"])
+            print(
+                "---- ",
+                tache["nom"],
+                " (",
+                tache["origine"],
+                ") : ",
+                tache["etat"],
+                sep="",
+            )
     print(f"\n---> Fin du statut de {groupe}")
 
 
 def groupe(richInput):
     nomGroupe = richInput.wideInput("Nom du groupe à créer :\n>> ")
+    while nomGroupe not in [
+        "UI",
+        "AI",
+        "Arduino",
+        "Simulation",
+        "Grille",
+        "SunRise",
+        "Arduino",
+        "DevOps",
+    ]:
+        print(
+            "Le nom de groupe rentré n'est pas reconnu. Les noms de groupe possibles sont :\n---- UI\n---- AI\n---- Arduino\n---- Simulation\n---- Grille\n---- SunRise\n---- Arduino\n---- DevOps",
+            file=sys.stderr,
+        )
+        nomGroupe = richInput.wideInput("Nom du groupe :\n>> ")
     nomRepertoire = os.path.join("taches", nomGroupe)
     os.makedirs(nomRepertoire, exist_ok=True)
     print("---> Groupe créé avec succès")
@@ -269,6 +356,9 @@ def fusion(richInput):
 
 def nouveau(richInput):
     data = {}
+    # On note la personne qui a créé la tâche
+    branch = richInput.user()
+    data["origine"] = branch
     # nom du groupe
     groupe = richInput.wideInput("Nom du groupe :\n>> ")
     while groupe not in [
@@ -396,13 +486,14 @@ def info(richInput):
 
     print("\nNom de la tâche :", tache["nom"])
     print("Type :", tache["type"])
+    print("Demandée par :", tache["origine"])
     print("Groupe assigné :", tache["groupe"])
     print("Avancement :", tache["etat"], "\n")
     if tache["type"] == "general":
         print("Description de la tache :\n", tache["desc"], sep="")
     elif tache["type"] == "code":
-        print("Arguments de la fonction :", tache["arguments"])
-        print("Retour de la fonction :", tache["retour"])
+        print("Arguments de la fonction :\n", tache["arguments"], sep="")
+        print("Retour de la fonction :\n", tache["retour"], sep="")
         print("Description de la fonction :\n", tache["desc"], sep="")
     print("\nRapport de la tache :\n", tache["rapport"], sep="")
 

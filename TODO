@@ -1,32 +1,56 @@
-La première chose à faire est d'écrire CI, qui évitera d'avoir à gérer un enfer de git.
+La première chose à faire est d'écrire CI, qui évitera d'avoir à gérer un 
+enfer de git.
 
-CI est un script qui gère git et la gestion de projet d'une façon plus facile pour l'utilisateur.
+CI est un script qui gère git et la gestion de projet d'une façon plus facile 
+pour l'utilisateur.
 
-Le fonctionnement de CI repose sur des fichiers .json décrivant les différentes tâches à faire (dans le dossier taches). Ces tâches se trouvent dans un sous-dossier de "taches" qui correpond au groupe qu'elles concernent.
+Le fonctionnement de CI repose sur des fichiers .json décrivant les 
+différentes tâches à faire (dans le dossier taches). Ces tâches se trouvent 
+dans un sous-dossier de "taches" qui correpond au groupe qu'elles concernent.
 
 Le format de ces fichiers de tâches est le suivant :
- - Le nom de la tâche est le nom fichier et se trouve dans un champs "nom" du json.
- - Le champs "groupe" qui continent le groupe concerné par la tache est doit être l'un de : "UI", "AI", "Arduino", "Simulation", "Grille", "SunRise", "Arduino" ou "DevOps".
- - Le champs "type" décrit le type de la tâche et doit être l'un de "general" (pour une tache générale) ou "code" (pour une fonction ou méthode).
- - "rapport", qui contient initialement une chaîne vide, puis le texte rentré par l'utilisateur qui aura terminé la tâche (le message du commit correspondant en gros).
+ - Le nom de la tâche est le nom fichier et se trouve dans un champs "nom" du 
+json.
+ - Le champs "groupe" qui continent le groupe concerné par la tache est doit 
+être l'un de : "UI", "AI", "Arduino", "Simulation", "Grille", "SunRise", 
+"Arduino" ou "DevOps".
+ - Le champs "type" décrit le type de la tâche et doit être l'un de 
+"general" (pour une tache générale) ou "code" (pour une fonction ou méthode).
+ - "rapport", qui contient initialement une chaîne vide, puis le texte rentré 
+par l'utilisateur qui aura terminé la tâche (le message du commit 
+correspondant en gros).
+ - Un champs "origine" qui identifie la personne qui a crée la tâche.
 
 Pour une tache générale, les champs supplémentaires définis sont :
  - "desc", qui continent une chaîne de caractères décrivant la tâche.
- - "etat", qui décrit l'état de la tache et doit être l'un de "incomplet" ou "complet".
+ - "etat", qui décrit l'état de la tache et doit être l'un de "incomplet" ou 
+"complet".
 
 Pour une tache de code, les champs supplémentaires définis seront :
- - "arguments", qui contient une description des arguments de la fonction en question.
+ - "arguments", qui contient une description des arguments de la fonction en 
+question.
  - "retour", qui décrit ce que la fonction doit renvoyer.
  - "desc", qui contient un texte de description de la tâche.
- - "etat", qui decrit l'etat de la tâche. Cet êtat doit être l'un de "incomplet", "test", "code", "complet". Notés que ces états doivent être traversés dans l'ordre (i.e. il faut écrire des tests avant d'écrire la fonction).
+ - "etat", qui decrit l'etat de la tâche. Cet êtat doit être l'un de 
+"incomplet", "test", "code", "complet". Notés que ces états doivent être 
+traversés dans l'ordre (i.e. il faut écrire des tests avant d'écrire la 
+fonction).
 
-Pour la gestion de git, l'idée est la suivante : il y a un git global sur lequel tout le monde aura sa propre branche. Au début des deux heures, tout le monde fait une mise à jour de sa version pour recevoir les modifications des autres. Ensuite, chacun fait des push sur sa propre version (sans avoir de conflits donc). Au moment de la pause, je vais faire des merge de toutes les versions de tout le monde sur la branche master et résoudre tous les conflits. Je ferai aussi du formattage de code avec black.
+Pour la gestion de git, l'idée est la suivante : il y a un git global sur 
+lequel tout le monde aura sa propre branche. Au début des deux heures, tout le 
+monde fait une mise à jour de sa version pour recevoir les modifications des 
+autres. Ensuite, chacun fait des push sur sa propre version (sans avoir de 
+conflits donc). Au moment de la pause, je vais faire des merge de toutes les 
+versions de tout le monde sur la branche master et résoudre tous les conflits. 
+Je ferai aussi du formattage de code avec black.
 
-L'outil CI fonctionnera en mode interactif (comme cli.py dans l'ancien code) et les fonctions qu'il devra définir seront :
+L'outil CI fonctionnera en mode interactif (comme cli.py dans l'ancien code) et 
+les fonctions qu'il devra définir seront :
  - "identifiant" pour la première connection
  - "maj" pour faire un git pull
  - "fini" pour faire un commit + push d'une tâche
- - "statut" pour obtenir des informations sur l'utilisateur et voir les tâches à faire pour le groupe
+ - "statut" pour obtenir des informations sur l'utilisateur et voir les tâches 
+à faire pour le groupe
  - "info" pour voir les informations sur une tâche à faire
  - "nouveau" permettant de créer une nouvelle tâche
  - "fusion" permettant de faire les merge à la pause
