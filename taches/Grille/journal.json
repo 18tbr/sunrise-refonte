@@ -1,0 +1,9 @@
+{
+    "desc": "La t\u00e2che journal n'est pas une vraie t\u00e2che, elle sert uniquement \u00e0 r\u00e9gler les conflits et \u00e0 sauvergarder le travail m\u00eame lorsque vous n'avez pas r\u00e9ellement fini une t\u00e2che.\n",
+    "etat": "complet",
+    "groupe": "Grille",
+    "nom": "journal",
+    "origine": "tbr",
+    "rapport": "",
+    "type": "general"
+}

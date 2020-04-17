@@ -1,0 +1,9 @@
+{
+    "desc": "La t\u00e2che journal n'est pas une vraie t\u00e2che, elle est uniquement utilse lorsque vous voulez sauvegarder un travail en cours ou r\u00e9gler des conflits git.\n",
+    "etat": "complet",
+    "groupe": "Web",
+    "nom": "journal",
+    "origine": "tbr",
+    "rapport": "",
+    "type": "general"
+}

@@ -81,7 +81,9 @@ def identifiant(richInput):
         print("\n")
     with open(".identifiant", "w") as idFile:
         idFile.write(prenomId)
-    print(f"---> Identification réalisée avec succès, bienvenue {prenomId.capitalize()} :-)")
+    print(
+        f"---> Identification réalisée avec succès, bienvenue {prenomId.capitalize()} :-)"
+    )
 
 
 def maj(richInput):
@@ -354,7 +356,7 @@ def fusion(richInput):
         )
         return 1
     # else...
-    gitProcess = run(f"git push", shell=True)   # Pour mettre à jour le dépôt distant
+    gitProcess = run(f"git push", shell=True)  # Pour mettre à jour le dépôt distant
     if gitProcess.returncode != 0:
         print(
             "---X Le push de la branche fusionnée a échoué. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider.",
@@ -570,7 +572,6 @@ class RichInput(object):
             return 1
 
         textProcess = run(f"{editor} editor.tmp", shell=True)
-        print(textProcess.returncode)
         if textProcess.returncode != 0:
             print(
                 "---X Une erreur est survenue pendant que vous rentriez votre message, ce dernier n'a pas été récupéré.",
