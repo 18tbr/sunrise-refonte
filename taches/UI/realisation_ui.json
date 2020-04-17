@@ -1,0 +1,9 @@
+{
+    "desc": "Cette tache ne pourra \u00eatre commenc\u00e9e qu'une fois la tache prototype_ui termin\u00e9e.\n\nMaintenant que vous savez quoi faire pour votre interface, il ne vous reste plus qu'\u00e0 la r\u00e9aliser en pratique.\nCette tache sera \u00e0 d\u00e9composer en plusieurs sous-t\u00e2ches de code plus pr\u00e9cises.\nUne fois que vous aurez cr\u00e9\u00e9 toutes les sous-t\u00e2ches, vous pourrez marquer la tache \"realiser_ui\" comme finie.\nNormalement lorsque vous aurez fini de r\u00e9aliser toutes les sous-t\u00e2ches, l'interface graphique sera termin\u00e9e.\n",
+    "etat": "incomplet",
+    "groupe": "UI",
+    "nom": "realisation_ui",
+    "origine": "tbr",
+    "rapport": "",
+    "type": "general"
+}

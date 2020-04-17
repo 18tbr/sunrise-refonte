@@ -116,8 +116,9 @@ def fini(richInput):
         "Simulation",
         "Grille",
         "SunRise",
-        "Arduino",
+        "Animation",
         "DevOps",
+        "Web",
     ]:
         print(
             "Le nom de groupe rentré n'est pas reconnu. Les noms de groupe possibles sont :\n---- UI\n---- AI\n---- Arduino\n---- Simulation\n---- Grille\n---- SunRise\n---- Arduino\n---- DevOps",
@@ -269,8 +270,9 @@ def statut(richInput):
         "Simulation",
         "Grille",
         "SunRise",
-        "Arduino",
+        "Animation",
         "DevOps",
+        "Web",
     ]:
         print(
             "Le nom de groupe rentré n'est pas reconnu. Les noms de groupe possibles sont :\n---- UI\n---- AI\n---- Arduino\n---- Simulation\n---- Grille\n---- SunRise\n---- Arduino\n---- DevOps",
@@ -320,8 +322,9 @@ def groupe(richInput):
         "Simulation",
         "Grille",
         "SunRise",
-        "Arduino",
+        "Animation",
         "DevOps",
+        "Web",
     ]:
         print(
             "Le nom de groupe rentré n'est pas reconnu. Les noms de groupe possibles sont :\n---- UI\n---- AI\n---- Arduino\n---- Simulation\n---- Grille\n---- SunRise\n---- Arduino\n---- DevOps",
@@ -375,8 +378,9 @@ def nouveau(richInput):
         "Simulation",
         "Grille",
         "SunRise",
-        "Arduino",
+        "Animation",
         "DevOps",
+        "Web",
     ]:
         print(
             "Le nom de groupe rentré n'est pas reconnu. Les noms de groupe possibles sont :\n---- UI\n---- AI\n---- Arduino\n---- Simulation\n---- Grille\n---- SunRise\n---- Arduino\n---- DevOps",
@@ -463,8 +467,9 @@ def info(richInput):
         "Simulation",
         "Grille",
         "SunRise",
-        "Arduino",
+        "Animation",
         "DevOps",
+        "Web",
     ]:
         print(
             "Le nom de groupe rentré n'est pas reconnu. Les noms de groupe possibles sont :\n---- UI\n---- AI\n---- Arduino\n---- Simulation\n---- Grille\n---- SunRise\n---- Arduino\n---- DevOps",
