@@ -351,6 +351,13 @@ def fusion(richInput):
         )
         return 1
     # else...
+    gitProcess = run(f"git push", shell=True)   # Pour mettre à jour le dépôt distant
+    if gitProcess.returncode != 0:
+        print(
+            "---X Le push de la branche fusionnée a échoué. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider.",
+            file=sys.stderr,
+        )
+        return 1
     print(f"---> Fusion de {nomBranche} effectuée avec succès")
 
 
