@@ -1,0 +1,9 @@
+{
+    "desc": "Maintenant que ci.py est pr\u00eat il faut nettoyer le dossier racine (et en particulier bouger le TODO).\n",
+    "etat": "complet",
+    "groupe": "DevOps",
+    "nom": "Nettoyage_initial",
+    "origine": "tbr",
+    "rapport": "(tbr) ---> Inscrivez votre rapport concernant la t\u00e2che en dessous\nJ'ai boug\u00e9 le TODO dans un r\u00e9pertoire d\u00e9di\u00e9 au groupe DevOps.\n",
+    "type": "general"
+}
