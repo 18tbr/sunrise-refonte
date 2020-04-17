@@ -72,7 +72,7 @@ def identifiant(richInput):
     prenomId = richInput.wideInput("Identifiant :\n>> ")
     while prenomId not in listePrenoms:
         print(
-            "L'identifiant que vous avez rentré n'est pas valable, veulliez rentrer un des identifiants possibles.",
+            "L'identifiant que vous avez rentré n'est pas valable, veuillez rentrer un des identifiants possibles.",
             file=stderr,
         )
         print("Les identifiants possibles sont :\n")
@@ -81,7 +81,7 @@ def identifiant(richInput):
         print("\n")
     with open(".identifiant", "w") as idFile:
         idFile.write(prenomId)
-    print(f"---> Identification réalisée avec succès, bienvenue {prenomId} :-)")
+    print(f"---> Identification réalisée avec succès, bienvenue {prenomId.capitalize()} :-)")
 
 
 def maj(richInput):
@@ -134,7 +134,7 @@ def fini(richInput):
             file=sys.stderr,
         )
         print(
-            f"Les taches qui existent pour le groupe {groupe} sont :", file=sys.stderr,
+            f"Les tâches qui existent pour le groupe {groupe} sont :", file=sys.stderr,
         )
         listeTaches = os.listdir(f"taches/{groupe}")
         for tachePossible in listeTaches:
@@ -282,7 +282,7 @@ def statut(richInput):
     listeTaches = os.listdir(f"taches/{groupe}")
     aFinir = []
     correction = (
-        0  # Compte les fichiers non JSON a supprimer dans le décompte des tâches
+        0  # Compte les fichiers non JSON à supprimer dans le décompte des tâches
     )
     for fichierTache in listeTaches:
         if fichierTache == ".gitignore":
@@ -392,16 +392,19 @@ def nouveau(richInput):
     nomTache = richInput.wideInput("Nom de la tâche :\n>> ")
     while ascii(nomTache)[1:-1] != nomTache or " " in nomTache:
         print(
-            "---X Le nom de la tâche n'est pas valide. Il ne doit contenir ni caractère spécial ni espace. Un nom valide est par exemple 'nom_de_tache'.",
+            "---X Le nom de la tâche n'est pas valide. Il ne doit contenir ni caractère spécial ni espace. Un nom valide est par exemple 'Nom_de_tache'.",
             file=sys.stderr,
         )
         nomTache = richInput.wideInput("Nom de la tâche :\n>> ")
     data["nom"] = nomTache
     # type de la tâche
     typeTache = richInput.wideInput("Type de la tâche :\n>> ")
-    while typeTache not in ["general", "code"]:
+    while typeTache not in [
+        "general",
+        "code",
+    ]:
         print(
-            "---X Le type de tâche rentré n'est pas reconnu.\nLes 2 types de tâches possibles sont 'general' (pour une tâche générale) et 'code' (pour une fonction ou méthode).",
+            "---X Le type de tâche rentré n'est pas reconnu.\nLes 2 types de tâches possibles sont \n---- general (pour une tâche générale)\n---- code (pour une fonction ou méthode)",
             file=sys.stderr,
         )
         typeTache = richInput.wideInput("Type de la tâche :\n>> ")
@@ -416,7 +419,7 @@ def nouveau(richInput):
         etat = richInput.wideInput("Etat de la tâche :\n>> ") or "incomplet"
         while etat not in ["incomplet", "complet"]:
             print(
-                "---X L'état rentré n'est pas reconnu.\nLes états possibles pour une tâche sont 'incomplet' et 'complet'.",
+                "---X L'état rentré n'est pas reconnu.\nLes états possibles pour une tâche sont \n---- incomplet\n---- complet",
                 file=sys.stderr,
             )
             etat = input("Etat de la tâche :\n>> ") or "incomplet"
@@ -439,7 +442,7 @@ def nouveau(richInput):
         etat = richInput.wideInput("Etat de la tâche :\n>> ") or "incomplet"
         while etat not in ["incomplet", "test", "code", "complet"]:
             print(
-                "---X L'état rentré n'est pas reconnu. Les états possibles pour une tâche sont 'incomplet', 'test', 'code', 'revue' et 'complet'.",
+                "---X L'état rentré n'est pas reconnu. Les états possibles pour une tâche sont \n---- incomplet\n---- test\n---- code\n---- complet",
                 file=sys.stderr,
             )
             etat = richInput.wideInput("Etat de la tâche :\n>> ") or "incomplet"
@@ -458,7 +461,7 @@ def nouveau(richInput):
 def info(richInput):
     # Récupération du groupe
     groupe = richInput.wideInput(
-        "Quel est le groupe dont vous chercher une information ?\n>> "
+        "Quel est le groupe sur lequel vous cherchez une information ?\n>> "
     )
     while groupe not in [
         "UI",
@@ -485,7 +488,7 @@ def info(richInput):
             file=sys.stderr,
         )
         print(
-            f"Les taches qui existent pour le groupe {groupe} sont :", file=sys.stderr,
+            f"Les tâches qui existent pour le groupe {groupe} sont :", file=sys.stderr,
         )
         listeTaches = os.listdir(f"taches/{groupe}")
         for tachePossible in listeTaches:
@@ -502,14 +505,14 @@ def info(richInput):
     print("Groupe assigné :", tache["groupe"])
     print("Avancement :", tache["etat"], "\n")
     if tache["type"] == "general":
-        print("Description de la tache :\n", tache["desc"], sep="")
+        print("Description de la tâche :\n", tache["desc"], sep="")
     elif tache["type"] == "code":
         print("Arguments de la fonction :\n", tache["arguments"], sep="")
         print("Retour de la fonction :\n", tache["retour"], sep="")
         print("Description de la fonction :\n", tache["desc"], sep="")
-    print("\nRapport de la tache :\n", tache["rapport"], sep="")
+    print("\nRapport de la tâche :\n", tache["rapport"], sep="")
 
-    print("---> Fin des informations sur la tache", tache["nom"])
+    print("---> Fin des informations sur la tâche", tache["nom"])
 
 
 # A class to handle various types of input
@@ -567,6 +570,7 @@ class RichInput(object):
             return 1
 
         textProcess = run(f"{editor} editor.tmp", shell=True)
+        print(textProcess.returncode)
         if textProcess.returncode != 0:
             print(
                 "---X Une erreur est survenue pendant que vous rentriez votre message, ce dernier n'a pas été récupéré.",
