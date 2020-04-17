@@ -4,6 +4,6 @@
     "groupe": "DevOps",
     "nom": "journal",
     "origine": "tbr",
-    "rapport": "(tbr) ---> Inscrivez votre rapport concernant la t\u00e2che en dessous\nJ'ai cr\u00e9\u00e9 une fausse t\u00e2che journal pour tous les groupes, qui est utile pour faire des commits m\u00eame lorsqu'une personne n'a pas vraiment fini une t\u00e2che.\nPar contre il ne faut pas que plus d'une personne par groupe utilise le journal en m\u00eame temps, sinon il y aura des conflits.\n",
+    "rapport": "(tbr) ---> Inscrivez votre rapport concernant la t\u00e2che en dessous\nJ'ai cr\u00e9\u00e9 une fausse t\u00e2che journal pour tous les groupes, qui est utile pour faire des commits m\u00eame lorsqu'une personne n'a pas vraiment fini une t\u00e2che.\nPar contre il ne faut pas que plus d'une personne par groupe utilise le journal en m\u00eame temps, sinon il y aura des conflits.\n(theo) ---> Inscrivez votre rapport concernant la t\u00e2che en dessous\n(tbr) j'ai emprunt\u00e9 le compte de Th\u00e9o pour pouvoir fusionner ses am\u00e9liorations sur la branche master.\n",
     "type": "general"
 }
