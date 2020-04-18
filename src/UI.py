@@ -1,5 +1,5 @@
 import tkinter as tk
-from Animation import *
+from .Animation import *
 
 class UI(object):
     """docstring for UI."""

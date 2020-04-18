@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.optimize import odeint
+from scipy.integrate import odeint
 
 class Simulation(object):
     """docstring for Simulation."""
