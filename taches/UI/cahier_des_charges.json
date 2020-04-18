@@ -1,9 +1,0 @@
-{
-    "desc": "Avant de r\u00e9aliser l'interface utilisateur de notre programme, il faut bien mettre au clair ce que l'on compte afficher.\nCela va ici passer par trois \u00e9l\u00e9ments principaux :\n\nQuelles informations le programme doit-il fournir \u00e0 l'utilisateur ? Quels sont leurs types ?\nQuelles informations le programme doit-il r\u00e9cup\u00e9rer de l'utilisateur ? Quels sont leurs types ?\nQuelles action l'utilisateur doit-il pouvoir faire au travers de l'interface ?\n",
-    "etat": "incomplet",
-    "groupe": "UI",
-    "nom": "cahier_des_charges",
-    "origine": "tbr",
-    "rapport": "",
-    "type": "general"
-}

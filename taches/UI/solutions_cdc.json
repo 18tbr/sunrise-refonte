@@ -1,9 +1,0 @@
-{
-    "desc": "Cette tache ne pourra \u00eatre commenc\u00e9e qu'une fois que vous aurez r\u00e9alis\u00e9 la tache nomm\u00e9e \"Cahier des charges\".\n\nMaintenant que vous avez trouv\u00e9 les donn\u00e9es et actions que votre interface aura besoin d'afficher \u00e0 l'utilisateur, il faut que vous trouviez quels \u00e9lements d'interface graphique sont adapt\u00e9s pour r\u00e9aliser ces t\u00e2ches.\nPar exemple, si vous avez besoin de d\u00e9clencher une action sans rien demander \u00e0 l'utilisateur, un bouton pourra \u00eatre une bonne id\u00e9e. Si il faut choisir une valeur parmi plusieurs, un radio-bouton est une meilleure solution.\nAutre exemple important : si vous avez besoin de r\u00e9cup\u00e9rer beaucoup d'informations de l'utilisateur mais qui ne changent pas entre plusieurs actions, les mettre dans un menu s\u00e9par\u00e9 pourrait \u00eatre un bon choix pour \u00e9viter de surcharger l'interface principale.\n\netc...\n",
-    "etat": "incomplet",
-    "groupe": "UI",
-    "nom": "solutions_cdc",
-    "origine": "tbr",
-    "rapport": "",
-    "type": "general"
-}

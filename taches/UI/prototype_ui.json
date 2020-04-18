@@ -1,9 +1,0 @@
-{
-    "desc": "Cette tache ne pourra \u00eatre commenc\u00e9e qu'une fois la t\u00e2che solutions_cdc r\u00e9alis\u00e9e.\n\nVous avez trouv\u00e9 ce que vous voulez afficher sur votre interface graphique et quels widgets utiliser pour les afficher.\nIl faut maintenant d\u00e9cider de la disposition de l'interface. Pour cela, le plus simple est de faire un prototype avec n'importe quel logiciel graphique et d'exporter le r\u00e9sultat en pdf.\nPar exemple, vous pourriez utiliser PowerPoint ou LibreOffice ou GoogleSlide.\n",
-    "etat": "incomplet",
-    "groupe": "UI",
-    "nom": "prototype_ui",
-    "origine": "tbr",
-    "rapport": "",
-    "type": "general"
-}

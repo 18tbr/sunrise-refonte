@@ -1,9 +1,0 @@
-{
-    "desc": "Maintenant que ci.py est pr\u00eat il faut nettoyer le dossier racine (et en particulier bouger le TODO).\n",
-    "etat": "complet",
-    "groupe": "DevOps",
-    "nom": "Nettoyage_initial",
-    "origine": "tbr",
-    "rapport": "(tbr) ---> Inscrivez votre rapport concernant la t\u00e2che en dessous\nJ'ai boug\u00e9 le TODO dans un r\u00e9pertoire d\u00e9di\u00e9 au groupe DevOps.\n(tbr) ---> Inscrivez votre rapport concernant la t\u00e2che en dessous\nIl y a eu un probl\u00e8me parce que fusion n'\u00e9tait pas bien \u00e9crite.\nJe l'ai corrig\u00e9 et maintenant elle devrait marcher.\n(tbr) ---> Inscrivez votre rapport concernant la t\u00e2che en dessous\nJe ma sert de cette t\u00e2che pour r\u00e9gler quelques conflits.\n",
-    "type": "general"
-}

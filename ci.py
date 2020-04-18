@@ -10,23 +10,19 @@ def main(richInput):
         "\n---! Ceci est le script d'intégration continue.\n---! Il n'est pas encore prêt à être utilisé.\n"
     )
     demande = richInput.wideInput(
-        "Que souhaitez-vous faire ? Vous pouvez répondre avec l'un de :\n---- identifiant\n---- maj\n---- fini\n---- statut\n---- nouveau\n---- info\n\nVotre demande :\n>> "
+        "Que souhaitez-vous faire ? Vous pouvez répondre avec l'un de :\n---- identifiant\n---- maj\n---- fini\n\nVotre demande :\n>> "
     )
     while demande not in [
         "identifiant",
         "maj",
         "fini",
-        "statut",
-        "nouveau",
-        "info",
-        "groupe",
         "fusion",
     ]:
         print(
             f"Votre demande {demande} n'a pas été comprise, vous ne pouvez utiliser que l'une des demandes proposées."
         )
         demande = richInput.wideInput(
-            "Que souhaitez-vous faire ? Vous pouvez répondre avec l'un de :\n---- identifiant\n---- maj\n---- fini\n---- statut\n---- nouveau\n---- info\nVotre demande :\n>> "
+            "Que souhaitez-vous faire ? Vous pouvez répondre avec l'un de :\n---- identifiant\n---- maj\n---- fini\n\nVotre demande :\n>> "
         )
 
     print()  # A blank line for the style :-)
@@ -36,14 +32,6 @@ def main(richInput):
         maj(richInput)
     elif demande == "fini":
         fini(richInput)
-    elif demande == "statut":
-        statut(richInput)
-    elif demande == "nouveau":
-        nouveau(richInput)
-    elif demande == "info":
-        info(richInput)
-    elif demande == "groupe":
-        groupe(richInput)
     elif demande == "fusion":
         fusion(richInput)
 
@@ -110,122 +98,16 @@ def maj(richInput):
 def fini(richInput):
     branch = richInput.user()
     # Récupération du groupe
-    groupe = richInput.wideInput("Pour quel groupe avez-vous travaillé ?\n>> ")
-    while groupe not in [
-        "UI",
-        "AI",
-        "Arduino",
-        "Simulation",
-        "Grille",
-        "SunRise",
-        "Animation",
-        "DevOps",
-        "Web",
-    ]:
-        print(
-            "Le nom de groupe rentré n'est pas reconnu. Les noms de groupe possibles sont :\n---- UI\n---- AI\n---- Arduino\n---- Simulation\n---- Grille\n---- SunRise\n---- Arduino\n---- DevOps",
-            file=sys.stderr,
-        )
-        groupe = richInput.wideInput("Nom du groupe :\n>> ")
-    # Récupération de la tâche
-    nomTache = richInput.wideInput("Sur quelle tâche avez-vous travaillé ?\n>> ")
-    cheminTache = f"taches/{groupe}/{nomTache}.json"
-    while not os.path.exists(cheminTache):
-        print(
-            f"La tâche {nomTache} n'existe pas pour le groupe {groupe}.",
-            file=sys.stderr,
-        )
-        print(
-            f"Les tâches qui existent pour le groupe {groupe} sont :", file=sys.stderr,
-        )
-        listeTaches = os.listdir(f"taches/{groupe}")
-        for tachePossible in listeTaches:
-            print(f">> {tachePossible[:-5]}", file=sys.stderr)
-        nomTache = richInput.wideInput("Sur quelle tâche avez-vous travaillé ?\n>> ")
-        cheminTache = f"taches/{groupe}/{nomTache}.json"
-    # Lecture du fichier JSON pour voir les valeurs à demander
-    with open(cheminTache, "r") as jsonFile:
-        tache = json.load(jsonFile)
-    # Mise à jour de nomTache avec sa vraie valeur
-    nomTache = tache["nom"]
-    messageEditeur = ""
-    if tache["type"] == "general":
-        # On a juste besoin d'un rapport, pas de plus que cela
-        messageEditeur = "---> Inscrivez votre rapport concernant la tâche en dessous"
-        tache["etat"] = "complet"
-    elif tache["type"] == "code":
-        typeTravail = richInput.wideInput(
-            f"Sur quoi avez-vous travaillé pour la tache {nomTache} ? Les valeurs possibles sont :\n>> test\n>> code\n>> revue\nVotre réponse :\n>> "
-        )
-        while typeTravail not in ["test", "code", "revue"]:
-            print(
-                f"---! La valeur {typeTravail} n'est pas connue.", file=sys.stderr,
-            )
-            typeTravail = richInput.wideInput(
-                f"Sur quoi avez-vous travaillé pour la tache {nomTache} ?\nLes valeurs possibles sont :\n>> test\n>> code\n>> revue\nVotre réponse :\n>> "
-            )
-        if typeTravail == "test":
-            if tache["etat"] == "incomplet":
-                tache["etat"] = "test"
-            messageEditeur = (
-                "---> Inscrivez votre message concernant les tests en dessous"
-            )
-        elif typeTravail == "code":
-            if tache["etat"] == "incomplet":
-                print(
-                    f"---! Vous devez écrire des tests de la fonction {nomTache} avant d'écrire la fonction en elle-même.",
-                    file=sys.stderr,
-                )
-                return 1
-            # else...
-            if tache["etat"] == "test":
-                tache["etat"] = "code"
-            messageEditeur = (
-                "---> Inscrivez votre message concernant l'écriture du code en dessous"
-            )
-        elif typeTravail == "revue":
-            if tache["etat"] == "incomplet" or tache["etat"] == "test":
-                print(
-                    "Il faut que vous écriviez la fonction avant de vérifier si elle est correcte.",
-                    file=sys.stderr,
-                )
-                return 1
-            # else...
-            if tache["etat"] == "code":
-                tache["etat"] = "complet"
-            messageEditeur = (
-                "---> Inscrivez votre message concernant la revue du code en dessous"
-            )
-
-    tacheRapport = tache["rapport"]
-    tacheType = tache["type"]
-    tache["rapport"] = richInput.editorInput(
-        "---> Inscrivez votre phrase de rapport dans votre éditeur de texte",
-        f"{tacheRapport}({branch}) {messageEditeur}\n",
-    )
 
     # Création d'un message de commit synthétique
-    messageCommit = ""
-    if tacheType == "general":
-        messageCommit = (
-            f"{branch} (groupe {groupe}) a fini la tache générale {nomTache}."
-        )
-    else:
-        if typeTravail == "test":
-            messageCommit = (
-                f"{branch} (groupe {groupe}) a fini les tests de {nomTache}."
-            )
-        elif typeTravail == "code":
-            messageCommit = f"{branch} (groupe {groupe}) a fini le code de {nomTache}."
-        else:
-            messageCommit = f"{branch} (groupe {groupe}) a fini la revue de {nomTache}."
+    commit = richInput.editorInput(
+        "---> Inscrivez votre rapport dans votre éditeur de texte",
+        "",
+    )
+    messageCommit = (
+        f"{branch} : {commit}."
+    )
 
-    # Mise à jour du fichier de la tâche
-    with open(cheminTache, "w") as tacheFile:
-        json.dump(tache, tacheFile, sort_keys=True, indent=4)
-
-    with open(".identifiant", "r") as branchFile:
-        branch = branchFile.read()
     gitProcess = run(f"git checkout {branch}", shell=True)
     if gitProcess.returncode != 0:
         print(
@@ -261,83 +143,6 @@ def fini(richInput):
     print("---> Votre travail a bien été enregistré.")
 
 
-def statut(richInput):
-    branch = richInput.user()
-    # Récupération du groupe
-    groupe = richInput.wideInput("Sur quel groupe voulez avoir un rapport ?\n>> ")
-    while groupe not in [
-        "UI",
-        "AI",
-        "Arduino",
-        "Simulation",
-        "Grille",
-        "SunRise",
-        "Animation",
-        "DevOps",
-        "Web",
-    ]:
-        print(
-            "Le nom de groupe rentré n'est pas reconnu. Les noms de groupe possibles sont :\n---- UI\n---- AI\n---- Arduino\n---- Simulation\n---- Grille\n---- SunRise\n---- Arduino\n---- DevOps",
-            file=sys.stderr,
-        )
-        groupe = richInput.wideInput("Nom du groupe :\n>> ")
-    listeTaches = os.listdir(f"taches/{groupe}")
-    aFinir = []
-    correction = (
-        0  # Compte les fichiers non JSON à supprimer dans le décompte des tâches
-    )
-    for fichierTache in listeTaches:
-        if fichierTache == ".gitignore":
-            # We skip gitignore files
-            correction += 1
-            continue
-        with open(f"taches/{groupe}/{fichierTache}", "r") as tacheFile:
-            tache = json.load(tacheFile)
-            if tache["etat"] == "complet":
-                continue
-            # else...
-            aFinir.append(tache)
-    print("\nNom du groupe :", groupe)
-    print(f"Total des taches de {groupe} :", len(listeTaches) - correction)
-    print(f"Taches en cours de {groupe} :", len(aFinir))
-    if len(aFinir) > 0:
-        print("\nListe des taches à finir :\n")
-        for tache in aFinir:
-            print(
-                "---- ",
-                tache["nom"],
-                " (",
-                tache["origine"],
-                ") : ",
-                tache["etat"],
-                sep="",
-            )
-    print(f"\n---> Fin du statut de {groupe}")
-
-
-def groupe(richInput):
-    nomGroupe = richInput.wideInput("Nom du groupe à créer :\n>> ")
-    while nomGroupe not in [
-        "UI",
-        "AI",
-        "Arduino",
-        "Simulation",
-        "Grille",
-        "SunRise",
-        "Animation",
-        "DevOps",
-        "Web",
-    ]:
-        print(
-            "Le nom de groupe rentré n'est pas reconnu. Les noms de groupe possibles sont :\n---- UI\n---- AI\n---- Arduino\n---- Simulation\n---- Grille\n---- SunRise\n---- Arduino\n---- DevOps",
-            file=sys.stderr,
-        )
-        nomGroupe = richInput.wideInput("Nom du groupe :\n>> ")
-    nomRepertoire = os.path.join("taches", nomGroupe)
-    os.makedirs(nomRepertoire, exist_ok=True)
-    print("---> Groupe créé avec succès")
-
-
 def fusion(richInput):
     nomBranche = richInput.wideInput("Nom de la branche à fusionner :\n>> ")
     gitProcess = run("git checkout master", shell=True)
@@ -364,157 +169,6 @@ def fusion(richInput):
         )
         return 1
     print(f"---> Fusion de {nomBranche} effectuée avec succès")
-
-
-def nouveau(richInput):
-    data = {}
-    # On note la personne qui a créé la tâche
-    branch = richInput.user()
-    data["origine"] = branch
-    # nom du groupe
-    groupe = richInput.wideInput("Nom du groupe :\n>> ")
-    while groupe not in [
-        "UI",
-        "AI",
-        "Arduino",
-        "Simulation",
-        "Grille",
-        "SunRise",
-        "Animation",
-        "DevOps",
-        "Web",
-    ]:
-        print(
-            "Le nom de groupe rentré n'est pas reconnu. Les noms de groupe possibles sont :\n---- UI\n---- AI\n---- Arduino\n---- Simulation\n---- Grille\n---- SunRise\n---- Arduino\n---- DevOps",
-            file=sys.stderr,
-        )
-        groupe = richInput.wideInput("Nom du groupe :\n>> ")
-    data["groupe"] = groupe
-    # nom de la tâche
-    nomTache = richInput.wideInput("Nom de la tâche :\n>> ")
-    while ascii(nomTache)[1:-1] != nomTache or " " in nomTache:
-        print(
-            "---X Le nom de la tâche n'est pas valide. Il ne doit contenir ni caractère spécial ni espace. Un nom valide est par exemple 'Nom_de_tache'.",
-            file=sys.stderr,
-        )
-        nomTache = richInput.wideInput("Nom de la tâche :\n>> ")
-    data["nom"] = nomTache
-    # type de la tâche
-    typeTache = richInput.wideInput("Type de la tâche :\n>> ")
-    while typeTache not in [
-        "general",
-        "code",
-    ]:
-        print(
-            "---X Le type de tâche rentré n'est pas reconnu.\nLes 2 types de tâches possibles sont \n---- general (pour une tâche générale)\n---- code (pour une fonction ou méthode)",
-            file=sys.stderr,
-        )
-        typeTache = richInput.wideInput("Type de la tâche :\n>> ")
-    data["type"] = typeTache
-
-    if data["type"] == "general":
-        # description
-        data["desc"] = richInput.editorInput(
-            "Entrez la description de la tâche dans votre éditeur de texte"
-        )
-        # état
-        etat = richInput.wideInput("Etat de la tâche :\n>> ") or "incomplet"
-        while etat not in ["incomplet", "complet"]:
-            print(
-                "---X L'état rentré n'est pas reconnu.\nLes états possibles pour une tâche sont \n---- incomplet\n---- complet",
-                file=sys.stderr,
-            )
-            etat = input("Etat de la tâche :\n>> ") or "incomplet"
-        data["etat"] = etat
-
-    else:
-        # arguments
-        data["arguments"] = richInput.editorInput(
-            "Entrez la description des arguments de la fonction dans votre éditeur de texte"
-        )
-        # retour
-        data["retour"] = richInput.editorInput(
-            "Entrez la description de ce que la fonction renvoie dans votre éditeur de texte"
-        )
-        # description
-        data["desc"] = richInput.editorInput(
-            "Entrez la description de la tâche dans votre éditeur de texte"
-        )
-        # état
-        etat = richInput.wideInput("Etat de la tâche :\n>> ") or "incomplet"
-        while etat not in ["incomplet", "test", "code", "complet"]:
-            print(
-                "---X L'état rentré n'est pas reconnu. Les états possibles pour une tâche sont \n---- incomplet\n---- test\n---- code\n---- complet",
-                file=sys.stderr,
-            )
-            etat = richInput.wideInput("Etat de la tâche :\n>> ") or "incomplet"
-
-        data["etat"] = etat
-
-    # rapport
-    data["rapport"] = ""
-
-    directory = os.path.join("taches", data["groupe"])
-    fileName = os.path.join(directory, "".join([data["nom"], ".json"]))
-    with open(fileName, "w") as tacheFile:
-        json.dump(data, tacheFile, sort_keys=True, indent=4)
-
-
-def info(richInput):
-    # Récupération du groupe
-    groupe = richInput.wideInput(
-        "Quel est le groupe sur lequel vous cherchez une information ?\n>> "
-    )
-    while groupe not in [
-        "UI",
-        "AI",
-        "Arduino",
-        "Simulation",
-        "Grille",
-        "SunRise",
-        "Animation",
-        "DevOps",
-        "Web",
-    ]:
-        print(
-            "Le nom de groupe rentré n'est pas reconnu. Les noms de groupe possibles sont :\n---- UI\n---- AI\n---- Arduino\n---- Simulation\n---- Grille\n---- SunRise\n---- Arduino\n---- DevOps",
-            file=sys.stderr,
-        )
-        groupe = richInput.wideInput("Nom du groupe :\n>> ")
-    # Récupération de la tâche
-    nomTache = richInput.wideInput("Quelle tâche vous intéresse ?\n>> ")
-    cheminTache = f"taches/{groupe}/{nomTache}.json"
-    while not os.path.exists(cheminTache):
-        print(
-            f"La tâche {nomTache} n'existe pas pour le groupe {groupe}.",
-            file=sys.stderr,
-        )
-        print(
-            f"Les tâches qui existent pour le groupe {groupe} sont :", file=sys.stderr,
-        )
-        listeTaches = os.listdir(f"taches/{groupe}")
-        for tachePossible in listeTaches:
-            print(f">> {tachePossible[:-5]}", file=sys.stderr)
-        nomTache = richInput.wideInput("Quelle tâche vous intéresse ?\n>> ")
-        cheminTache = f"taches/{groupe}/{nomTache}.json"
-    # Lecture du fichier JSON pour voir les valeurs à demander
-    with open(cheminTache, "r") as jsonFile:
-        tache = json.load(jsonFile)
-
-    print("\nNom de la tâche :", tache["nom"])
-    print("Type :", tache["type"])
-    print("Demandée par :", tache["origine"])
-    print("Groupe assigné :", tache["groupe"])
-    print("Avancement :", tache["etat"], "\n")
-    if tache["type"] == "general":
-        print("Description de la tâche :\n", tache["desc"], sep="")
-    elif tache["type"] == "code":
-        print("Arguments de la fonction :\n", tache["arguments"], sep="")
-        print("Retour de la fonction :\n", tache["retour"], sep="")
-        print("Description de la fonction :\n", tache["desc"], sep="")
-    print("\nRapport de la tâche :\n", tache["rapport"], sep="")
-
-    print("---> Fin des informations sur la tâche", tache["nom"])
 
 
 # A class to handle various types of input
