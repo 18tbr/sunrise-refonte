@@ -36,7 +36,6 @@ def main(richInput):
         fusion(richInput)
 
 
-
 def identifiant(richInput):
     listePrenoms = [
         "theo",
