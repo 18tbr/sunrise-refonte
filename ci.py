@@ -202,7 +202,6 @@ class RichInput(object):
             raise CIException(
                 f"---X Votre plateforme {sys.platform} n'est pas supportée."
             )
-            return 1
 
         textProcess = run(f"{editor} editor.tmp", shell=True)
         if textProcess.returncode != 0:
