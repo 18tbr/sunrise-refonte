@@ -93,8 +93,16 @@ def maj(richInput):
 
 def fini(richInput):
     branch = richInput.user()
-    # Récupération du groupe
-
+    # run tests
+    testProcess = run("pytest")
+    if testProcess.returncode != 0:
+        raise CIException(
+            "Les tests ne sont pas vérifiés ! Testez vos fonctions avant de les sauvegarder (cf. 'tests/README.md')"
+        )
+    # else...
+    print(
+        "Les tests ont été vérifiés."
+    )
     # Création d'un message de commit synthétique
     commit = richInput.editorInput(
         "---> Inscrivez votre rapport dans votre éditeur de texte",
