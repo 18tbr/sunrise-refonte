@@ -10,11 +10,12 @@ def main(richInput):
         "\n---! Ceci est le script d'intégration continue.\n---! Il n'est pas encore prêt à être utilisé.\n"
     )
     demande = richInput.wideInput(
-        "Que souhaitez-vous faire ? Vous pouvez répondre avec l'un de :\n---- identifiant\n---- maj\n---- fini\n\nVotre demande :\n>> "
+        "Que souhaitez-vous faire ? Vous pouvez répondre avec l'un de :\n---- identifiant\n---- maj\n---- test\n---- fini\n\nVotre demande :\n>> "
     )
     while demande not in [
         "identifiant",
         "maj",
+        "test",
         "fini",
         "fusion",
     ]:
@@ -22,7 +23,7 @@ def main(richInput):
             f"Votre demande {demande} n'a pas été comprise, vous ne pouvez utiliser que l'une des demandes proposées."
         )
         demande = richInput.wideInput(
-            "Que souhaitez-vous faire ? Vous pouvez répondre avec l'un de :\n---- identifiant\n---- maj\n---- fini\n\nVotre demande :\n>> "
+            "Que souhaitez-vous faire ? Vous pouvez répondre avec l'un de :\n---- identifiant\n---- maj\n---- test\n---- fini\n\nVotre demande :\n>> "
         )
 
     print()  # A blank line for the style :-)
@@ -30,6 +31,8 @@ def main(richInput):
         identifiant(richInput)
     elif demande == "maj":
         maj(richInput)
+    elif demande == "test":
+        verifier(richInput)
     elif demande == "fini":
         fini(richInput)
     elif demande == "fusion":
@@ -91,18 +94,45 @@ def maj(richInput):
     print("---> Mise à jour effectuée avec succès")
 
 
+def verifier(richInput):
+    listeGroupes = [
+        "AI",
+        "Animation",
+        "Grille",
+        "Simulation",
+        "SunRise",
+        "UI",
+    ]
+    nomGroupe = richInput.wideInput("Nom du groupe à tester :\n>> ")
+    while nomGroupe not in listeGroupes and nomGroupe != "all":
+        print(
+            "Le nom de groupe que vous avez rentré n'est pas valable, veuillez rentrer un des groupes possibles."
+        )
+        print("Les groupes possibles sont :\n")
+        for groupe in listeGroupes:
+            print(f"---- {groupe}")
+        print("\n")
+        nomGroupe = richInput.wideInput("Nom du groupe à tester :\n>> ")
+
+    if nomGroupe == "all":
+        testProcess = run(f"pytest")
+    else:
+        testProcess = run(f"pytest tests\\test_{nomGroupe}.py")
+    print()
+    if testProcess.returncode == 1:
+        print("---> Certains tests ont échoué")
+    elif testProcess.returncode == 0:
+        print("---> Les tests ont réussi")
+    else:
+        raise CIException(
+            "---X Une erreur est survenue lors des tests. Demandez de l'aide au groupe DevOps pour régler le problème."
+        )
+
+
 def fini(richInput):
     branch = richInput.user()
-    # run tests
-    testProcess = run("pytest")
-    if testProcess.returncode != 0:
-        raise CIException(
-            "Les tests ne sont pas vérifiés ! Testez vos fonctions avant de les sauvegarder (cf. 'tests/README.md')"
-        )
-    # else...
-    print(
-        "Les tests ont été vérifiés."
-    )
+    # Récupération du groupe
+
     # Création d'un message de commit synthétique
     commit = richInput.editorInput(
         "---> Inscrivez votre rapport dans votre éditeur de texte",
