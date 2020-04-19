@@ -17,7 +17,7 @@ sunrise-refonte
 
 ## Un exemple de test
 
-Si dans le fichier `Groupe.py` vous avez :
+Si le fichier `Groupe.py` est :
 ```py
 class Multiplie(object):
     def __init__(self):
@@ -27,7 +27,7 @@ class Multiplie(object):
         return 2 * x
 ```
 
-Alors dans le fichier `test_Groupe.py` on pourra écrire :
+Alors le fichier `test_Groupe.py` contient :
 ```py
 def test_multiplieFonction():
     """Teste si multipliePar2(3) = 6"""
@@ -37,13 +37,4 @@ def test_multiplieFonction():
 
 ## Lancer les tests
 
-Pour lancer tous les tests du dossier `tests` :
-```bash
->> pytest
-```
-
-Pour lancer les tests du fichier `test_Groupe.py` :
-```bash
->> pytest tests\test_Groupe.py
-```
-
+Pour lancer les tests, utiliser la fonctionnalité `test` du `ci.py`.
