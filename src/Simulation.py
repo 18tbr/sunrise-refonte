@@ -14,3 +14,11 @@ class Simulation(object):
         self.sortie = {}
         # Indique si la simulation a fini de tourner ou non
         self.fini = False
+
+    def creation_simulation_recursive(noeud,tableau_simulation,droite,gauche):
+        if noeud. == "parallele":
+            resolution_simulation_parallele(noeud,tableau_simulation,droite,gauche)
+        if noeud == "serie":
+            resolution_simulation_serie(noeud,tableau_simulation,droite,gauche)
+
+
