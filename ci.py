@@ -139,7 +139,7 @@ def fini(richInput):
         "",
     )
     messageCommit = (
-        f"({branch}) {commit}."
+        f"({branch}) {commit}"
     )
 
     gitProcess = run(f"git checkout {branch}", shell=True)
