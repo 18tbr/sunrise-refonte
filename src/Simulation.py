@@ -21,7 +21,6 @@ def creation_simulation_recursive(noeud,tableau_simulation,droite,gauche):
     if noeud == "serie":
         resolution_simulation_serie(noeud,tableau_simulation,droite,gauche)
 
-
 def creation_simulation(grille):
     nbTemperatures = grille.nbCondensateurs + 1
     tableau = np.zeroes((nbTemperatures, nbTemperatures))
