@@ -8,8 +8,8 @@ class Grille(object):
         super(Grille, self).__init__()
         # Les parametres de la grille, récupérés du groupe SunRise
         self.parametres = parametres
-        # Une liste contenant tous les noeuds utilisés pour la simulation
-        self.noeuds = []
+        # La racine de l'arbre
+        self.racine = None
 
 
 class Noeud(object):
