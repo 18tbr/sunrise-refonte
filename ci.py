@@ -14,6 +14,7 @@ def main(richInput):
     )
     while demande not in [
         "identifiant",
+        "id",
         "maj",
         "test",
         "fini",
@@ -27,7 +28,7 @@ def main(richInput):
         )
 
     print()  # A blank line for the style :-)
-    if demande == "identifiant":
+    if demande == "identifiant" or demande == "id":
         identifiant(richInput)
     elif demande == "maj":
         maj(richInput)
