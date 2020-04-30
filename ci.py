@@ -209,7 +209,7 @@ def fusion(richInput):
         )
     # else...
     # On fusionne les changements de la branche visée dans master
-    gitProcess = richInput.run(f"git pull --rebase {branch}", shell=True)
+    gitProcess = richInput.run(f"git rebase {branch}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
             "---X Un conflit semble être apparu dans l'usage de git. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
