@@ -13,28 +13,35 @@ Etapes à coder :
 
 """
 import os
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"]="-1" #model will be trained on CPU
 import numpy as np
 import matplotlib.pyplot as plt
 import keras
+import json
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # model will be trained on CPU
 from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D
-from keras.models import Model
+from keras.models import Model, load_model
 
 
 
 class Autoencoder(object):
     """docstring for Autoencoder"""
 
-    def __init__(self, inChannel=1, x=28, y=28):
+    def __init__(self, inChannel=1, x=28, y=28, load_model_name=None):
         super(Autoencoder, self).__init__()
 
         self.inChannel = inChannel
         self.x = x
         self.y = y
 
+        # input image dimensions are fixed and do not depend of the model
         self.input_img = Input(shape=(self.x, self.y, self.inChannel))               # 28 x 28 x 1
-        self.autoencoder_model = self._create_autoencoder_model(self.input_img)
+
+        if load_model_name is None:
+            self.autoencoder_model = self._create_autoencoder_model(self.input_img)
+        else:
+            self.autoencoder_model = self._load_model(load_model_name)
+
 
     def __str__(self):
         """
@@ -81,10 +88,43 @@ class Autoencoder(object):
                       loss='mean_squared_error')
         return model
 
+    def save_model(self, name='model.h5'):
+        """
+        Save model
+        """
+        destination = os.path.join('models', name)
+        file_name, extension = os.path.splitext(name)
+
+        # save model and weights
+        if extension == '.h5':
+            self.autoencoder_model.save(destination)
+        # save only model
+        elif extension == '.json':
+            with open(destination, 'w') as json_file:
+                json.dump(self.autoencoder_model.to_json(), json_file, indent=4)
+        elif extension == '.yaml':
+            with open(destination, 'w') as yaml_file:
+                yaml_file.write(self.autoencoder_model.to_yaml())
+        else:
+            raise TypeError('You can only save models as .h5, .json or .yaml files.')
+
+    def _load_model(self, name='model.h5'):
+        """
+        Load h5 model
+        """
+        destination = os.path.join('models', name)
+        file_name, extension = os.path.splitext(name)
+
+        # load model and weights
+        if extension == '.h5':
+            return load_model(destination)
+        raise TypeError("You can only load '.h5' files.")
+
+
 
 if __name__ == "__main__":
 
-    autoencoder = Autoencoder()
+    autoencoder = Autoencoder(load_model_name='model.h5')
     print(autoencoder)
 
 
