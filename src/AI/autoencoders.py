@@ -51,33 +51,25 @@ class Autoencoder(object):
         return ""
 
 
-    def _encode(self, input_img):
+    def _autoencode(self, input_img):
         """
-        Encode input_img
+        Encode and decode input_img
         """
+        # encode
         conv1 = Conv2D(32, (3, 3), activation='relu', padding='same')(input_img)     # 28 x 28 x  32
         pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)                                # 14 x 14 x  32
         conv2 = Conv2D(64, (3, 3), activation='relu', padding='same')(pool1)         # 14 x 14 x  64
         pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)                                #  7 x  7 x  64
         encoded = Conv2D(128, (3, 3), activation='relu', padding='same')(pool2)      #  7 x  7 x 128
-        return encoded
 
-    def _decode(self, encoded_img):
-        """
-        Decode encoded_img
-        """
-        conv4 = Conv2D(128, (3, 3), activation='relu', padding='same')(encoded_img)  #  7 x  7 x 128
+        # decode
+        conv4 = Conv2D(128, (3, 3), activation='relu', padding='same')(encoded)      #  7 x  7 x 128
         up1 = UpSampling2D((2,2))(conv4)                                             # 14 x 14 x 128
         conv5 = Conv2D(64, (3, 3), activation='relu', padding='same')(up1)           # 14 x 14 x  64
         up2 = UpSampling2D((2,2))(conv5)                                             # 28 x 28 x  64
         decoded = Conv2D(1, (3, 3), activation='sigmoid', padding='same')(up2)       # 28 x 28 x   1
-        return decoded
 
-    def _autoencode(self, input_img):
-        """
-        Encode and decode input_img
-        """
-        return self._decode(self._encode(input_img))
+        return decoded
 
     def _create_autoencoder_model(self, input_img):
         """
