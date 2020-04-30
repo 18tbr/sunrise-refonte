@@ -17,6 +17,7 @@ class Noeud(object):
 
     def __init__(self, coordonnees, grille, proprietes = {}):
         super(Noeud, self).__init__()
+        fils = []
         pass
 
 
@@ -34,6 +35,7 @@ class Serie(object):
     def __init__(self, arg):
         super(Serie, self).__init__()
         self.arg = arg
+        self.cond = []
 
 
 class Feuille(object):
@@ -42,3 +44,4 @@ class Feuille(object):
     def __init__(self, arg):
         super(Feuille, self).__init__()
         self.arg = arg
+        H = 0
