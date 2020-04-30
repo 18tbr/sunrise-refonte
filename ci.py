@@ -332,7 +332,7 @@ class RichInput(object):
         return return_value
 
     def run(self, commande, *args, **kwargs):
-        print(f"---~ {commande}")
+        print(f"( {commande} )")
         return run(commande, *args, **kwargs)
 
 
