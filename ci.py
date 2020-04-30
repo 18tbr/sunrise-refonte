@@ -43,20 +43,20 @@ def main(richInput):
 
 def identifiant(richInput):
     listePrenoms = [
-        "theo",
-        "tbr",
-        "thibault",
-        "pierre",
-        "maud",
-        "lucie",
         "alicia",
-        "camille",
         "arthur",
-        "vitor",
+        "camille",
         "felipe",
         "litao",
+        "lucie",
+        "maud",
+        "pierre",
         "martin",
         "shao-hen",
+        "tbr",
+        "theo",
+        "thibault",
+        "vitor",
     ]
     print("Les identifiants possibles sont :\n")
     for prenom in listePrenoms:
@@ -76,6 +76,12 @@ def identifiant(richInput):
     print(
         f"---> Identification réalisée avec succès, bienvenue {prenomId.capitalize()} :-)"
     )
+    # checkout sur branche
+    gitProcess = run(f"git checkout {prenomId}", shell=True)
+    if gitProcess.returncode != 0:
+        raise CIException(
+            "---X git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?"
+        )
 
 
 def maj(richInput):
