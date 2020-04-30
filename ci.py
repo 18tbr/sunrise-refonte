@@ -198,6 +198,13 @@ def fusion(richInput):
     print(f"---> Fusion de {nomBranche} effectuée avec succès")
 
 
+def union(richInput):
+    # Step 1 : changer l'id pour prendre celui d'un membre du groupe
+    # Step 2 : maj, sortir avec un message d'erreur s'il y a un conflit
+    # Step 3 : git push
+    # Et on recommence
+    pass
+
 # A class to handle various types of input
 class RichInput(object):
     """docstring for RichInput."""
