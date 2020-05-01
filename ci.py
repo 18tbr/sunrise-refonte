@@ -17,6 +17,7 @@ def main(richInput):
         "fini",
         "fusion",
         "union",
+        "final"
     ]:
         print(
             f"Votre demande {demande} n'a pas été comprise, vous ne pouvez utiliser que l'une des demandes proposées."
@@ -172,18 +173,24 @@ def fini(richInput):
     print("---> Votre travail a bien été enregistré.")
 
 
-def fusion(richInput):
-    branch = richInput.wideInput("Nom de la branche à fusionner :\n>> ")
+def fusion(richInput, branch=None):
+    if branch is None:
+        branch = richInput.wideInput("Nom de la branche à fusionner :\n>> ")
+        target = "devops"
+    else:
+        # branch = "devops"
+        target = "master"
+
     # On passe sur la branche en question
     gitProcess = richInput.run(f"git checkout {branch}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(f"---X Vous n'avez pas pu passer sur la branche {branch}.")
     # else...
-    # On la met à jour par rapport à origin/master
-    gitProcess = richInput.run("git pull --rebase origin master", shell=True)
+    # On la met à jour par rapport à origin/{target}
+    gitProcess = richInput.run(f"git pull --rebase origin {target}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
-            f"---X Un conflit semble être apparu lors de la récupération de changements présents sur origin/master mais pas la branche {branch}. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
+            f"---X Un conflit semble être apparu lors de la récupération de changements présents sur origin/{target} mais pas la branche {branch}. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
         )
     # else...
     # On pousse la branche obtenue sur GitHub pour la mettre à jour
@@ -192,34 +199,36 @@ def fusion(richInput):
     )  # Pour mettre à jour le dépôt distant
     if gitProcess.returncode != 0:
         raise CIException(
-            f"---X Le push de la branche {branch} resynchronisée avec master a échoué. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
+            f"---X Le push de la branche {branch} resynchronisée avec {target} a échoué. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
         )
-    # On passe sur la branche master
-    gitProcess = richInput.run("git checkout master", shell=True)
+    # On passe sur la branche devops pour y faire la fusion
+    gitProcess = richInput.run(f"git checkout {target}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
             "---X git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?"
         )
     # else...
-    # On fusionne les changements de la branche visée dans master
+    # On fusionne les changements de la branche branch visée dans target
     gitProcess = richInput.run(f"git rebase {branch}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
             "---X Un conflit semble être apparu dans l'usage de git. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
         )
     # else...
-    # On pousse la nouvelle version de la branche principale sur GitHub
+    # On pousse la nouvelle version de la branche target sur GitHub
     gitProcess = richInput.run(
-        "git push origin master", shell=True
+        f"git push origin {target}", shell=True
     )  # Pour mettre à jour le dépôt distant
     if gitProcess.returncode != 0:
         raise CIException(
             "---X Le push de la branche fusionnée a échoué. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
         )
-    print(f"---> Fusion de {branch} effectuée avec succès")
-
+    print(f"---> Fusion de {branch} dans {target} effectuée avec succès")
 
 def union(richInput):
+    # Step 0 : Fusionner devops dans master
+    fusion(richInput, "devops")
+    print() # Une ligne vide pour le style
     # Step 1 : changer l'id pour prendre celui d'un membre du groupe
     listePrenoms = [
         "alicia",
