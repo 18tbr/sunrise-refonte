@@ -6,14 +6,14 @@ Ce dépôt fait partie du projet SunRise, donc deux cas de figure se posent si v
 
 ## Vous faites partie du projet SunRise
 
-Si vous faites partie du projet SunRise, pour contribuer au projet vous devrez utiliser l'outil ci.py fourni dans ce dépôt. Pour cela, il faut que le mainteneur du dépôt vous ajoute aux contributeurs du projet. La première chose à faire est donc de contacter le groupe DevOps qui gère l'intégration continue sur ce dépôt.
+Si vous faites partie du projet SunRise, pour contribuer au projet vous devrez utiliser l'outil `ci.py` fourni dans ce dépôt. Pour cela, il faut que le mainteneur du dépôt vous ajoute aux contributeurs du projet. La première chose à faire est donc de contacter le groupe DevOps qui gère l'intégration continue sur ce dépôt.
 
 Une fois que le groupe DevOps aura préparé votre arrivé, vous devrez cloner ce dépôt en utilisant git :
 
 > $ git clone https://github.com/18tbr/sunrise-refonte.git
 
 
-La suite du travail se fera avec l'outil ci.py, qui ne fonctionne qu'avec une version de python >= 3.5. Pour vérifier si vous avez une installation de python qui convient, vous pouvez utiliser :
+La suite du travail se fera avec l'outil `ci.py`, qui ne fonctionne qu'avec une version de python >= 3.5. Pour vérifier si vous avez une installation de python qui convient, vous pouvez utiliser :
 
 Sous Windows
 > $ python --version
@@ -26,7 +26,7 @@ Une fois le dépôt cloné, il vous faudra vous identifier sur le dépôt. Vous 
 > $ cd sunrise-refonte <br>
 > $ python ./ci.py identifiant
 
-L'outil ci.py vous demandera alors votre identifiant, qui est celui que le groupe DevOps vous aura donné. Si vous ne parvenez pas à vous identifier, contactez le groupe DevOps.
+L'outil `ci.py` vous demandera alors votre identifiant, qui est celui que le groupe DevOps vous aura donné. Si vous ne parvenez pas à vous identifier, contactez le groupe DevOps.
 
 Une fois votre authentification réussie, vous n'aurez plus que deux commandes à retenir pour pouvoir contribuer au projet.
 
@@ -38,7 +38,7 @@ Une fois la mise à jour effectuée, vous pourrez commencer votre travail. Modif
 
 > $ python ./ci.py fini
 
-L'outil ouvrira alors un éditeur de texte (sans doute notepad.exe) sur lequel vous devrez inscrire un court message descriptif résumant les modifications que vous avez réalisées. Lorsque vous fermerez votre éditeur de texte, le message sera enregistré et votre travail envoyé sur GitHub.
+L'outil ouvrira alors un éditeur de texte (sans doute `notepad.exe`) sur lequel vous devrez inscrire un court message descriptif résumant les modifications que vous avez réalisées. Lorsque vous fermerez votre éditeur de texte, le message sera enregistré et votre travail envoyé sur GitHub.
 
 ## Vous êtes extérieur au projet SunRise
 
