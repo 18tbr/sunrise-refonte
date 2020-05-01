@@ -17,11 +17,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import keras
 import json
+
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # model will be trained on CPU
 from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D
 from keras.models import Model, load_model
-
 
 
 class Autoencoder(object):
@@ -35,13 +35,12 @@ class Autoencoder(object):
         self.y = y
 
         # input image dimensions are fixed and do not depend of the model
-        self.input_img = Input(shape=(self.x, self.y, self.inChannel))               # 28 x 28 x 1
+        self.input_img = Input(shape=(self.x, self.y, self.inChannel))  # 28 x 28 x 1
 
         if load_model_name is None:
             self.autoencoder_model = self._create_autoencoder_model(self.input_img)
         else:
             self.autoencoder_model = self._load_model(load_model_name)
-
 
     def __str__(self):
         """
@@ -50,24 +49,35 @@ class Autoencoder(object):
         self.autoencoder_model.summary()
         return ""
 
-
     def _autoencode(self, input_img):
         """
         Encode and decode input_img
         """
         # encode
-        conv1 = Conv2D(32, (3, 3), activation='relu', padding='same')(input_img)     # 28 x 28 x  32
-        pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)                                # 14 x 14 x  32
-        conv2 = Conv2D(64, (3, 3), activation='relu', padding='same')(pool1)         # 14 x 14 x  64
-        pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)                                #  7 x  7 x  64
-        encoded = Conv2D(128, (3, 3), activation='relu', padding='same')(pool2)      #  7 x  7 x 128
+        conv1 = Conv2D(32, (3, 3), activation="relu", padding="same")(
+            input_img
+        )  # 28 x 28 x  32
+        pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)  # 14 x 14 x  32
+        conv2 = Conv2D(64, (3, 3), activation="relu", padding="same")(
+            pool1
+        )  # 14 x 14 x  64
+        pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)  #  7 x  7 x  64
+        encoded = Conv2D(128, (3, 3), activation="relu", padding="same")(
+            pool2
+        )  #  7 x  7 x 128
 
         # decode
-        conv4 = Conv2D(128, (3, 3), activation='relu', padding='same')(encoded)      #  7 x  7 x 128
-        up1 = UpSampling2D((2,2))(conv4)                                             # 14 x 14 x 128
-        conv5 = Conv2D(64, (3, 3), activation='relu', padding='same')(up1)           # 14 x 14 x  64
-        up2 = UpSampling2D((2,2))(conv5)                                             # 28 x 28 x  64
-        decoded = Conv2D(1, (3, 3), activation='sigmoid', padding='same')(up2)       # 28 x 28 x   1
+        conv4 = Conv2D(128, (3, 3), activation="relu", padding="same")(
+            encoded
+        )  #  7 x  7 x 128
+        up1 = UpSampling2D((2, 2))(conv4)  # 14 x 14 x 128
+        conv5 = Conv2D(64, (3, 3), activation="relu", padding="same")(
+            up1
+        )  # 14 x 14 x  64
+        up2 = UpSampling2D((2, 2))(conv5)  # 28 x 28 x  64
+        decoded = Conv2D(1, (3, 3), activation="sigmoid", padding="same")(
+            up2
+        )  # 28 x 28 x   1
 
         return decoded
 
@@ -76,50 +86,46 @@ class Autoencoder(object):
         Return autoencoder
         """
         model = Model(inputs=input_img, outputs=self._autoencode(input_img))
-        model.compile(optimizer = 'sgd',
-                      loss='mean_squared_error')
+        model.compile(optimizer="sgd", loss="mean_squared_error")
         return model
 
-    def save_model(self, name='model.h5'):
+    def save_model(self, name="model.h5"):
         """
         Save model
         """
-        destination = os.path.join('models', name)
+        destination = os.path.join("models", name)
         file_name, extension = os.path.splitext(name)
 
         # save model and weights
-        if extension == '.h5':
+        if extension == ".h5":
             self.autoencoder_model.save(destination)
         # save only model
-        elif extension == '.json':
-            with open(destination, 'w') as json_file:
+        elif extension == ".json":
+            with open(destination, "w") as json_file:
                 json.dump(self.autoencoder_model.to_json(), json_file, indent=4)
-        elif extension == '.yaml':
-            with open(destination, 'w') as yaml_file:
+        elif extension == ".yaml":
+            with open(destination, "w") as yaml_file:
                 yaml_file.write(self.autoencoder_model.to_yaml())
         else:
-            raise TypeError('You can only save models as .h5, .json or .yaml files.')
+            raise TypeError("You can only save models as .h5, .json or .yaml files.")
 
-    def _load_model(self, name='model.h5'):
+    def _load_model(self, name="model.h5"):
         """
         Load h5 model
         """
-        destination = os.path.join('models', name)
+        destination = os.path.join("models", name)
         file_name, extension = os.path.splitext(name)
 
         # load model and weights
-        if extension == '.h5':
+        if extension == ".h5":
             return load_model(destination)
         raise TypeError("You can only load '.h5' files.")
 
 
-
 if __name__ == "__main__":
 
-    autoencoder = Autoencoder(load_model_name='model.h5')
+    autoencoder = Autoencoder(load_model_name="model.h5")
     print(autoencoder)
-
-
 
 
 class AI(object):
@@ -142,9 +148,6 @@ class AI(object):
         # Récupère le modèle entrainé depuis le fichier modele.skl et le met dans self.model
         pass
 
-
     def sauvegarde_modele():
         # Récupère le modèle entrainé dans self.model et le sauvegarde dans le fichier modele.skl
         pass
-
-

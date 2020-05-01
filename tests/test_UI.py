@@ -8,6 +8,7 @@ from src.UI import UI
 
 # ===== Test functions for UI ===== #
 
+
 def test_lecture_parametres():
     """Test if [...]"""
     ui = UI()

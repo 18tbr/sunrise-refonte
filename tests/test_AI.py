@@ -8,6 +8,7 @@ from src.AI import AI
 
 # ===== Test functions for AI ===== #
 
+
 def test_lecture_modele():
     """Test if [...]"""
     ai = AI(None, None, None, None)

@@ -16,7 +16,7 @@ def main(richInput):
         "test",
         "fini",
         "fusion",
-        "union"
+        "union",
     ]:
         print(
             f"Votre demande {demande} n'a pas été comprise, vous ne pouvez utiliser que l'une des demandes proposées."
@@ -38,7 +38,6 @@ def main(richInput):
         fusion(richInput)
     elif demande == "union":
         union(richInput)
-
 
 
 def identifiant(richInput):
@@ -142,12 +141,9 @@ def fini(richInput):
 
     # Création d'un message de commit synthétique
     commit = richInput.editorInput(
-        "---> Inscrivez votre rapport dans votre éditeur de texte",
-        "",
+        "---> Inscrivez votre rapport dans votre éditeur de texte", "",
     )
-    messageCommit = (
-        f"({branch}) {commit}"
-    )
+    messageCommit = f"({branch}) {commit}"
 
     gitProcess = richInput.run(f"git checkout {branch}", shell=True)
     if gitProcess.returncode != 0:
@@ -181,9 +177,7 @@ def fusion(richInput):
     # On passe sur la branche en question
     gitProcess = richInput.run(f"git checkout {branch}", shell=True)
     if gitProcess.returncode != 0:
-        raise CIException(
-            f"---X Vous n'avez pas pu passer sur la branche {branch}."
-        )
+        raise CIException(f"---X Vous n'avez pas pu passer sur la branche {branch}.")
     # else...
     # On la met à jour par rapport à origin/master
     gitProcess = richInput.run("git pull --rebase origin master", shell=True)
@@ -193,7 +187,9 @@ def fusion(richInput):
         )
     # else...
     # On pousse la branche obtenue sur GitHub pour la mettre à jour
-    gitProcess = richInput.run(f"git push origin {branch}", shell=True)  # Pour mettre à jour le dépôt distant
+    gitProcess = richInput.run(
+        f"git push origin {branch}", shell=True
+    )  # Pour mettre à jour le dépôt distant
     if gitProcess.returncode != 0:
         raise CIException(
             f"---X Le push de la branche {branch} resynchronisée avec master a échoué. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
@@ -213,7 +209,9 @@ def fusion(richInput):
         )
     # else...
     # On pousse la nouvelle version de la branche principale sur GitHub
-    gitProcess = richInput.run("git push origin master", shell=True)  # Pour mettre à jour le dépôt distant
+    gitProcess = richInput.run(
+        "git push origin master", shell=True
+    )  # Pour mettre à jour le dépôt distant
     if gitProcess.returncode != 0:
         raise CIException(
             "---X Le push de la branche fusionnée a échoué. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
@@ -264,6 +262,7 @@ def union(richInput):
         # else...
         print(f"---> La branche origin/{branch} est à jour par rapport à master")
     print("Union des branches réalisée avec succès")
+
 
 # A class to handle various types of input
 class RichInput(object):

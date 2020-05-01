@@ -1,6 +1,7 @@
 import numpy as np
 import googlemaps
 
+
 class Grille(object):
     """docstring for Grille."""
 
@@ -15,7 +16,7 @@ class Grille(object):
 class Noeud(object):
     """docstring for Noeud."""
 
-    def __init__(self, coordonnees, grille, proprietes = {}):
+    def __init__(self, coordonnees, grille, proprietes={}):
         super(Noeud, self).__init__()
         fils = []
         pass

@@ -7,6 +7,7 @@ from src.Animation import Animation
 
 # ===== Test functions for Animation ===== #
 
+
 def test_exemple():
     """Test if 2x3=6"""
     animation = Animation(None, None)
