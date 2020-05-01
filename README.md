@@ -1,4 +1,5 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+![Python application](https://github.com/18tbr/sunrise-refonte/workflows/Python%20application/badge.svg)
 # sunrise-refonte
 Le dépôt GitHub pour le projet SunRise de 2020.
 
