@@ -10,21 +10,28 @@ Si vous faites partie du projet SunRise, pour contribuer au projet vous devrez u
 
 Une fois que le groupe DevOps aura préparé votre arrivé, vous devrez cloner ce dépôt en utilisant git :
 
-> $ git clone https://github.com/18tbr/sunrise-refonte.git
-
+```bash
+git clone https://github.com/18tbr/sunrise-refonte.git
+```
 
 La suite du travail se fera avec l'outil `ci.py`, qui ne fonctionne qu'avec une version de python >= 3.5. Pour vérifier si vous avez une installation de python qui convient, vous pouvez utiliser :
 
 Sous Windows
-> $ python --version
+```bash
+python --version
+```
 
 Sous Linux
-> $ python3 --version
+```bash
+python3 --version
+```
 
 Une fois le dépôt cloné, il vous faudra vous identifier sur le dépôt. Vous n'aurez besoin de réaliser cela qu'une seule fois. La commande à utiliser est :
 
-> $ cd sunrise-refonte <br>
-> $ python ./ci.py identifiant
+```bash
+cd sunrise-refonte <br>
+python ./ci.py identifiant
+```
 
 L'outil `ci.py` vous demandera alors votre identifiant, qui est celui que le groupe DevOps vous aura donné. Si vous ne parvenez pas à vous identifier, contactez le groupe DevOps.
 
@@ -32,11 +39,15 @@ Une fois votre authentification réussie, vous n'aurez plus que deux commandes �
 
 En début de séance de travail, vous devez mettre à jour le code sur votre PC par rapport au code sur GitHub. Pour cela, utilisez :
 
-> $ python ./ci.py maj
+```bash
+python ./ci.py maj
+```
 
 Une fois la mise à jour effectuée, vous pourrez commencer votre travail. Modifiez vos fichiers comme vous le feriez en temps normal, puis à la fin de votre travail vous devez envoyer vos modifications sur GitHub. Pour cela, utilisez la commande :
 
-> $ python ./ci.py fini
+```bash
+python ./ci.py fini
+```
 
 L'outil ouvrira alors un éditeur de texte (sans doute `notepad.exe`) sur lequel vous devrez inscrire un court message descriptif résumant les modifications que vous avez réalisées. Lorsque vous fermerez votre éditeur de texte, le message sera enregistré et votre travail envoyé sur GitHub.
 
