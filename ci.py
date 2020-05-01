@@ -6,9 +6,6 @@ from subprocess import run, DEVNULL
 
 
 def main(richInput):
-    print(
-        "\n---! Ceci est le script d'intégration continue.\n---! Il n'est pas encore prêt à être utilisé.\n"
-    )
     demande = richInput.wideInput(
         "Que souhaitez-vous faire ? Vous pouvez répondre avec l'un de :\n---- identifiant\n---- maj\n---- test\n---- fini\n\nVotre demande :\n>> "
     )
