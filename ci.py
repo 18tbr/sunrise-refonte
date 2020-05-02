@@ -277,13 +277,13 @@ def union(richInput):
     print("Union des branches réalisée avec succès")
 
 def black(richInput):
-    argList = ""
+    argList = []
     for root, dirs, files in os.walk(".", topdown=True):
         for name in files:
             extension = os.path.splitext(name)
-            if extension == "py":
-                arglist = f"{argList} {os.path.join(root, name)}"
-    richInput.run(f"black -l 80 {argList}", shell=True)
+            if extension == ".py":
+                arglist.append(os.path.join(root, name))
+    richInput.run(f"black -l 80 {' '.join(argList)}", shell=True)
     print("\n---> Formattage réalisé avec succès !")
 
 
