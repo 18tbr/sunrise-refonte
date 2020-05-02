@@ -22,7 +22,7 @@ class Grille(object):
         tableau[
             nbTemperatures - 1, nbTemperatures - 1
         ] = self.cint  # La capacité sur Tint n'est pas dans l'arbre
-        result, curseur = self.racine.creation_simulation_recursive(
+        result, curseur = self.racine.creationSimulationRecursive(
             tableau, 0, nbTemperatures - 1, 0
         )
         # Il reste à rentrer dans le tableau la valeur du lien entre Tint et Text
@@ -48,11 +48,11 @@ class Parallele(Noeud):
         super(Parallele, self).__init__()
         pass
 
-    def creation_simulation_recursive(self, tableau, gauche, droite, curseur):
+    def creationSimulationRecursive(self, tableau, gauche, droite, curseur):
         result = 0
         for fils in self.fils:
-            resultBranche, curseur = fils.creation_simulation_recursive(
-                tableau_simulation, gauche, droite, curseur
+            resultBranche, curseur = fils.creationSimulationRecursive(
+                tableau, gauche, droite, curseur
             )
             if resultBranche is not None:
                 result += resultBranche
@@ -66,7 +66,7 @@ class Serie(Noeud):
         super(Serie, self).__init__()
         self.capacites = []
 
-    def creation_simulation_recursive(self, tableau, gauche, droite, curseur):
+    def creationSimulationRecursive(self, tableau, gauche, droite, curseur):
         listeTemperatures = [gauche]
         for i in range(len(self.capacites)):
             curseur += 1
@@ -76,16 +76,14 @@ class Serie(Noeud):
         for i in range(len(self.fils)):
             gaucheBranche = listeTemperatures[i]
             droiteBranche = listeTemperatures[i + 1]
-            result, curseur = self.fils[i].resolution_simulation_recursive(
-                tableau_simulation, gaucheBranche, droiteBranche, curseur
+            result, curseur = self.fils[i].creationSimulationRecursive(
+                tableau, gaucheBranche, droiteBranche, curseur
             )
             if result is not None:
-                tableau_simulation[gaucheBranche, droiteBranche] = result
-                tableau_simulation[droiteBranche, gaucheBranche] = result
+                tableau[gaucheBranche, droiteBranche] = result
+                tableau[droiteBranche, gaucheBranche] = result
             if i + 1 < len(self.fils):
-                tableau_simulation[
-                    droiteBranche, droiteBranche
-                ] = self.capacites[i]
+                tableau[droiteBranche, droiteBranche] = self.capacites[i]
         return None, curseur
 
 
@@ -96,5 +94,5 @@ class Feuille(Noeud):
         super(Feuille, self).__init__()
         self.H = 0
 
-    def creation_simulation_recursive(self, tableau, gauche, droite, curseur):
+    def creationSimulationRecursive(self, tableau, gauche, droite, curseur):
         return self.H, curseur
