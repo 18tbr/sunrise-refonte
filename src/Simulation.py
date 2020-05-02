@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.integrate import odeint
 
+
 class Simulation(object):
     """docstring for Simulation."""
 

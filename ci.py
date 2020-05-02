@@ -18,7 +18,7 @@ def main(richInput):
         "fusion",
         "union",
         "final",
-        "format"
+        "format",
     ]:
         print(
             f"Votre demande {demande} n'a pas été comprise, vous ne pouvez utiliser que l'une des demandes proposées."
@@ -188,7 +188,9 @@ def fusion(richInput, branch=None):
     # On passe sur la branche en question
     gitProcess = richInput.run(f"git checkout {branch}", shell=True)
     if gitProcess.returncode != 0:
-        raise CIException(f"---X Vous n'avez pas pu passer sur la branche {branch}.")
+        raise CIException(
+            f"---X Vous n'avez pas pu passer sur la branche {branch}."
+        )
     # else...
     # On la met à jour par rapport à origin/{target}
     gitProcess = richInput.run(f"git pull --rebase origin {target}", shell=True)
@@ -229,10 +231,11 @@ def fusion(richInput, branch=None):
         )
     print(f"---> Fusion de {branch} dans {target} effectuée avec succès")
 
+
 def union(richInput):
     # Step 0 : Fusionner devops dans master
     fusion(richInput, "devops")
-    print() # Une ligne vide pour le style
+    print()  # Une ligne vide pour le style
     # Step 1 : changer l'id pour prendre celui d'un membre du groupe
     listePrenoms = [
         "alicia",
@@ -265,7 +268,9 @@ def union(richInput):
                 f"---X Vous n'avez pas pu mettre la branche {branch} à jour par rapport à origin/master"
             )
         # else...
-        print(f"---> La branche {branch} est à jour par rapport à origin/master")
+        print(
+            f"---> La branche {branch} est à jour par rapport à origin/master"
+        )
         # Step 3 : git push
         gitProcess = richInput.run(f"git push origin {branch}", shell=True)
         if gitProcess.returncode != 0:
@@ -273,8 +278,11 @@ def union(richInput):
                 "---X Un conflit semble être apparu dans l'usage de git. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
             )
         # else...
-        print(f"---> La branche origin/{branch} est à jour par rapport à master")
+        print(
+            f"---> La branche origin/{branch} est à jour par rapport à master"
+        )
     print("Union des branches réalisée avec succès")
+
 
 def black(richInput):
     argList = []
@@ -285,7 +293,6 @@ def black(richInput):
                 argList.append(os.path.join(root, name))
     richInput.run(f"black -l 80 {' '.join(argList)}", shell=True)
     print("\n---> Formattage réalisé avec succès !")
-
 
 
 # A class to handle various types of input

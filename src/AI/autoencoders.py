@@ -35,10 +35,14 @@ class Autoencoder(object):
         self.y = y
 
         # input image dimensions are fixed and do not depend of the model
-        self.input_img = Input(shape=(self.x, self.y, self.inChannel))  # 28 x 28 x 1
+        self.input_img = Input(
+            shape=(self.x, self.y, self.inChannel)
+        )  # 28 x 28 x 1
 
         if load_model_name is None:
-            self.autoencoder_model = self._create_autoencoder_model(self.input_img)
+            self.autoencoder_model = self._create_autoencoder_model(
+                self.input_img
+            )
         else:
             self.autoencoder_model = self._load_model(load_model_name)
 
@@ -107,7 +111,9 @@ class Autoencoder(object):
             with open(destination, "w") as yaml_file:
                 yaml_file.write(self.autoencoder_model.to_yaml())
         else:
-            raise TypeError("You can only save models as .h5, .json or .yaml files.")
+            raise TypeError(
+                "You can only save models as .h5, .json or .yaml files."
+            )
 
     def _load_model(self, name="model.h5"):
         """

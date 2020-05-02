@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Grille(object):
     """docstring for Grille."""
 
@@ -17,9 +18,13 @@ class Grille(object):
     def creation_simulation(self):
         nbTemperatures = self.nbCondensateurs + 1
         tableau = np.zeroes((nbTemperatures, nbTemperatures))
-        tableau[0, 0] = 0   # Pas de capacité sur Text
-        tableau[nbTemperatures - 1, nbTemperatures - 1] = self.cint   # La capacité sur Tint n'est pas dans l'arbre
-        result, curseur = self.racine.creation_simulation_recursive(tableau, 0, nbTemperatures - 1, 0)
+        tableau[0, 0] = 0  # Pas de capacité sur Text
+        tableau[
+            nbTemperatures - 1, nbTemperatures - 1
+        ] = self.cint  # La capacité sur Tint n'est pas dans l'arbre
+        result, curseur = self.racine.creation_simulation_recursive(
+            tableau, 0, nbTemperatures - 1, 0
+        )
         # Il reste à rentrer dans le tableau la valeur du lien entre Tint et Text
         if result is not None:
             tableau[0, nbTemperatures - 1] = result
@@ -46,7 +51,9 @@ class Parallele(Noeud):
     def creation_simulation_recursive(self, tableau, gauche, droite, curseur):
         result = 0
         for fils in self.fils:
-            resultBranche, curseur = fils.creation_simulation_recursive(tableau_simulation, gauche, droite, curseur)
+            resultBranche, curseur = fils.creation_simulation_recursive(
+                tableau_simulation, gauche, droite, curseur
+            )
             if resultBranche is not None:
                 result += resultBranche
         return result, curseur
@@ -68,14 +75,19 @@ class Serie(Noeud):
 
         for i in range(len(self.fils)):
             gaucheBranche = listeTemperatures[i]
-            droiteBranche = listeTemperatures[i+1]
-            result, curseur = self.fils[i].resolution_simulation_recursive(tableau_simulation, gaucheBranche, droiteBranche, curseur)
+            droiteBranche = listeTemperatures[i + 1]
+            result, curseur = self.fils[i].resolution_simulation_recursive(
+                tableau_simulation, gaucheBranche, droiteBranche, curseur
+            )
             if result is not None:
                 tableau_simulation[gaucheBranche, droiteBranche] = result
                 tableau_simulation[droiteBranche, gaucheBranche] = result
             if i + 1 < len(self.fils):
-                tableau_simulation[droiteBranche, droiteBranche] = self.capacites[i]
+                tableau_simulation[
+                    droiteBranche, droiteBranche
+                ] = self.capacites[i]
         return None, curseur
+
 
 class Feuille(Noeud):
     """docstring for Feuille."""
