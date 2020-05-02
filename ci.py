@@ -280,9 +280,9 @@ def black(richInput):
     argList = []
     for root, dirs, files in os.walk(".", topdown=True):
         for name in files:
-            extension = os.path.splitext(name)
+            extension = os.path.splitext(name)[-1]
             if extension == ".py":
-                arglist.append(os.path.join(root, name))
+                argList.append(os.path.join(root, name))
     richInput.run(f"black -l 80 {' '.join(argList)}", shell=True)
     print("\n---> Formattage réalisé avec succès !")
 
