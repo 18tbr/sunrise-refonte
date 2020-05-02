@@ -61,12 +61,12 @@ class Serie(Noeud):
 
     def creation_simulation_recursive(self, tableau, gauche, droite, curseur):
         listeTemperatures = [gauche]
-        for i in range(len(self..capacites)):
+        for i in range(len(self.capacites)):
             curseur += 1
             listeTemperatures.append(curseur)
         listeTemperatures.append(droite)
 
-        for i in range(len(self..fils)):
+        for i in range(len(self.fils)):
             gaucheBranche = listeTemperatures[i]
             droiteBranche = listeTemperatures[i+1]
             result, curseur = self.fils[i].resolution_simulation_recursive(tableau_simulation, gaucheBranche, droiteBranche, curseur)

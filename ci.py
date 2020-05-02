@@ -17,7 +17,8 @@ def main(richInput):
         "fini",
         "fusion",
         "union",
-        "final"
+        "final",
+        "format"
     ]:
         print(
             f"Votre demande {demande} n'a pas été comprise, vous ne pouvez utiliser que l'une des demandes proposées."
@@ -39,6 +40,9 @@ def main(richInput):
         fusion(richInput)
     elif demande == "union":
         union(richInput)
+    elif demande == "format":
+        # "Format" est déjà une fonction de la librairie standard
+        black(richInput)
 
 
 def identifiant(richInput):
@@ -271,6 +275,17 @@ def union(richInput):
         # else...
         print(f"---> La branche origin/{branch} est à jour par rapport à master")
     print("Union des branches réalisée avec succès")
+
+def black(richInput):
+    argList = ""
+    for root, dirs, files in os.walk(".", topdown=True):
+        for name in files:
+            extension = os.path.splitext(name)
+            if extension == "py":
+                arglist = f"{argList} {os.path.join(root, name)}"
+    richInput.run(f"black -l 80 {argList}", shell=True)
+    print("\n---> Formattage réalisé avec succès !")
+
 
 
 # A class to handle various types of input
