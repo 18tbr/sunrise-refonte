@@ -6,6 +6,9 @@ from subprocess import run, DEVNULL
 
 
 def main(richInput):
+    """
+    Récupère la commande de l'utilisateur.
+    """
     demande = richInput.wideInput(
         "Que souhaitez-vous faire ? Vous pouvez répondre avec l'un de :\n---- identifiant\n---- maj\n---- test\n---- fini\n\nVotre demande :\n>> "
     )
@@ -46,6 +49,9 @@ def main(richInput):
 
 
 def identifiant(richInput):
+    """
+    Identifie un contributeur en le plaçant sur sa branche.
+    """
     listePrenoms = [
         "alicia",
         "arthur",
@@ -89,6 +95,9 @@ def identifiant(richInput):
 
 
 def maj(richInput):
+    """
+    Réalise un pull depuis le dépot distant.
+    """
     branch = richInput.user()
     gitProcess = richInput.run(f"git checkout {branch}", shell=True)
     if gitProcess.returncode != 0:
@@ -106,6 +115,9 @@ def maj(richInput):
 
 
 def verifier(richInput):
+    """
+    Lance les unittests grâce à pytest.
+    """
     listeGroupes = [
         "AI",
         "Animation",
@@ -141,6 +153,9 @@ def verifier(richInput):
 
 
 def fini(richInput):
+    """
+    Push les modifications faites sur une branche locale sur la branche du repo distant.
+    """
     branch = richInput.user()
     # Récupération du groupe
 
@@ -285,6 +300,9 @@ def union(richInput):
 
 
 def black(richInput):
+    """
+    Formate les fichiers du répertoire courant suivant les conventions Black.
+    """
     argList = []
     for root, dirs, files in os.walk(".", topdown=True):
         for name in files:
@@ -292,7 +310,7 @@ def black(richInput):
             if extension == ".py":
                 argList.append(os.path.join(root, name))
     richInput.run(f"black -l 80 {' '.join(argList)}", shell=True)
-    print("\n---> Formattage réalisé avec succès !")
+    print("\n---> Formatage réalisé avec succès !")
 
 
 # A class to handle various types of input
