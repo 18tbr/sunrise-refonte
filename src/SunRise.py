@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class SunRise(object):
     """docstring for SunRise."""
 
@@ -11,4 +12,6 @@ class SunRise(object):
         self.args = {}
         # Un dictionnaire contenant tous les paramètres de la simulation, utile pour le groupe Grille
         self.parametres = {}
+
+
 # <3

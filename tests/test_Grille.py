@@ -8,6 +8,7 @@ from src.Grille import Grille, Noeud
 
 # ===== Test functions for Grille ===== #
 
+
 def test_creer_maille():
     """Test if [...]"""
     grille = Grille(None)
@@ -15,6 +16,7 @@ def test_creer_maille():
 
 
 # ===== Test functions for Noeud  ===== #
+
 
 def test_mettre_a_jour():
     """Test if [...]"""
