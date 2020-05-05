@@ -17,7 +17,7 @@ class Grille(object):
 
     def creationSimulation(self):
         nbTemperatures = self.nbCondensateurs + 1
-        tableau = np.zeroes((nbTemperatures, nbTemperatures))
+        tableau = np.zeros((nbTemperatures, nbTemperatures))
         tableau[0, 0] = 0  # Pas de capacité sur Text
         tableau[
             nbTemperatures - 1, nbTemperatures - 1
