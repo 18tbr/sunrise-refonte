@@ -1,4 +1,5 @@
 import numpy as np
+from random import randint
 
 
 class Grille(object):
@@ -31,6 +32,100 @@ class Grille(object):
             tableau[nbTemperatures - 1, 0] = result
         # On crée récursivement le tableau en partant de la racine.
         return tableau
+
+    def to_image(self, img_size=(100, 100)):
+        """
+        Convertit un arbre en image.
+
+        Parameters
+        ----------
+        img_size : (int, int)
+            Taille de l'image souhaitée (hauteur, largeur).
+        """
+
+        def image_fill(image, NW, SE, val):
+            """
+            Colorie une zone de l'image.
+
+            Parameters
+            ----------
+            image : numpy array
+                Image to fill.
+            NW = (NW_h, NW_w) : (int, int)
+                North-West corner of portion of image.
+            SE = (SE_h, SE_w) : (int, int)
+                South-East corner of portion of image.
+            val : int
+                Value to affect to portion of image.
+            """
+            print(f"On colorie de {NW} à {SE}")
+            NW_h, NW_w = NW
+            SE_h, SE_w = SE
+            image[NW_h:SE_h, NW_w:SE_w] = val
+
+        def make_resistance_channel(image, racine, num_racine, NW, SE, profondeur):
+            """
+            Fonction récursive de création du channel résistance de l'arbre.
+
+            Parameters
+            ----------
+            image : numpy array
+                Image to modify.
+            racine : Noeud
+            num_racine : int
+                Numéro de la racine parmi les fils de son père.
+            NW = (NW_h, NW_w) : (int, int)
+                North-West corner of portion of image.
+            SE = (SE_h, SE_w) : (int, int)
+                South-East corner of portion of image.
+            profondeur : int
+                profondeur de racine, utile pour savoir si l'on divise
+                verticalement ou horizontalement.
+                On alterne le sens de division, et on commence par une
+                division verticale.
+
+            """
+            # get coord
+            NW_h, NW_w = NW
+            SE_h, SE_w = SE
+            # cas de base
+            if type(racine) is Feuille:
+                print(f"Feuille de valeur {racine.val}")
+                image_fill(image, NW, SE, racine.val)
+            # else...
+            else:
+                print(f"Noeud")
+                for num_fils, fils in enumerate(racine.fils):
+                    total_fils = len(racine.fils)
+                    if profondeur % 2 == 0:  # on divise verticalement
+                        # upper left
+                        new_NW_h = NW_h
+                        new_NW_w = NW_w + (SE_w - NW_w) * num_fils // total_fils
+                        # down right
+                        new_SE_h = SE_h
+                        new_SE_w = NW_w + (SE_w - NW_w) * (num_fils + 1) // total_fils
+                    else:  # on divise horizontalement
+                        # upper left
+                        new_NW_h = NW_h + (SE_h - NW_h) * num_fils // total_fils
+                        new_NW_w = NW_w
+                        # down right
+                        new_SE_w = SE_w
+                        new_SE_h = NW_h + (SE_h - NW_h) * (num_fils + 1) // total_fils
+                    new_NW = (new_NW_h, new_NW_w)
+                    new_SE = (new_SE_h, new_SE_w)
+                    # appel résursif
+                    make_resistance_channel(image, fils, num_fils, new_NW, new_SE, profondeur + 1)
+
+        image = np.zeros(img_size)
+        make_resistance_channel(racine=self.racine,
+                                num_racine=0,
+                                NW=(0, 0),
+                                SE=img_size,
+                                profondeur=0,
+                                image=image)
+
+        return image
+
 
 
 class Noeud(object):
@@ -168,6 +263,7 @@ class Feuille(Noeud):
     def __init__(self):
         super(Feuille, self).__init__()
         self.H = 0
+        self.val = randint(0, 42)
 
     def creationSimulationRecursive(self, tableau, gauche, droite, curseur):
         return self.H, curseur
