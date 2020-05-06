@@ -97,7 +97,7 @@ class Grille(object):
                 print(f"Noeud")
                 for num_fils, fils in enumerate(racine.fils):
                     total_fils = len(racine.fils)
-                    if profondeur % 2 == 0:  # on divise verticalement
+                    if type(racine) is Serie:  # on divise verticalement
                         # upper left
                         new_NW_h = NW_h
                         new_NW_w = NW_w + (SE_w - NW_w) * num_fils // total_fils
