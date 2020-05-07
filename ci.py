@@ -208,7 +208,7 @@ def fusion(richInput, branch=None):
         )
     # else...
     # On la met à jour par rapport à origin/{target}
-    gitProcess = richInput.run(f"git pull --rebase origin {target}", shell=True)
+    gitProcess = richInput.run(f"git pull origin {target}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
             f"---X Un conflit semble être apparu lors de la récupération de changements présents sur origin/{target} mais pas la branche {branch}. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
