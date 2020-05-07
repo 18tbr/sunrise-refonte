@@ -157,3 +157,7 @@ class AI(object):
     def sauvegarde_modele():
         # Récupère le modèle entrainé dans self.model et le sauvegarde dans le fichier modele.skl
         pass
+
+def arbre_to_image(Arbre) :
+    
+    
