@@ -213,6 +213,13 @@ def fusion(richInput, branch=None):
             f"---X Vous n'avez pas pu passer sur la branche {branch}."
         )
     # else...
+    # On la met à jour par rapport à origin/{branch}
+    gitProcess = richInput.run(f"git pull origin {branch}", shell=True)
+    if gitProcess.returncode != 0:
+        raise CIException(
+            f"---X Un conflit semble être apparu lors de la récupération de changements présents sur origin/{branch} mais pas la branche {branch}. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
+        )
+    # else...
     # On la met à jour par rapport à origin/{target}
     gitProcess = richInput.run(f"git pull origin {target}", shell=True)
     if gitProcess.returncode != 0:
