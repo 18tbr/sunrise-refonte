@@ -105,6 +105,12 @@ def maj(richInput):
             "---X git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?"
         )
     # else...
+    gitProcess = richInput.run(f"git pull origin {branch}", shell=True)
+    if gitProcess.returncode != 0:
+        raise CIException(
+            "---X Un conflit semble être apparu dans l'usage de git. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
+        )
+    # else...
     gitProcess = richInput.run("git pull origin master", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
@@ -276,7 +282,14 @@ def union(richInput):
                 f"---X Vous n'avez pas pu passer sur la branche locale {branch}."
             )
         print(f"---> Vous êtes sur la branche {branch}.")
-        # Step 2 : maj, sortir avec un message d'erreur s'il y a un conflit
+        # Step 2 : Maj par rapport à origin/branch
+        gitProcess = richInput.run(f"git pull origin {branch}", shell=True)
+        if gitProcess.returncode != 0:
+            raise CIException(
+                f"---X Vous n'avez pas pu mettre la branche {branch} à jour par rapport à origin/{branch}"
+            )
+        # else...
+        # Step 3 : maj, sortir avec un message d'erreur s'il y a un conflit
         gitProcess = richInput.run("git pull origin master", shell=True)
         if gitProcess.returncode != 0:
             raise CIException(
@@ -286,7 +299,7 @@ def union(richInput):
         print(
             f"---> La branche {branch} est à jour par rapport à origin/master"
         )
-        # Step 3 : git push
+        # Step 4 : git push
         gitProcess = richInput.run(f"git push origin {branch}", shell=True)
         if gitProcess.returncode != 0:
             raise CIException(
