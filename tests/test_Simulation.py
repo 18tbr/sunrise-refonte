@@ -8,6 +8,7 @@ from src.Simulation import Simulation
 
 # ===== Test functions for Simulation ===== #
 
+
 def test_exemple():
     """Test if 2x3=6"""
     simulation = Simulation(None, None)

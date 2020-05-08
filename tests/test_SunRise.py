@@ -7,6 +7,7 @@ from src.SunRise import SunRise
 
 # ===== Test functions for SunRise ===== #
 
+
 def test_exemple():
     """Test if 2x3=6"""
     sunrise = SunRise(None)

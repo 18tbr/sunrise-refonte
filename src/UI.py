@@ -9,7 +9,6 @@ canvas = tk.Canvas(root, height=700, width=700)
 canvas.pack()
 
 
-
 #creation du frame choix des parametres
 frame = tk.Frame(root, bg="white")
 frame.place(relwidth=0.8, relheight=0.8, relx = 0.1, rely=0.1)
@@ -50,18 +49,6 @@ T_int_aff.place(relwidth=0.4, relheight=0.1, relx = 0.5, rely=0.4)
 
 Puissance_int_aff = tk.Button(frame, text = "Afficher la courbe de puissance intérieure", padx=10, pady=5, fg="white", bg="gray")
 Puissance_int_aff.place(relwidth=0.4, relheight=0.1, relx = 0.5, rely=0.6)
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

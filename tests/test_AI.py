@@ -3,12 +3,12 @@ import sklearn
 import joblib
 
 # Import from package
-from src.AI import AI
+from src.AI import autoencoders
 
 
 # ===== Test functions for AI ===== #
 
+
 def test_lecture_modele():
     """Test if [...]"""
-    ai = AI(None, None, None, None)
-    assert AI.lecture_modele() is None
+    ai = autoencoders.Autoencoder(None, None, None, None)

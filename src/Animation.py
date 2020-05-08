@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 
+
 class Animation(object):
     """docstring for Animation."""
 
