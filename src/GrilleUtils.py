@@ -65,7 +65,6 @@ def creerImage(image, racine, numRacine, NW, SE, profondeur):
     - si l'on tombe sur une liaison ``Parallele``, on divise l'image
     horizontalement et on réalise l'appel récursif.
     """
-    # get coord
     NW_h, NW_w = NW
     SE_h, SE_w = SE
     # cas de base
@@ -85,23 +84,27 @@ def creerImage(image, racine, numRacine, NW, SE, profondeur):
                 # new south east
                 new_SE_h = SE_h
                 new_SE_w = NW_w + (SE_w - NW_w) * (num_fils + 1) // total_fils
-                # Capacity north west
+                # capacité north west
                 NW_C_h = new_NW_h
-                NW_C_w =int((new_NW_w+4*new_SE_w)/5)
-                NW_C=( NW_C_h, NW_C_w)
-                # Capacity south east
-                SE_C_h=new_SE_h
-                SE_C_w=int((-new_NW_w+6*new_SE_w)/5)
-                SE_C=(SE_C_h,SE_C_w)
-                if num_fils+1<total_fils:
-                    remplirZone(image,1, NW_C, SE_C, racine.capacites[num_fils])
-            else:  # on divise horizontalement
+                NW_C_w = (new_NW_w + 4 * new_SE_w) // 5
+                NW_C = (NW_C_h, NW_C_w)
+                # capacité south east
+                SE_C_h = new_SE_h
+                SE_C_w = (- new_NW_w + 6 * new_SE_w) // 5
+                SE_C = (SE_C_h, SE_C_w)
+                # remplissage
+                if num_fils < total_fils:  # il y a (total_fils - 1) capacités
+                    remplirZone(image, 1, NW_C, SE_C, racine.capacites[num_fils])
+            elif type(racine) is Parallele:  # on divise horizontalement
                 # north west
                 new_NW_h = NW_h + (SE_h - NW_h) * num_fils // total_fils
                 new_NW_w = NW_w
                 # south east
                 new_SE_w = SE_w
                 new_SE_h = NW_h + (SE_h - NW_h) * (num_fils + 1) // total_fils
+            else:
+                raise TypeError("Le type de noeud n'est pas reconnu.")
+
             new_NW = (new_NW_h, new_NW_w)
             new_SE = (new_SE_h, new_SE_w)
             # appel résursif
