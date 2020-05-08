@@ -1,12 +1,13 @@
 import numpy as np
 from random import randint
+from scipy.integrate import solve_ivp   # Cersion moderne et orienté objet de odeint
 import GrilleUtils
 
 
 class Grille(object):
     """docstring for Grille."""
 
-    def __init__(self, cint):
+    def __init__(self, cint, T, Text, Tint, Pint):
         super(Grille, self).__init__()
         # La racine de l'arbre
         self.racine = None
@@ -16,23 +17,57 @@ class Grille(object):
         self.nbCondensateurs = 1
         # La forme du réseau, résumée au nombre de noeuds à chaque profondeur
         self.forme = []
+        # La liste des temps (pour Text, Tint, Pint)
+        self.T = T
+        # La série des températures extérieures
+        self.Text = Text
+        # La série des températures intérieures
+        self.Tint = Tint
+        # La série des puissances intérieures
+        self.Pint = Pint
 
     def creationSimulation(self):
-        nbTemperatures = self.nbCondensateurs + 1
-        tableau = np.zeros((nbTemperatures, nbTemperatures))
-        tableau[0, 0] = 0  # Pas de capacité sur Text
-        tableau[
-            nbTemperatures - 1, nbTemperatures - 1
-        ] = self.cint  # La capacité sur Tint n'est pas dans l'arbre
+        nbTemperatures = self.nbCondensateurs
+        # L'équation différentielle à résoudre sera :
+        # C^-1 dT/dt = AT + BQ
+        # Pour la signification de chacune de ces matrices, voire les fonctions de résolution de l'équation différentielle.
+        A = np.zeros((nbTemperatures, nbTemperatures))
+        B = np.zeros((nbTemperatures,2))
+        C = np.eye(nbTemperatures)
+        C[0,0] /= self.cint  # La capacité sur Tint n'est pas dans l'arbre
         result, curseur = self.racine.creationSimulationRecursive(
-            tableau, 0, nbTemperatures - 1, 0
+            A, B, C, None, 0, 0
         )
         # Il reste à rentrer dans le tableau la valeur du lien entre Tint et Text
         if result is not None:
-            tableau[0, nbTemperatures - 1] = result
-            tableau[nbTemperatures - 1, 0] = result
+            B[0, 0] = result
+            B[0, 1] = 1 # La puissance intérieure s'applique sur Tint
         # On crée récursivement le tableau en partant de la racine.
-        return tableau
+        return A, B, C
+
+    def simulation(self):
+        A, B, C = self.creationSimulation()
+        # Résoudre C^-1 dT/dt = AT + BQ
+        nbTemperatures = self.nbCondensateurs
+        # Hypothèse : Au début de la simulation, tout est à l'équilibre à la température extérieure Text[0]
+        T0 = np.full((nbTemperatures),self.Text[0])
+
+        def gradient(T, t):
+            # dT/dt = gradient(T,t) = C * (AT + BQ)
+            return C @ (A @ T + B @ np.array([[self.Text[t]], [self.Pint[t]]]))
+
+        return solve_ivp(gradient, self.T, T0, method='RK45', t_eval=self.T, vectorized=True)
+
+    def score(self):
+        # On calcule toutes le températures internes au fil du temps
+        calcul = self.simulation()
+        # On récupère la température intérieure (la première dans la matrice)
+        calculTint = np.array([vecteur[0] for vecteur in calcul.y])
+        # On calcule l'écart entre la température calculée et la référence
+        ecart = self.Tint - calculTint
+        # On renvoie l'écart quadratique cumulé
+        return np.sum(np.square(ecart),0)
+
 
     def toImage(self, dimImage=(100, 100)):
         """
@@ -105,7 +140,7 @@ class Parallele(Noeud):
         super(Parallele, self).__init__()
         pass
 
-    def creationSimulationRecursive(self, tableau, gauche, droite, curseur):
+    def creationSimulationRecursive(self, A, B, C, gauche, droite, curseur):
         result = 0
         for fils in self.fils:
             resultBranche, curseur = fils.creationSimulationRecursive(
@@ -149,7 +184,7 @@ class Serie(Noeud):
         self.capacites = []
         self.valeurCapaciteDefaut = 1
 
-    def creationSimulationRecursive(self, tableau, gauche, droite, curseur):
+    def creationSimulationRecursive(self, A, B, C, gauche, droite, curseur):
         listeTemperatures = [gauche]
         for i in range(len(self.capacites)):
             curseur += 1
@@ -160,13 +195,21 @@ class Serie(Noeud):
             gaucheBranche = listeTemperatures[i]
             droiteBranche = listeTemperatures[i + 1]
             result, curseur = self.fils[i].creationSimulationRecursive(
-                tableau, gaucheBranche, droiteBranche, curseur
+                A, B, C, gaucheBranche, droiteBranche, curseur
             )
             if result is not None:
-                tableau[gaucheBranche, droiteBranche] = result
-                tableau[droiteBranche, gaucheBranche] = result
+                # Text (i.e. gauche is None) a un traitement différent
+                if gauche is None:
+                    B[droiteBranche, 0] = result
+                else:
+                    # Termes hors diagonale
+                    A[gaucheBranche, droiteBranche] = -result
+                    A[droiteBranche, gaucheBranche] = -result
+                    # Termes diagonaux
+                    A[droiteBranche, droiteBranche] = result
+                    A[gaucheBranche, gaucheBranche] = result
             if i + 1 < len(self.fils):
-                tableau[droiteBranche, droiteBranche] = self.capacites[i]
+                C[droiteBranche, droiteBranche] /= self.capacites[i]
         return None, curseur
 
     def suppressionFils(self, index):
@@ -212,7 +255,7 @@ class Feuille(Noeud):
         self.H = 0
         self.val = randint(0, 42)
 
-    def creationSimulationRecursive(self, tableau, gauche, droite, curseur):
+    def creationSimulationRecursive(self, A, B, C, gauche, droite, curseur):
         return self.H, curseur
 
     @property
