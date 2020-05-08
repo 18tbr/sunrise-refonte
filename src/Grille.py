@@ -101,24 +101,15 @@ class Grille(object):
         dimImage : (int, int)
             Taille de l'image souhaitée (hauteur, largeur).
         """
-
-        # création du canal représentant les résistances
-        canalResistance = np.zeros(dimImage)
-        GrilleUtils.creerCanalResistance(racine=self.racine,
+        # création du multicanal
+        image=np.zeros(dimImage[0],dimImage[1],3)
+        GrilleUtils.creerMultiCanal(racine=self.racine,
                                          numRacine=0,
                                          NW=(0, 0),
                                          SE=dimImage,
                                          profondeur=0,
-                                         image=canalResistance)
-        # création du canal représentant les capacités
-        canalCapacite = np.zeros(dimImage)
-        GrilleUtils.creerCanalCapacite(racine=self.racine,
-                                       numRacine=0,
-                                       NW=(0, 0),
-                                       SE=dimImage,
-                                       profondeur=0,
-                                       image=canalCapacite)
-        # création du 3e canal ? Facultatif
+                                         image=image)
+
         return None
 
     def fromImage(self, image):
