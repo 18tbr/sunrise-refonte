@@ -110,22 +110,22 @@ class Grille(object):
                                image=image)
         return image
 
-    def Update(self, image):
+    def update(self, image):
         """
-        Met à jour l'arbre à partir de l'image, renvoie l'arbre.
+        Met à jour l'arbre à partir de l'image. Modifie l'arbre en place.
 
         Parameters
         ----------
         image : numpy array
             Image à partir de laquelle créer un arbre.
         """
-        dimImage=(len(image),len(image))
-        self.racine=GrilleUtils.updaterRacine(racine=self.racine,
-                                         numRacine=0,
-                                         NW=(0, 0),
-                                         SE=dimImage,
-                                         profondeur=0,
-                                         image=image)
+
+        dimImage = image.shape
+        GrilleUtils.updaterRacine(racine=self.racine,
+                                  numRacine=0,
+                                  NW=(0, 0),
+                                  SE=dimImage[0:2],
+                                  image=image)
         return None
 
 
