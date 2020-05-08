@@ -79,14 +79,22 @@ def creerImage(image, racine, numRacine, NW, SE, profondeur):
         for num_fils, fils in enumerate(racine.fils):
             total_fils = len(racine.fils)
             if type(racine) is Serie:  # on divise verticalement
-                # north west
+                # new north west
                 new_NW_h = NW_h
                 new_NW_w = NW_w + (SE_w - NW_w) * num_fils // total_fils
-                # south east
+                # new south east
                 new_SE_h = SE_h
                 new_SE_w = NW_w + (SE_w - NW_w) * (num_fils + 1) // total_fils
-                if num_fils+1!=total_fils:
-                    remplirZone(image,1, (new_NW_h,int((new_NW_w+4*new_SE_w)/5)), (new_SE_h,int(-new_NW_w+6*new_SE_w)/5)), racine.capacites[num_fils])
+                # Capacity north west
+                NW_C_h = new_NW_h
+                NW_C_w =int((new_NW_w+4*new_SE_w)/5)
+                NW_C=( NW_C_h, NW_C_w)
+                # Capacity south east
+                SE_C_h=new_SE_h
+                SE_C_w=int((-new_NW_w+6*new_SE_w)/5)
+                SE_C=(SE_C_h,SE_C_w)
+                if num_fils+1<total_fils:
+                    remplirZone(image,1, NW_C, SE_C, racine.capacites[num_fils])
             else:  # on divise horizontalement
                 # north west
                 new_NW_h = NW_h + (SE_h - NW_h) * num_fils // total_fils
