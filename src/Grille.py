@@ -92,25 +92,23 @@ class Grille(object):
 
         return file[index]
 
-    def toImage(self, dimImage=(100, 100)):
+    def toImage(self, dimImage=(100, 100, 3)):
         """
         Convertit un arbre en image.
 
         Parameters
         ----------
-        dimImage : (int, int)
-            Taille de l'image souhaitée (hauteur, largeur).
+        dimImage : (int, int, int)
+            Taille de l'image souhaitée (hauteur, largeur, profondeur).
         """
-        # création du multicanal
-        image=np.zeros(dimImage[0],dimImage[1],3)
-        GrilleUtils.creerMultiCanal(racine=self.racine,
-                                         numRacine=0,
-                                         NW=(0, 0),
-                                         SE=dimImage,
-                                         profondeur=0,
-                                         image=image)
-
-        return None
+        image = np.zeros(dimImage)
+        GrilleUtils.creerImage(racine=self.racine,
+                               numRacine=0,
+                               NW=(0, 0),
+                               SE=dimImage[0:2],
+                               profondeur=0,
+                               image=image)
+        return image
 
     def Update(self, image):
         """
