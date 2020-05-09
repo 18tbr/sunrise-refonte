@@ -11,6 +11,8 @@ Le projet SunRise est un projet lancé en 2017 par le CES (Centre d'Efficacité 
 
 Une particularité de l'expérience du CES (qui donne son nom au projet) est qu'elle utilise un soleil artificiel mobile de grande dimension (~2m de diamètre) afin de bénéficier de davantage de précision lors de l'évaluation de l'influence des rayons lumineux.
 
+Pour plus de détails, vous pouvez visiter le [site du projet](https://sites.google.com/view/2019-2020-gr12/home).
+
 ## Ce dépôt
 Ce dépôt contient le travail d'une équipe d'étudiants des Mines de Paris sur une identification de paramètres d'intérêt à partir de mesures de thermique de bâtiment. Il s'agit d'un élément préalable à la réalisation de l'expérience SunRise.
 
