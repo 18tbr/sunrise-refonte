@@ -1,6 +1,6 @@
 import numpy as np
 from random import randint
-from scipy.integrate import solve_ivp   # Cersion moderne et orienté objet de odeint
+from scipy.integrate import solve_ivp   # Version moderne et orienté objet de odeint
 import GrilleUtils
 
 
@@ -92,7 +92,7 @@ class Grille(object):
 
         return file[index]
 
-    def toImage(self, dimImage=(100, 100, 3)):
+    def ecritureImage(self, dimImage=(100, 100, 3)):
         """
         Convertit un arbre en image.
 
@@ -110,7 +110,7 @@ class Grille(object):
                                image=image)
         return image
 
-    def update(self, image):
+    def lectureImage(self, image):
         """
         Met à jour l'arbre à partir de l'image. Modifie l'arbre en place.
 
@@ -121,7 +121,7 @@ class Grille(object):
         """
 
         dimImage = image.shape
-        GrilleUtils.updaterRacine(racine=self.racine,
+        GrilleUtils.modifierRacine(racine=self.racine,
                                   numRacine=0,
                                   NW=(0, 0),
                                   SE=dimImage[0:2],

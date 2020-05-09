@@ -214,17 +214,24 @@ def fusion(richInput, branch=None):
         )
     # else...
     # On la met à jour par rapport à origin/{branch}
-    gitProcess = richInput.run(f"git pull origin {branch}", shell=True)
+    gitProcess = richInput.run(f"git pull --rebase origin {branch}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
             f"---X Un conflit semble être apparu lors de la récupération de changements présents sur origin/{branch} mais pas la branche {branch}. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
         )
     # else...
     # On la met à jour par rapport à origin/{target}
-    gitProcess = richInput.run(f"git pull origin {target}", shell=True)
+    gitProcess = richInput.run(f"git pull --rebase origin {target}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
             f"---X Un conflit semble être apparu lors de la récupération de changements présents sur origin/{target} mais pas la branche {branch}. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
+        )
+    # else...
+    # Pour une raison inconnue, le pull --rebase invalide souvent des commits. Il faut alors aller les récupérer de la branche origine/branch . Cette manipulation semble régler les problèmes à chaque fois.
+    gitProcess = richInput.run(f"git pull --rebase origin {branch}", shell=True)
+    if gitProcess.returncode != 0:
+        raise CIException(
+            f"---X Un conflit semble être apparu lors de la récupération de changements présents sur origin/{branch} mais pas la branche {branch}. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
         )
     # else...
     # On pousse la branche obtenue sur GitHub pour la mettre à jour
@@ -290,14 +297,14 @@ def union(richInput):
             )
         print(f"---> Vous êtes sur la branche {branch}.")
         # Step 2 : Maj par rapport à origin/branch
-        gitProcess = richInput.run(f"git pull origin {branch}", shell=True)
+        gitProcess = richInput.run(f"git pull --rebase origin {branch}", shell=True)
         if gitProcess.returncode != 0:
             raise CIException(
                 f"---X Vous n'avez pas pu mettre la branche {branch} à jour par rapport à origin/{branch}"
             )
         # else...
         # Step 3 : maj, sortir avec un message d'erreur s'il y a un conflit
-        gitProcess = richInput.run("git pull origin master", shell=True)
+        gitProcess = richInput.run("git pull --rebase origin master", shell=True)
         if gitProcess.returncode != 0:
             raise CIException(
                 f"---X Vous n'avez pas pu mettre la branche {branch} à jour par rapport à origin/master"
