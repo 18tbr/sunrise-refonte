@@ -282,14 +282,18 @@ def union(richInput):
             )
         print(f"---> Vous êtes sur la branche {branch}.")
         # Step 2 : Maj par rapport à origin/branch
-        gitProcess = richInput.run(f"git pull --rebase origin {branch}", shell=True)
+        gitProcess = richInput.run(
+            f"git pull --rebase origin {branch}", shell=True
+        )
         if gitProcess.returncode != 0:
             raise CIException(
                 f"---X Vous n'avez pas pu mettre la branche {branch} à jour par rapport à origin/{branch}"
             )
         # else...
         # Step 3 : maj, sortir avec un message d'erreur s'il y a un conflit
-        gitProcess = richInput.run("git pull --rebase origin master", shell=True)
+        gitProcess = richInput.run(
+            "git pull --rebase origin master", shell=True
+        )
         if gitProcess.returncode != 0:
             raise CIException(
                 f"---X Vous n'avez pas pu mettre la branche {branch} à jour par rapport à origin/master"

@@ -1,6 +1,8 @@
 import numpy as np
 from random import randint
-from scipy.integrate import solve_ivp   # Version moderne et orienté objet de odeint
+from scipy.integrate import (
+    solve_ivp,
+)  # Version moderne et orienté objet de odeint
 import GrilleUtils
 
 
@@ -32,16 +34,16 @@ class Grille(object):
         # C^-1 dT/dt = AT + BQ
         # Pour la signification de chacune de ces matrices, voire les fonctions de résolution de l'équation différentielle.
         A = np.zeros((nbTemperatures, nbTemperatures))
-        B = np.zeros((nbTemperatures,2))
+        B = np.zeros((nbTemperatures, 2))
         C = np.eye(nbTemperatures)
-        C[0,0] /= self.cint  # La capacité sur Tint n'est pas dans l'arbre
+        C[0, 0] /= self.cint  # La capacité sur Tint n'est pas dans l'arbre
         result, curseur = self.racine.creationSimulationRecursive(
             A, B, C, None, 0, 0
         )
         # Il reste à rentrer dans le tableau la valeur du lien entre Tint et Text
         if result is not None:
             B[0, 0] = result
-            B[0, 1] = 1 # La puissance intérieure s'applique sur Tint
+            B[0, 1] = 1  # La puissance intérieure s'applique sur Tint
         # On crée récursivement le tableau en partant de la racine.
         return A, B, C
 
@@ -50,13 +52,15 @@ class Grille(object):
         # Résoudre C^-1 dT/dt = AT + BQ
         nbTemperatures = self.nbCondensateurs
         # Hypothèse : Au début de la simulation, tout est à l'équilibre à la température extérieure Text[0]
-        T0 = np.full((nbTemperatures),self.Text[0])
+        T0 = np.full((nbTemperatures), self.Text[0])
 
         def gradient(T, t):
             # dT/dt = gradient(T,t) = C * (AT + BQ)
             return C @ (A @ T + B @ np.array([[self.Text[t]], [self.Pint[t]]]))
 
-        return solve_ivp(gradient, self.T, T0, method='RK45', t_eval=self.T, vectorized=True)
+        return solve_ivp(
+            gradient, self.T, T0, method="RK45", t_eval=self.T, vectorized=True
+        )
 
     def score(self):
         # On calcule toutes le températures internes au fil du temps
@@ -66,13 +70,14 @@ class Grille(object):
         # On calcule l'écart entre la température calculée et la référence
         ecart = self.Tint - calculTint
         # On renvoie l'écart quadratique cumulé
-        return np.sum(np.square(ecart),0)
-
+        return np.sum(np.square(ecart), 0)
 
     # Effectue un parcours en profondeur de l'arbre sous la racine jusqu'à atteindre le index ième noeud à la profondeur donnée. Renvoie le noeud trouvé.
     def inspecter(self, profondeur, index):
         if profondeur >= len(self.forme):
-            raise IndexError(f"La profondeur de l'arbre désigné est {len(self.forme)}, il n'y a donc pas de noeuds à la profondeur {profondeur}.")
+            raise IndexError(
+                f"La profondeur de l'arbre désigné est {len(self.forme)}, il n'y a donc pas de noeuds à la profondeur {profondeur}."
+            )
         # else...
 
         file = [self.racine]
@@ -87,7 +92,9 @@ class Grille(object):
             filePrecedente = file
 
         if index >= len(file):
-            raise IndexError(f"Il n'y a que {len(file)} noeuds à la profondeur {profondeur} de cette arbre, vous ne pouvez donc pas en récupérer le {index}ième.")
+            raise IndexError(
+                f"Il n'y a que {len(file)} noeuds à la profondeur {profondeur} de cette arbre, vous ne pouvez donc pas en récupérer le {index}ième."
+            )
         # else...
 
         return file[index]
@@ -102,12 +109,14 @@ class Grille(object):
             Taille de l'image souhaitée (hauteur, largeur, profondeur).
         """
         image = np.zeros(dimImage)
-        GrilleUtils.creerImage(racine=self.racine,
-                               numRacine=0,
-                               NW=(0, 0),
-                               SE=dimImage[0:2],
-                               profondeur=0,
-                               image=image)
+        GrilleUtils.creerImage(
+            racine=self.racine,
+            numRacine=0,
+            NW=(0, 0),
+            SE=dimImage[0:2],
+            profondeur=0,
+            image=image,
+        )
         return image
 
     def lectureImage(self, image):
@@ -121,11 +130,13 @@ class Grille(object):
         """
 
         dimImage = image.shape
-        GrilleUtils.modifierRacine(racine=self.racine,
-                                  numRacine=0,
-                                  NW=(0, 0),
-                                  SE=dimImage[0:2],
-                                  image=image)
+        GrilleUtils.modifierRacine(
+            racine=self.racine,
+            numRacine=0,
+            NW=(0, 0),
+            SE=dimImage[0:2],
+            image=image,
+        )
         return None
 
 
@@ -142,18 +153,21 @@ class Noeud(object):
     # Méthode abstraite, on supprime le fils à l'index i
     # Le noeud est modifié en place.
     def suppressionFils(self, index):
-        raise NotImplementedError("La suppression d'un fils n'a pas été réimplémenté.")
+        raise NotImplementedError(
+            "La suppression d'un fils n'a pas été réimplémenté."
+        )
 
     # Méthode abstraite, contraire de suppressionFils
     # Le noeud est modifié en place.
     def ajoutFils(self, nouveauFils, index, forme=None):
         raise NotImplementedError("L'ajout d'un fils n'a pas été implémenté.")
 
-
     # Implémentation abstraite de la profondeur
     @property
     def profondeur(self):
-        raise NotImplementedError("Le calcul de la profondeur d'un noeud n'a pas été implémenté.")
+        raise NotImplementedError(
+            "Le calcul de la profondeur d'un noeud n'a pas été implémenté."
+        )
 
     # Une fonction pour remplacer l'instance noeud désignée par nouveau dans son parent.
     def remplacer(self, nouveau):
@@ -165,12 +179,15 @@ class Noeud(object):
     # Renvoie une copie de tout le sousArbre qui se trouve au dela de cette grille, mais sans parent pour ce noeud et sans grille associée.
     # Cette méthode est utile pour faire des fusions d'arbres.
     def sousArbre(self):
-        raise NotImplementedError("La création d'un sous-arbre à partir d'un noeud n'a pas été implémentée.")
+        raise NotImplementedError(
+            "La création d'un sous-arbre à partir d'un noeud n'a pas été implémentée."
+        )
 
     # Attache un noeud et tous ses fils récursivement à une grille, en mettant au passage à jour les caractéristiques de la grille. Doit être appelé après avoir donné un parent au noeud considéré. Cette étape est utile pour garder des grilles cohérentes après les étapes de fusion.
     def attacher(self, grille):
-        raise NotImplementedError("L'attachement d'un noeud à une grille n'a pas été implémentée.")
-
+        raise NotImplementedError(
+            "L'attachement d'un noeud à une grille n'a pas été implémentée."
+        )
 
 
 class Parallele(Noeud):
@@ -188,9 +205,10 @@ class Parallele(Noeud):
         if self.parent == None:
             return 0
         elif _profondeur is None:
-            _profondeur = profondeur(parent) + 1    # On mémoïse la profondeur pour éviter des calculs inutiles
+            _profondeur = (
+                profondeur(parent) + 1
+            )  # On mémoïse la profondeur pour éviter des calculs inutiles
         return _profondeur
-
 
     def creationSimulationRecursive(self, A, B, C, gauche, droite, curseur):
         result = 0
@@ -202,7 +220,6 @@ class Parallele(Noeud):
                 result += resultBranche
         return result, curseur
 
-
     def suppressionFils(self, index):
         # Renvoie le noeud qui doit remplacer celui-ci une fois la suppression effectuée.
         # IndexError out of range si index est trop grand pour self.fils
@@ -212,14 +229,17 @@ class Parallele(Noeud):
             # S'il ne reste plus qu'un seul bloc fils il prend la place du bloc parallèle. Il faut juste faire attention à la mémoïzation de la profondeur
             self.fils[0]._profondeur = self.profondeur
             self.replace(self.fils[0])
-        self.grille.forme[self.profondeur+1] -= 1
-
+        self.grille.forme[self.profondeur + 1] -= 1
 
     def ajoutFils(self, nouveauFils, index, forme=None):
         if forme is not None:
-            raise NonFeuilleException("Vous ne pouvez pas changer le forme d'un noeud (non feuille) qui existe déjà avec ajoutFils !")
+            raise NonFeuilleException(
+                "Vous ne pouvez pas changer le forme d'un noeud (non feuille) qui existe déjà avec ajoutFils !"
+            )
         elif index is None:
-            raise NonFeuilleException("Vous devez préciser à quel index insérer le nouveau fils parmi les fils du noeud préexistant !")
+            raise NonFeuilleException(
+                "Vous devez préciser à quel index insérer le nouveau fils parmi les fils du noeud préexistant !"
+            )
         if index == len(self.fils):
             self.fils.append(nouveauFils)
         else:
@@ -263,9 +283,10 @@ class Serie(Noeud):
         if self.parent == None:
             return 0
         elif _profondeur is None:
-            _profondeur = profondeur(parent) + 1    # On mémoïse la profondeur pour éviter des calculs inutiles
+            _profondeur = (
+                profondeur(parent) + 1
+            )  # On mémoïse la profondeur pour éviter des calculs inutiles
         return _profondeur
-
 
     def creationSimulationRecursive(self, A, B, C, gauche, droite, curseur):
         listeTemperatures = [gauche]
@@ -314,14 +335,17 @@ class Serie(Noeud):
             self.fils[0]._profondeur = self.profondeur
             self.replace(self.fils[0])
         # On met à jour la forme de la grille
-        self.grille.forme[self.profondeur+1] -= 1
-
+        self.grille.forme[self.profondeur + 1] -= 1
 
     def ajoutFils(self, nouveauFils, index=None, forme=None):
         if forme is not None:
-            raise NonFeuilleException("Vous ne pouvez pas changer le forme d'un noeud (non feuille) qui existe déjà avec ajoutFils !")
+            raise NonFeuilleException(
+                "Vous ne pouvez pas changer le forme d'un noeud (non feuille) qui existe déjà avec ajoutFils !"
+            )
         elif index is None:
-            raise NonFeuilleException("Vous devez préciser à quel index insérer le nouveau fils parmi les fils du noeud préexistant !")
+            raise NonFeuilleException(
+                "Vous devez préciser à quel index insérer le nouveau fils parmi les fils du noeud préexistant !"
+            )
         taille = len(self.fils)
         # Il faut aussi aojuter une valeur de capacité intermédiaire dans le cas d'une liaison série. Attention à ne pas ajouter de capacité pour le premier fils !
         if taille > 0 and (index == taille or index == taille + 1):
@@ -392,16 +416,20 @@ class Feuille(Noeud):
         raise FeuilleException("Une feuille n'a pas de fils !")
 
     def ajoutFils(self, nouveauFils, index=None, forme=None):
-        if forme is None or forme not in ['parallele', 'serie']:
-            raise FeuilleException("Pour créer un nouveau noeud à partir d'une feuille il faut préciser la forme à donner, l'un de 'parallele' ou 'serie'.")
+        if forme is None or forme not in ["parallele", "serie"]:
+            raise FeuilleException(
+                "Pour créer un nouveau noeud à partir d'une feuille il faut préciser la forme à donner, l'un de 'parallele' ou 'serie'."
+            )
         elif index is not None:
-            raise FeuilleException("Pour créer un nouveau noeud à partir d'une feuille il ne faut pas préciser d'index, qui n'est utilisable que pour un noeud Parallele ou Serie.")
-        elif forme == 'parallele':
+            raise FeuilleException(
+                "Pour créer un nouveau noeud à partir d'une feuille il ne faut pas préciser d'index, qui n'est utilisable que pour un noeud Parallele ou Serie."
+            )
+        elif forme == "parallele":
             # Si besoin, le constructeur de Parallele changera la taille de forme pour nous
             nouveauNoeud = Parallele(grille, self.parent)
             nouveauNoeud.ajoutFils(self, index=0)
             nouveauNoeud.ajoutFils(nouveauFils, index=1)
-        elif forme == 'serie':
+        elif forme == "serie":
             # Si besoin, le constructeur de Serie changera la taille de forme pour nous
             nouveauNoeud = Serie(grille, self.parent)
             nouveauNoeud.ajoutFils(self, index=0)
@@ -425,6 +453,7 @@ class Feuille(Noeud):
 class FeuilleException(Exception):
     # Syntaxe spéciale pour une déclaration d'exceptions plus rapide
     pass
+
 
 # Une erreur est apparue car vous avez utilisé une syntaxe spécifique aux feuilles pour un noeud.
 class NonFeuilleException(Exception):

@@ -25,7 +25,7 @@ def remplirZone(image, canal, NW, SE, val):
     print(f"On colorie le canal {canal} de {NW} à {SE}")
     NWH, NWW = NW
     SEH, SEW = SE
-    image[NWH:SEH, NWW:SEW,couche] = val
+    image[NWH:SEH, NWW:SEW, couche] = val
 
 
 def creerImage(image, racine, numRacine, NW, SE, profondeur):
@@ -73,8 +73,8 @@ def creerImage(image, racine, numRacine, NW, SE, profondeur):
     # cas de base
     if type(racine) is Feuille:
         print(f"Feuille de valeur {racine.val}")
-        remplirZone(image,0, NW, SE, racine.val)
-        remplirZone(image,2, NW, SE, profondeur)
+        remplirZone(image, 0, NW, SE, racine.val)
+        remplirZone(image, 2, NW, SE, profondeur)
     # else...
     else:
         print(f"Noeud")
@@ -93,7 +93,7 @@ def creerImage(image, racine, numRacine, NW, SE, profondeur):
                 NWC = (NWCH, NWCW)
                 # capacité south east
                 SECH = nouvSEH
-                SECW = (- nouvNWH + 6 * nouvSEW) // 5
+                SECW = (-nouvNWH + 6 * nouvSEW) // 5
                 SEC = (SECH, SECW)
                 # remplissage
                 if numFils < totalFils:  # il y a (totalFils - 1) capacités
@@ -183,7 +183,7 @@ def modifierRacine(image, racine, numRacine, NW, SE):
                 NWC = (NWCH, NWCW)
                 # Capacity south east
                 SECH = nouvSEH
-                SECW = (- nouvNWH + 6 * nouvSEW) // 5
+                SECW = (-nouvNWH + 6 * nouvSEW) // 5
                 SEC = (SECH, SECW)
                 if numFils < totalFils:
                     racine.capacites[numFils] = moyenneZone(image, 1, NWC, SEC)
@@ -197,8 +197,10 @@ def modifierRacine(image, racine, numRacine, NW, SE):
             nouvNW = (nouvNWH, nouvNWH)
             nouvSE = (nouvSEH, nouvSEW)
             # appel récursif
-            modifierRacine(racine=racine.fils,
-                          numRacine=numFils,
-                          NW=nouvNW,
-                          SE=nouvSE,
-                          image=image)
+            modifierRacine(
+                racine=racine.fils,
+                numRacine=numFils,
+                NW=nouvNW,
+                SE=nouvSE,
+                image=image,
+            )

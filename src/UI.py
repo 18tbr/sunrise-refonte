@@ -5,6 +5,7 @@ from tkinter import filedialog, Text
 import os
 import matplotlib
 from matplotlib import style
+
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
@@ -20,90 +21,142 @@ valeursText, valeursTint, valeursPint, Temps = [], [], [], []
 
 #### OUTILS GRAPHIQUES ####
 
-#creation de la fenêtre
+# creation de la fenêtre
 fenetrePrincipale = tk.Canvas(racineInterface, height=700, width=700)
 fenetrePrincipale.pack()
 
 
-#creation de la vue de choix des parametres
+# creation de la vue de choix des parametres
 vueChoixParametres = tk.Frame(racineInterface, bg="white")
 vueChoixParametres.place(relwidth=1, relheight=1)
 
 
-#creation du titre
-titre = tk.Label(vueChoixParametres, text = "Choix des paramètres de la simulation", fg = "white", bg = "green")
+# creation du titre
+titre = tk.Label(
+    vueChoixParametres,
+    text="Choix des paramètres de la simulation",
+    fg="white",
+    bg="green",
+)
 titre.pack()
 
-#creation du sous titre
-titre = tk.Label(vueChoixParametres, text = "1. Saisie des valeurs de température intérieure, température extérieure et puissance intérieure en fonction du temps", fg = "white", bg = "red")
+# creation du sous titre
+titre = tk.Label(
+    vueChoixParametres,
+    text="1. Saisie des valeurs de température intérieure, température extérieure et puissance intérieure en fonction du temps",
+    fg="white",
+    bg="red",
+)
 titre.pack()
 
-#definition de la fonction qui ouvre l'explorateur de fichiers
-def ajoutFichier1() :
-    nomFichier = filedialog.askopennomFichier(initialdir="/", title="Sélectionnez le fichier de valeurs", filetypes=(("tableau de valeurs", "*.npy"),("all files", "*./")))
+# definition de la fonction qui ouvre l'explorateur de fichiers
+def ajoutFichier1():
+    nomFichier = filedialog.askopennomFichier(
+        initialdir="/",
+        title="Sélectionnez le fichier de valeurs",
+        filetypes=(("tableau de valeurs", "*.npy"), ("all files", "*./")),
+    )
     # (TBR) La syntaxe correcte pour ouvrir des fichiers est celle du with, l'ouvrir directement avec fichier = open est source de bug (notamment si on oublie de mettre le close associé).
     with open(nomFichier, "r") as fichier:
         donnees = np.load(nomFichier)
-        if len(donnees)==2 :
+        if len(donnees) == 2:
             Temps = donnees[0]
             valeursText = donnees[1]
-            f = Figure(figsize=(5,5), dpi=100)
+            f = Figure(figsize=(5, 5), dpi=100)
             a = f.add_subplot(111)
-            a.plot(Temps,valeursText)
+            a.plot(Temps, valeursText)
             fenetrePrincipale = FigureCanvasTkAgg(f, vueChoixParametres)
-            fenetrePrincipale.get_tk_widget().place(relwidth=0.7, relheight=0.3, relx = 0.3, rely=0.1)
+            fenetrePrincipale.get_tk_widget().place(
+                relwidth=0.7, relheight=0.3, relx=0.3, rely=0.1
+            )
 
-        else :
+        else:
             print("Le fichier n'est pas exploitable")
 
-#definition de la fonction qui ouvre l'explorateur de fichiers
-def ajoutFichier2() :
-    nomFichier = filedialog.askopennomFichier(initialdir="/", title="Sélectionnez le fichier de valeurs", filetypes=(("tableau de valeurs", "*.npy"),("all files", "*./")))
+
+# definition de la fonction qui ouvre l'explorateur de fichiers
+def ajoutFichier2():
+    nomFichier = filedialog.askopennomFichier(
+        initialdir="/",
+        title="Sélectionnez le fichier de valeurs",
+        filetypes=(("tableau de valeurs", "*.npy"), ("all files", "*./")),
+    )
     with open(nomFichier, "r") as fichier:  # cf ajoutFichier1
         donnees = np.load(nomFichier)
-        if len(donnees)==2 :
+        if len(donnees) == 2:
             Temps = donnees[0]
             valeursTint = donnees[1]
-            f = Figure(figsize=(5,5), dpi=100)
+            f = Figure(figsize=(5, 5), dpi=100)
             a = f.add_subplot(111)
-            a.plot(Temps,valeursTint)
+            a.plot(Temps, valeursTint)
             fenetrePrincipale = FigureCanvasTkAgg(f, vueChoixParametres)
-            fenetrePrincipale.get_tk_widget().place(relwidth=0.7, relheight=0.3, relx = 0.3, rely=0.4)
+            fenetrePrincipale.get_tk_widget().place(
+                relwidth=0.7, relheight=0.3, relx=0.3, rely=0.4
+            )
 
-        else :
+        else:
             print("Le fichier n'est pas exploitable")
 
-def ajoutFichier3() :
-    nomFichier = filedialog.askopennomFichier(initialdir="/", title="Sélectionnez le fichier de valeurs", filetypes=(("tableau de valeurs", "*.npy"),("all files", "*./")))
+
+def ajoutFichier3():
+    nomFichier = filedialog.askopennomFichier(
+        initialdir="/",
+        title="Sélectionnez le fichier de valeurs",
+        filetypes=(("tableau de valeurs", "*.npy"), ("all files", "*./")),
+    )
     with open(nomFichier, "r") as fichier:  # cf ajoutFichier1
         donnees = np.load(nomFichier)
-        if len(donnees)==2 :
+        if len(donnees) == 2:
             Temps = donnees[0]
             valeursPint = donnees[1]
-            f = Figure(figsize=(5,5), dpi=100)
+            f = Figure(figsize=(5, 5), dpi=100)
             a = f.add_subplot(111)
-            a.plot(Temps,valeursPint)
+            a.plot(Temps, valeursPint)
             fenetrePrincipale = FigureCanvasTkAgg(f, vueChoixParametres)
-            fenetrePrincipale.get_tk_widget().place(relwidth=0.7, relheight=0.3, relx = 0.3, rely=0.7)
+            fenetrePrincipale.get_tk_widget().place(
+                relwidth=0.7, relheight=0.3, relx=0.3, rely=0.7
+            )
 
-        else :
+        else:
             print("Le fichier n'est pas exploitable")
 
 
-#creation des trois boutons de saisie des parametres
+# creation des trois boutons de saisie des parametres
 # ------> quand on ouvre un fichier, il s'affiche automatiquement à côté
 
 
-boutonText = tk.Button(vueChoixParametres, text = "Température extérieure", fg="white", bg="gray", command=ajoutFichier1)
-boutonText.place(relwidth=0.2, relheight=0.1, relx = 0.1, rely=0.2)
+boutonText = tk.Button(
+    vueChoixParametres,
+    text="Température extérieure",
+    fg="white",
+    bg="gray",
+    command=ajoutFichier1,
+)
+boutonText.place(relwidth=0.2, relheight=0.1, relx=0.1, rely=0.2)
 
 
-boutonTint = tk.Button(vueChoixParametres, text = "Température intérieure", padx=10, pady=5, fg="white", bg="gray", command=ajoutFichier2)
-boutonTint.place(relwidth=0.2, relheight=0.1, relx = 0.1, rely=0.5)
+boutonTint = tk.Button(
+    vueChoixParametres,
+    text="Température intérieure",
+    padx=10,
+    pady=5,
+    fg="white",
+    bg="gray",
+    command=ajoutFichier2,
+)
+boutonTint.place(relwidth=0.2, relheight=0.1, relx=0.1, rely=0.5)
 
 
-boutonPint = tk.Button(vueChoixParametres, text = "Puissance intérieure", padx=10, pady=5, fg="white", bg="gray", command=ajoutFichier3)
-boutonPint.place(relwidth=0.2, relheight=0.1, relx = 0.1, rely=0.8)
+boutonPint = tk.Button(
+    vueChoixParametres,
+    text="Puissance intérieure",
+    padx=10,
+    pady=5,
+    fg="white",
+    bg="gray",
+    command=ajoutFichier3,
+)
+boutonPint.place(relwidth=0.2, relheight=0.1, relx=0.1, rely=0.8)
 
 
 # (TBR) Quelques remarques :
