@@ -32,7 +32,7 @@ def initialisationSimulation(tableau):
 
     nMat = n
     mMat = 3
-    matrice = np.zeroes((nMat, mMat))
+    matrice = np.zeros((nMat, mMat))
     # Une matrice qui enregistre les Ci, Hiéquivalent et Ti de chaque maille en ligne(mMat)
 
     initialisationTemperature(matrice)
