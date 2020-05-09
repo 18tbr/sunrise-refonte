@@ -9,11 +9,11 @@ def remplirZone(image, canal, NW, SE, val):
     ----------
     image : numpy array
         Image à remplir.
-    canal : int
+            canal : int
         Canal cible.
-    NW = (NW_h, NW_w) : (int, int)
+            NW = (NWH, NWW) : (int, int)
         Coin North-West de la portion de l'image.
-    SE = (SE_h, SE_w) : (int, int)
+    SE = (SEH, SEW) : (int, int)
         Coin South-East de la portion de l'image.
     val : int
         Valeur avec laquelle colorier la portion d'image.
@@ -22,10 +22,10 @@ def remplirZone(image, canal, NW, SE, val):
     -------
     La fonction modifie `image` en place.
     """
-    print(f"On colorie le canal{canal} de {NW} à {SE}")
-    NW_h, NW_w = NW
-    SE_h, SE_w = SE
-    image[NW_h:SE_h, NW_w:SE_w, canal] = val
+    print(f"On colorie le canal {canal} de {NW} à {SE}")
+    NWH, NWW = NW
+    SEH, SEW = SE
+    image[NWH:SEH, NWW:SEW, couche] = val
 
 
 def creerImage(image, racine, numRacine, NW, SE, profondeur):
@@ -40,9 +40,9 @@ def creerImage(image, racine, numRacine, NW, SE, profondeur):
         Noeud que l'on examine.
     numRacine : int
         Numéro de la racine parmi les fils de son père.
-    NW = (NW_h, NW_w) : (int, int)
+    NW = (NWH, NWW) : (int, int)
         Coin North-West de la portion de l'image.
-    SE = (SE_h, SE_w) : (int, int)
+    SE = (SEH, SEW) : (int, int)
         Coin South-East de la portion de l'image.
     profondeur : int
         Profondeur de racine, stocké pour colorier le 3e canal.
@@ -67,50 +67,51 @@ def creerImage(image, racine, numRacine, NW, SE, profondeur):
     - si l'on tombe sur une liaison ``Parallele``, on divise l'image
     horizontalement et on réalise l'appel récursif.
     """
-    NW_h, NW_w = NW
-    SE_h, SE_w = SE
+    # Récupération des coordonnées
+    NWH, NWW = NW
+    SEH, SEW = SE
     # cas de base
     if type(racine) is Feuille:
         print(f"Feuille de valeur {racine.val}")
-        remplirZone(image,0, NW, SE, racine.val)
-        remplirZone(image,2, NW, SE, profondeur)
+        remplirZone(image, 0, NW, SE, racine.val)
+        remplirZone(image, 2, NW, SE, profondeur)
     # else...
     else:
         print(f"Noeud")
-        for num_fils, fils in enumerate(racine.fils):
-            total_fils = len(racine.fils)
+        for numFils, fils in enumerate(racine.fils):
+            totalFils = len(racine.fils)
             if type(racine) is Serie:  # on divise verticalement
                 # new north west
-                new_NW_h = NW_h
-                new_NW_w = NW_w + (SE_w - NW_w) * num_fils // total_fils
+                nouvNWH = NWH
+                nouvNWW = NWW + (SEW - NWW) * numFils // totalFils
                 # new south east
-                new_SE_h = SE_h
-                new_SE_w = NW_w + (SE_w - NW_w) * (num_fils + 1) // total_fils
+                nouvSEH = SEH
+                nouvSEW = NWH + (SEW - NWH) * (numFils + 1) // totalFils
                 # capacité north west
-                NW_C_h = new_NW_h
-                NW_C_w = (new_NW_w + 4 * new_SE_w) // 5
-                NW_C = (NW_C_h, NW_C_w)
+                NWCH = nouvNWH
+                NWCW = (nouvNWH + 4 * nouvSEW) // 5
+                NWC = (NWCH, NWCW)
                 # capacité south east
-                SE_C_h = new_SE_h
-                SE_C_w = (- new_NW_w + 6 * new_SE_w) // 5
-                SE_C = (SE_C_h, SE_C_w)
+                SECH = nouvSEH
+                SECW = (-nouvNWH + 6 * nouvSEW) // 5
+                SEC = (SECH, SECW)
                 # remplissage
-                if num_fils < total_fils:  # il y a (total_fils - 1) capacités
-                    remplirZone(image, 1, NW_C, SE_C, racine.capacites[num_fils])
+                if numFils < totalFils:  # il y a (totalFils - 1) capacités
+                    remplirZone(image, 1, NWC, SEC, racine.capacites[numFils])
             elif type(racine) is Parallele:  # on divise horizontalement
                 # north west
-                new_NW_h = NW_h + (SE_h - NW_h) * num_fils // total_fils
-                new_NW_w = NW_w
+                nouvNWH = NWH + (SEH - NWH) * numFils // totalFils
+                nouvNWW = NWW
                 # south east
-                new_SE_w = SE_w
-                new_SE_h = NW_h + (SE_h - NW_h) * (num_fils + 1) // total_fils
+                nouvSEW = SEW
+                nouvSEH = NWH + (SEH - NWH) * (numFils + 1) // totalFils
             else:
                 raise TypeError("Le type de noeud n'est pas reconnu.")
 
-            new_NW = (new_NW_h, new_NW_w)
-            new_SE = (new_SE_h, new_SE_w)
+            nouvNW = (nouvNWH, nouvNWH)
+            nouvSE = (nouvSEH, nouvSEW)
             # appel résursif
-            creerImage(image, fils, num_fils, new_NW, new_SE, profondeur + 1)
+            creerImage(image, fils, numFils, nouvNW, nouvSE, profondeur + 1)
 
 
 def moyenneZone(image, canal, NW, SE):
@@ -124,9 +125,9 @@ def moyenneZone(image, canal, NW, SE):
         Image cible.
     canal : int
         Canal cible.
-    NW = (NW_h, NW_w) : (int, int)
+    NW = (NWH, NWH) : (int, int)
         Coin North-West de la portion de l'image.
-    SE = (SE_h, SE_w) : (int, int)
+    SE = (SEH, SEW) : (int, int)
         Coin South-East de la portion de l'image.
 
     Returns
@@ -134,12 +135,14 @@ def moyenneZone(image, canal, NW, SE):
     moyenne : float
         Valeur moyenne.
     """
-    NW_h, NW_w = NW
-    SE_h, SE_w = SE
-    return np.mean(image[NW_h:SE_h, NW_w:SE_w, canal])
+    NWH, NWH = NW
+    SEH, SEW = SE
+    return np.mean(image[NWH:SEH, NWH:SEW, canal])
 
 
-def updaterRacine(image, racine, numRacine, NW, SE):
+# (TBR) "updaterRacine" !
+# (TBR) Bien tenté, mais ça ne compte pas comme du français :-D
+def modifierRacine(image, racine, numRacine, NW, SE):
     """
     Fonction récursive de mise à jour de la racine de l'arbre.
 
@@ -151,13 +154,13 @@ def updaterRacine(image, racine, numRacine, NW, SE):
         Noeud que l'on examine.
     numRacine : int
         Numéro de la racine parmi les fils de son père.
-    NW = (NW_h, NW_w) : (int, int)
+    NW = (NWH, NWW) : (int, int)
         Coin North-West de la portion de l'image.
-    SE = (SE_h, SE_w) : (int, int)
+    SE = (SEH, SEW) : (int, int)
         Coin South-East de la portion de l'image.
     """
-    NW_h, NW_w = NW
-    SE_h, SE_w = SE
+    NWH, NWH = NW
+    SEH, SEW = SE
     # cas de base
     if type(racine) is Feuille:
         racine.val = moyenneZone(image, 0, NW, SE)
@@ -165,37 +168,39 @@ def updaterRacine(image, racine, numRacine, NW, SE):
     # else...
     else:
         print(f"Noeud")
-        for num_fils, fils in enumerate(racine.fils):
-            total_fils = len(racine.fils)
+        for numFils, fils in enumerate(racine.fils):
+            totalFils = len(racine.fils)
             if type(racine) is Serie:  # on divise verticalement
                 # new north west
-                new_NW_h = NW_h
-                new_NW_w = NW_w + (SE_w - NW_w) * num_fils // total_fils
+                nouvNWH = NWH
+                nouvNWW = NWW + (SEW - NWW) * numFils // totalFils
                 # new south east
-                new_SE_h = SE_h
-                new_SE_w = NW_w + (SE_w - NW_w) * (num_fils + 1) // total_fils
+                nouvSEH = SEH
+                nouvSEW = NWW + (SEW - NWW) * (numFils + 1) // totalFils
                 # Capacity north west
-                NW_C_h = new_NW_h
-                NW_C_w = (new_NW_w + 4 * new_SE_w) // 5
-                NW_C = (NW_C_h, NW_C_w)
+                NWCH = nouvNWH
+                NWCW = (nouvNWH + 4 * nouvSEW) // 5
+                NWC = (NWCH, NWCW)
                 # Capacity south east
-                SE_C_h = new_SE_h
-                SE_C_w = (- new_NW_w + 6 * new_SE_w) // 5
-                SE_C = (SE_C_h, SE_C_w)
-                if num_fils < total_fils:
-                    racine.capacites[num_fils] = moyenneZone(image, 1, NW_C, SE_C)
+                SECH = nouvSEH
+                SECW = (-nouvNWH + 6 * nouvSEW) // 5
+                SEC = (SECH, SECW)
+                if numFils < totalFils:
+                    racine.capacites[numFils] = moyenneZone(image, 1, NWC, SEC)
             else:  # on divise horizontalement
                 # north west
-                new_NW_h = NW_h + (SE_h - NW_h) * num_fils // total_fils
-                new_NW_w = NW_w
+                nouvNWH = NWH + (SEH - NWH) * numFils // totalFils
+                nouvNWW = NWW
                 # south east
-                new_SE_w = SE_w
-                new_SE_h = NW_h + (SE_h - NW_h) * (num_fils + 1) // total_fils
-            new_NW = (new_NW_h, new_NW_w)
-            new_SE = (new_SE_h, new_SE_w)
+                nouvSEW = SEW
+                nouvSEH = NWH + (SEH - NWH) * (numFils + 1) // totalFils
+            nouvNW = (nouvNWH, nouvNWH)
+            nouvSE = (nouvSEH, nouvSEW)
             # appel récursif
-            updaterRacine(racine=racine.fils,
-                          numRacine=num_fils,
-                          NW=new_NW,
-                          SE=new_SE,
-                          image=image)
+            modifierRacine(
+                racine=racine.fils,
+                numRacine=numFils,
+                NW=nouvNW,
+                SE=nouvSE,
+                image=image,
+            )

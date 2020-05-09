@@ -213,33 +213,25 @@ def fusion(richInput, branch=None):
             f"---X Vous n'avez pas pu passer sur la branche {branch}."
         )
     # else...
-    # On la met à jour par rapport à origin/{branch}
+    # On la met à jour par rapport à origin/{branch}. Pas besoin de rebase car origin/branch est forcément en avance.
     gitProcess = richInput.run(f"git pull origin {branch}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
             f"---X Un conflit semble être apparu lors de la récupération de changements présents sur origin/{branch} mais pas la branche {branch}. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
         )
     # else...
-    # On la met à jour par rapport à origin/{target}
-    gitProcess = richInput.run(f"git pull origin {target}", shell=True)
-    if gitProcess.returncode != 0:
-        raise CIException(
-            f"---X Un conflit semble être apparu lors de la récupération de changements présents sur origin/{target} mais pas la branche {branch}. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
-        )
-    # else...
-    # On pousse la branche obtenue sur GitHub pour la mettre à jour
-    gitProcess = richInput.run(
-        f"git push origin {branch}", shell=True
-    )  # Pour mettre à jour le dépôt distant
-    if gitProcess.returncode != 0:
-        raise CIException(
-            f"---X Le push de la branche {branch} resynchronisée avec {target} a échoué. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
-        )
     # On passe sur la branche devops pour y faire la fusion
     gitProcess = richInput.run(f"git checkout {target}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
             "---X git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?"
+        )
+    # else...
+    # On met aussi la branche target à jour par rapport à origin.
+    gitProcess = richInput.run(f"git pull origin {target}", shell=True)
+    if gitProcess.returncode != 0:
+        raise CIException(
+            f"---X Un conflit semble être apparu lors de la récupération de changements présents sur origin/{target} mais pas la branche {target}. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
         )
     # else...
     # On fusionne les changements de la branche branch visée dans target
@@ -290,14 +282,18 @@ def union(richInput):
             )
         print(f"---> Vous êtes sur la branche {branch}.")
         # Step 2 : Maj par rapport à origin/branch
-        gitProcess = richInput.run(f"git pull origin {branch}", shell=True)
+        gitProcess = richInput.run(
+            f"git pull --rebase origin {branch}", shell=True
+        )
         if gitProcess.returncode != 0:
             raise CIException(
                 f"---X Vous n'avez pas pu mettre la branche {branch} à jour par rapport à origin/{branch}"
             )
         # else...
         # Step 3 : maj, sortir avec un message d'erreur s'il y a un conflit
-        gitProcess = richInput.run("git pull origin master", shell=True)
+        gitProcess = richInput.run(
+            "git pull --rebase origin master", shell=True
+        )
         if gitProcess.returncode != 0:
             raise CIException(
                 f"---X Vous n'avez pas pu mettre la branche {branch} à jour par rapport à origin/master"
