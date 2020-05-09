@@ -227,6 +227,13 @@ def fusion(richInput, branch=None):
             "---X git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?"
         )
     # else...
+    # On met aussi la branche target à jour par rapport à origin.
+    gitProcess = richInput.run(f"git pull origin {target}", shell=True)
+    if gitProcess.returncode != 0:
+        raise CIException(
+            f"---X Un conflit semble être apparu lors de la récupération de changements présents sur origin/{target} mais pas la branche {target}. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
+        )
+    # else...
     # On fusionne les changements de la branche branch visée dans target
     gitProcess = richInput.run(f"git rebase {branch}", shell=True)
     if gitProcess.returncode != 0:
