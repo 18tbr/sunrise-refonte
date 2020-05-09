@@ -42,6 +42,8 @@ class Noeud(object):
         indexParent = self.parent.fils.index(self)
         self.parent.fils[indexParent] = nouveau
         nouveau.parent = self.parent
+        # On attache le nouvel élément à la grille
+        nouveau.attacher(self.grille)
         # Dans la mesure où l'on a perdu notre place dans l'arbre, il faut s'en détacher.
         self.detacher()
 

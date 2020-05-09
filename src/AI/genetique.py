@@ -169,7 +169,9 @@ class Genetique(object):
             fils.noeud = hautArbre.noeud
             # (TBR) Non, utiliser ajouterFils. Cela ne marchera pas.
             # (TBR) Accessoirement, tu ne peux pas assigner un résultat à un appel de fonction. Je suis obligé de commenter cette ligne pour formatter le code.
+
             # fils.inspecter(profondeurPere, indicePere) = basArbre.noeud
+
             # (TBR) En dehors du fait que l'algorithme de fusion que tu proposes ne semble pas fonctionner (ce n'est pas très grave, c'est un bon début qui t'aidera à comprendre celui que je te propose), tu n'ajoutes jamais fils à enfant. Le principal problème dans ton algorithme est que tu essaies de concatener les arbres (comme tu le ferais avec des listes), mais ce n'est pas comme cela qu'un arbre se présente.
 
     # A verif cette partie 6- IMPORTANT - IMPORTANT - IMPORTANT
