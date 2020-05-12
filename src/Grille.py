@@ -4,7 +4,7 @@ from scipy.integrate import (
     solve_ivp,
 )  # Version moderne et orienté objet de odeint
 import GrilleUtils
-from Noeuds import *
+from Noeuds import Feuille, Parallele, Serie, Noeud
 
 
 class Grille(object):
@@ -13,13 +13,13 @@ class Grille(object):
     def __init__(self, cint, T, Text, Tint, Pint):
         super(Grille, self).__init__()
         # La racine de l'arbre
-        self.racine = None
+        self.racine = Feuille(self)
         # Capacité thermique associée à l'air intérieur
         self.cint = cint
         # Nombre de condensateurs dans le réseau, il doit au moins y avoir cint
         self.nbCondensateurs = 1
         # La forme du réseau, résumée au nombre de noeuds à chaque profondeur
-        self.forme = []
+        self.forme = [1]
         # La liste des temps (pour Text, Tint, Pint)
         self.T = T
         # La série des températures extérieures
@@ -139,3 +139,12 @@ class Grille(object):
             image=image,
         )
         return None
+
+T = [i for i in range (1,101)]
+Text = [20]*100
+Tint = np.log(T)
+Pint = [100*i for i in range (100)]
+
+a=Grille (1500,T,Text,Tint,Pint)
+a.racine=Feuille(a)
+#a.racine.ajoutFils(Feuille(a),forme='parallele')

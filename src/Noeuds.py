@@ -1,3 +1,4 @@
+from random import randint
 # Un fichier qui contient les implémentations des différents noeuds que l'on trouve dans nos arbres.
 
 
@@ -79,13 +80,13 @@ class Parallele(Noeud):
     # Note : les propriétés ne sont pas héritées en python...
     @property
     def profondeur(self):
-        if self.parent == None:
+        if self.parent is None:
             return 0
-        elif _profondeur is None:
-            _profondeur = (
-                parent.profondeur + 1
+        elif self.profondeur is None:
+            self.profondeur = (
+                self.parent.profondeur + 1
             )  # On mémoïse la profondeur pour éviter des calculs inutiles
-        return _profondeur
+        return self.profondeur
 
     def creationSimulationRecursive(self, A, B, C, gauche, droite, curseur):
         result = 0
@@ -157,6 +158,8 @@ class Parallele(Noeud):
         if self.profondeur + 1 == len(self.grille.forme):
             # Comme un noeud parallèle a forcément des enfants, il faut ajouter un niveau à la forme de la grille
             self.grille.forme.append(0)
+        print (self.grille.forme)
+        print(self.profondeur)
         self.grille.forme[self.profondeur] += 1
         for fils in self.fils:
             fils.attacher(grille)
@@ -350,7 +353,7 @@ class Feuille(Noeud):
             return 0
         else:
             # Pas de mémoïzation de la profondeur pour une feuille car elle sera amenée à changer
-            return parent.profondeur + 1
+            return self.parent.profondeur + 1
 
     def creationSimulationRecursive(self, A, B, C, gauche, droite, curseur):
         return self.H, curseur
@@ -374,16 +377,16 @@ class Feuille(Noeud):
             )
         elif forme == "parallele":
             # Si besoin, le constructeur de Parallele changera la taille de forme pour nous
-            nouveauNoeud = Parallele(grille, self.parent)
+            nouveauNoeud = Parallele(self.grille, self.parent)
             nouveauNoeud.ajoutFils(self, index=0)
             nouveauNoeud.ajoutFils(nouveauFils, index=1)
         elif forme == "serie":
             # Si besoin, le constructeur de Serie changera la taille de forme pour nous
-            nouveauNoeud = Serie(grille, self.parent)
+            nouveauNoeud = Serie(self.grille, self.parent)
             nouveauNoeud.ajoutFils(self, index=0)
             nouveauNoeud.ajoutFils(nouveauFils, index=1)
         # On remplace cette feuille par son nouveau parent dans la généalogie de l'arbre
-        self.replace(nouveauNoeud)
+        self.remplacer(nouveauNoeud)
         # Le nouveau noeud prend notre place dans la généalogie, c'est donc lui que l'on renvoie.
         return nouveauNoeud
 
