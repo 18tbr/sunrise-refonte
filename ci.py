@@ -83,17 +83,17 @@ def identifiant(richInput):
         print("\n")
     with open(".identifiant", "w") as idFile:
         idFile.write(prenomId)
-    print(
-        info(
-            f"Identification réalisée avec succès, bienvenue {prenomId.capitalize()} :-)"
-        )
-    )
     # checkout sur branche
     gitProcess = richInput.run(f"git checkout {prenomId}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
             "git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?"
         )
+    print(
+        info(
+            f"Identification réalisée avec succès, bienvenue {prenomId.capitalize()} :-)"
+        )
+    )
 
 
 def maj(richInput):
@@ -169,7 +169,7 @@ def fini(richInput):
 
     # Création d'un message de commit synthétique
     commit = richInput.editorInput(
-            "Inscrivez votre rapport dans votre éditeur de texte", "",
+        "Inscrivez votre rapport dans votre éditeur de texte", "",
     )
     messageCommit = f"({branch}) {commit}"
 
@@ -236,6 +236,13 @@ def fusion(richInput, branch=None):
     # else...
     # On fusionne les changements de la branche branch visée dans target
     gitProcess = richInput.run(f"git rebase {branch}", shell=True)
+    if gitProcess.returncode != 0:
+        raise CIException(
+            "Un conflit semble être apparu dans l'usage de git. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
+        )
+    # else...
+    # Je crois avoir compris comment régler le problème des conflits que j'ai depuis le début du projet. Ajouter un git pull --rebase origin target ici semble tout résoudre.
+    gitProcess = richInput.run(f"git pull --rebase origin {target}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
             "Un conflit semble être apparu dans l'usage de git. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
