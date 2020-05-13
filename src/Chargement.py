@@ -11,7 +11,7 @@ def initialisationAnimation():
     return ligne,
 
 def fonctionAnimation(mot):
-    X.append(min(len(X), 10))
+    X.append(len(X))
     Y.append(len(mot))
     ligne.set_data(X, Y)
     return ligne,
