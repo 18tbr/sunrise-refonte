@@ -1,4 +1,5 @@
 from random import randint
+
 # Un fichier qui contient les implémentations des différents noeuds que l'on trouve dans nos arbres.
 
 
@@ -158,7 +159,7 @@ class Parallele(Noeud):
         if self.profondeur + 1 == len(self.grille.forme):
             # Comme un noeud parallèle a forcément des enfants, il faut ajouter un niveau à la forme de la grille
             self.grille.forme.append(0)
-        print (self.grille.forme)
+        print(self.grille.forme)
         print(self.profondeur)
         self.grille.forme[self.profondeur] += 1
         for fils in self.fils:

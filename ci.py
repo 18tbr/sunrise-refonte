@@ -298,9 +298,8 @@ def union(richInput):
             )
         # else...
         # Step 3 : maj, sortir avec un message d'erreur s'il y a un conflit
-        gitProcess = richInput.run(
-            "git pull --rebase origin master", shell=True
-        )
+        # Dans la mesure où il ne dois pas y avoir de conflits au moment de la fusion du master (qui est toujours en avance par rapport aux autres branches) il faut faire un git pull ici (et pas de rebase).
+        gitProcess = richInput.run("git pull origin master", shell=True)
         if gitProcess.returncode != 0:
             raise CIException(
                 f"Vous n'avez pas pu mettre la branche {branch} à jour par rapport à origin/master"
@@ -400,7 +399,7 @@ class RichInput(object):
         return return_value
 
     def run(self, commande, *args, **kwargs):
-        print(f">> {commande}")
+        print(f"\033[94m>> {commande}\033[m")
         return run(commande, *args, **kwargs)
 
 

@@ -140,11 +140,12 @@ class Grille(object):
         )
         return None
 
-T = [i for i in range (1,101)]
-Text = [20]*100
-Tint = np.log(T)
-Pint = [100*i for i in range (100)]
 
-a=Grille (1500,T,Text,Tint,Pint)
-a.racine=Feuille(a)
-#a.racine.ajoutFils(Feuille(a),forme='parallele')
+T = [i for i in range(1, 101)]
+Text = [20] * 100
+Tint = np.log(T)
+Pint = [100 * i for i in range(100)]
+
+a = Grille(1500, T, Text, Tint, Pint)
+a.racine = Feuille(a)
+# a.racine.ajoutFils(Feuille(a),forme='parallele')
