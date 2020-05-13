@@ -413,6 +413,8 @@ class CIException(Exception):
 
 
 if __name__ == "__main__":
+    # On windows, colors will only display correctly in the terminal if a system call has been triggered beforehand. Not that there be a link between the two...
+    os.system("")
     try:
         richInput = RichInput()
         main(richInput)
