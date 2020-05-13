@@ -174,7 +174,7 @@ class Genetique(object):
                 enfant.substituerEnfants(fils_choisis)
         
     # La population de la génération suivante
-            return (parents + children), [scoreIndividus[k][1] for k in range(0,len(scoreIndividus) )],  np.array([vecteur[0] for vecteur in scoreIndividus[0][0].Simulation().y])
+            return (parents + children), [scoreIndividus[k][1] for k in range(0,len(scoreIndividus) )],  [vecteur[0] for vecteur in scoreIndividus[0][0].Simulation().y]
 
     def AlgoGenetique(self):
         Generation = Generation(cint = self.cint, T = self.T, Text = self.Text, Tint = self.Tint, Pint = self.Pint, numeroGeneration = 1)
