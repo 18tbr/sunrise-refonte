@@ -169,7 +169,7 @@ def fini(richInput):
 
     # Création d'un message de commit synthétique
     commit = richInput.editorInput(
-        info("Inscrivez votre rapport dans votre éditeur de texte"), "",
+            "Inscrivez votre rapport dans votre éditeur de texte", "",
     )
     messageCommit = f"({branch}) {commit}"
 
@@ -362,7 +362,7 @@ class RichInput(object):
         with open("editor.tmp", "w") as messageTemp:
             messageTemp.write(editorMessage)
 
-        print(inputMessage)
+        print(info(inputMessage))
         editor = ""
         if sys.platform == "linux":
             geditExists = self.run(

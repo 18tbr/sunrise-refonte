@@ -399,12 +399,12 @@ class RichInput(object):
 
 def err(text):
     # Creates a pretty error String from text.
-    return f"\033[1;31m---X {text}\033[m"
+    return f"\033[91m---X {text}\033[m"
 
 
 def info(text):
     # Ceates a pretty informative String from text
-    return f"\033[;1m---> {text}\033[m"
+    return f"\033[92m---> {text}\033[m"
 
 
 class CIException(Exception):
