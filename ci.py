@@ -84,13 +84,15 @@ def identifiant(richInput):
     with open(".identifiant", "w") as idFile:
         idFile.write(prenomId)
     print(
-        f"---> Identification réalisée avec succès, bienvenue {prenomId.capitalize()} :-)"
+        info(
+            f"Identification réalisée avec succès, bienvenue {prenomId.capitalize()} :-)"
+        )
     )
     # checkout sur branche
     gitProcess = richInput.run(f"git checkout {prenomId}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
-            "---X git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?"
+            "git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?"
         )
 
 
@@ -102,22 +104,22 @@ def maj(richInput):
     gitProcess = richInput.run(f"git checkout {branch}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
-            "---X git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?"
+            "git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?"
         )
     # else...
     gitProcess = richInput.run(f"git pull origin {branch}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
-            "---X Un conflit semble être apparu dans l'usage de git. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
+            "Un conflit semble être apparu dans l'usage de git. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
         )
     # else...
     gitProcess = richInput.run("git pull origin master", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
-            "---X Un conflit semble être apparu dans l'usage de git. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
+            "Un conflit semble être apparu dans l'usage de git. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
         )
     # else...
-    print("---> Mise à jour effectuée avec succès")
+    print(info("Mise à jour effectuée avec succès"))
 
 
 def verifier(richInput):
@@ -149,12 +151,12 @@ def verifier(richInput):
         testProcess = richInput.run(f"pytest tests\\test_{nomGroupe}.py")
     print()
     if testProcess.returncode == 1:
-        print("---> Certains tests ont échoué")
+        print(err("Certains tests ont échoué"))
     elif testProcess.returncode == 0:
-        print("---> Les tests ont réussi")
+        print(info("Les tests ont réussi"))
     else:
         raise CIException(
-            "---X Une erreur est survenue lors des tests. Demandez de l'aide au groupe DevOps pour régler le problème."
+            "Une erreur est survenue lors des tests. Demandez de l'aide au groupe DevOps pour régler le problème."
         )
 
 
@@ -167,35 +169,35 @@ def fini(richInput):
 
     # Création d'un message de commit synthétique
     commit = richInput.editorInput(
-        "---> Inscrivez votre rapport dans votre éditeur de texte", "",
+        info("Inscrivez votre rapport dans votre éditeur de texte"), "",
     )
     messageCommit = f"({branch}) {commit}"
 
     gitProcess = richInput.run(f"git checkout {branch}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
-            "---X git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?"
+            "git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?"
         )
     # Ajout de tout le travail fait depuis le dernier commit
     gitProcess = richInput.run("git add .", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
-            "---X Le travail que vous avez fait n'a pas pu être ajouté. Demandez de l'aide au groupe DevOps pour régler le problème."
+            "Le travail que vous avez fait n'a pas pu être ajouté. Demandez de l'aide au groupe DevOps pour régler le problème."
         )
 
     # Validation du travail effectué
     gitProcess = richInput.run(f'git commit -m "{messageCommit}"', shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
-            "---X Le travail que vous avez fait n'a pas pu être validé. Demandez de l'aide au groupe DevOps pour régler le problème."
+            "Le travail que vous avez fait n'a pas pu être validé. Demandez de l'aide au groupe DevOps pour régler le problème."
         )
     # Envoi du travail effectué
     gitProcess = richInput.run(f"git push", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
-            "---X Le travail que vous avez fait n'a pas pu être enregisté. Demandez de l'aide au groupe DevOps pour régler le problème."
+            "Le travail que vous avez fait n'a pas pu être enregisté. Demandez de l'aide au groupe DevOps pour régler le problème."
         )
-    print("---> Votre travail a bien été enregistré.")
+    print(info("Votre travail a bien été enregistré."))
 
 
 def fusion(richInput, branch=None):
@@ -209,36 +211,34 @@ def fusion(richInput, branch=None):
     # On passe sur la branche en question
     gitProcess = richInput.run(f"git checkout {branch}", shell=True)
     if gitProcess.returncode != 0:
-        raise CIException(
-            f"---X Vous n'avez pas pu passer sur la branche {branch}."
-        )
+        raise CIException(f"Vous n'avez pas pu passer sur la branche {branch}.")
     # else...
     # On la met à jour par rapport à origin/{branch}. Pas besoin de rebase car origin/branch est forcément en avance.
     gitProcess = richInput.run(f"git pull origin {branch}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
-            f"---X Un conflit semble être apparu lors de la récupération de changements présents sur origin/{branch} mais pas la branche {branch}. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
+            f"Un conflit semble être apparu lors de la récupération de changements présents sur origin/{branch} mais pas la branche {branch}. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
         )
     # else...
     # On passe sur la branche devops pour y faire la fusion
     gitProcess = richInput.run(f"git checkout {target}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
-            "---X git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?"
+            "git n'a pas pu être lancé correctement. Etes-vous certain que git est bien accessible ?"
         )
     # else...
     # On met aussi la branche target à jour par rapport à origin.
     gitProcess = richInput.run(f"git pull origin {target}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
-            f"---X Un conflit semble être apparu lors de la récupération de changements présents sur origin/{target} mais pas la branche {target}. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
+            f"Un conflit semble être apparu lors de la récupération de changements présents sur origin/{target} mais pas la branche {target}. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
         )
     # else...
     # On fusionne les changements de la branche branch visée dans target
     gitProcess = richInput.run(f"git rebase {branch}", shell=True)
     if gitProcess.returncode != 0:
         raise CIException(
-            "---X Un conflit semble être apparu dans l'usage de git. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
+            "Un conflit semble être apparu dans l'usage de git. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
         )
     # else...
     # On pousse la nouvelle version de la branche target sur GitHub
@@ -247,9 +247,9 @@ def fusion(richInput, branch=None):
     )  # Pour mettre à jour le dépôt distant
     if gitProcess.returncode != 0:
         raise CIException(
-            "---X Le push de la branche fusionnée a échoué. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
+            "Le push de la branche fusionnée a échoué. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
         )
-    print(f"---> Fusion de {branch} dans {target} effectuée avec succès")
+    print(info(f"Fusion de {branch} dans {target} effectuée avec succès"))
 
 
 def union(richInput):
@@ -278,16 +278,16 @@ def union(richInput):
         gitProcess = richInput.run(f"git checkout {branch}", shell=True)
         if gitProcess.returncode != 0:
             raise CIException(
-                f"---X Vous n'avez pas pu passer sur la branche locale {branch}."
+                f"Vous n'avez pas pu passer sur la branche locale {branch}."
             )
-        print(f"---> Vous êtes sur la branche {branch}.")
+        print(info(f"Vous êtes sur la branche {branch}."))
         # Step 2 : Maj par rapport à origin/branch
         gitProcess = richInput.run(
             f"git pull --rebase origin {branch}", shell=True
         )
         if gitProcess.returncode != 0:
             raise CIException(
-                f"---X Vous n'avez pas pu mettre la branche {branch} à jour par rapport à origin/{branch}"
+                f"Vous n'avez pas pu mettre la branche {branch} à jour par rapport à origin/{branch}"
             )
         # else...
         # Step 3 : maj, sortir avec un message d'erreur s'il y a un conflit
@@ -296,23 +296,23 @@ def union(richInput):
         )
         if gitProcess.returncode != 0:
             raise CIException(
-                f"---X Vous n'avez pas pu mettre la branche {branch} à jour par rapport à origin/master"
+                f"Vous n'avez pas pu mettre la branche {branch} à jour par rapport à origin/master"
             )
         # else...
         print(
-            f"---> La branche {branch} est à jour par rapport à origin/master"
+            info(f"La branche {branch} est à jour par rapport à origin/master")
         )
         # Step 4 : git push
         gitProcess = richInput.run(f"git push origin {branch}", shell=True)
         if gitProcess.returncode != 0:
             raise CIException(
-                "---X Un conflit semble être apparu dans l'usage de git. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
+                "Un conflit semble être apparu dans l'usage de git. Veuillez prévenir le groupe DevOps pour qu'ils puissent vous aider."
             )
         # else...
         print(
-            f"---> La branche origin/{branch} est à jour par rapport à master"
+            info(f"La branche origin/{branch} est à jour par rapport à master")
         )
-    print("Union des branches réalisée avec succès")
+    print(info("Union des branches réalisée avec succès"))
 
 
 def black(richInput):
@@ -326,7 +326,7 @@ def black(richInput):
             if extension == ".py":
                 argList.append(os.path.join(root, name))
     richInput.run(f"black -l 80 {' '.join(argList)}", shell=True)
-    print("\n---> Formatage réalisé avec succès !")
+    print("\n", info("Formatage réalisé avec succès !"))
 
 
 # A class to handle various types of input
@@ -341,7 +341,7 @@ class RichInput(object):
         branch = ""
         if not os.path.exists(".identifiant"):
             raise CIException(
-                '---X Vous devez utiliser "identifiant" au moins une fois avant de pouvoir faire des modifications de code.'
+                'Vous devez utiliser "identifiant" au moins une fois avant de pouvoir faire des modifications de code.'
             )
         with open(".identifiant", "r") as branchFile:
             branch = branchFile.read()
@@ -376,13 +376,13 @@ class RichInput(object):
             editor = "notepad.exe"
         else:
             raise CIException(
-                f"---X Votre plateforme {sys.platform} n'est pas supportée."
+                f"Votre plateforme {sys.platform} n'est pas supportée."
             )
 
         textProcess = self.run(f"{editor} editor.tmp", shell=True)
         if textProcess.returncode != 0:
             raise CIException(
-                "---X Une erreur est survenue pendant que vous rentriez votre message, ce dernier n'a pas été récupéré."
+                "Une erreur est survenue pendant que vous rentriez votre message, ce dernier n'a pas été récupéré."
             )
         # else...
         # Lecture du message enregistré
@@ -397,6 +397,16 @@ class RichInput(object):
         return run(commande, *args, **kwargs)
 
 
+def err(text):
+    # Creates a pretty error String from text.
+    return f"\033[1;31m---X {text}\033[m"
+
+
+def info(text):
+    # Ceates a pretty informative String from text
+    return f"\033[;1m---> {text}\033[m"
+
+
 class CIException(Exception):
     # Special syntax to declare exceptions easily
     pass
@@ -407,4 +417,4 @@ if __name__ == "__main__":
         richInput = RichInput()
         main(richInput)
     except CIException as e:
-        print(str(e), file=sys.stderr)
+        print(err(str(e)), file=sys.stderr)
