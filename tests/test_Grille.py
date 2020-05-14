@@ -2,6 +2,7 @@
 import numpy as np
 import os
 import sys
+
 # Il faut ajouter src au PYTHONPATH avant tout, sinon les modules n'auront pas accès à leurs propres imports.
 sys.path.append(f"{os.getcwd()}/src")
 # Import from package
@@ -21,6 +22,7 @@ from Grille import Grille, Noeud, Feuille, Parallele, Serie
 
 # Test des fonctions sur les noeuds en parallèle
 
+
 def test_creation_arbre_minimal():
     """Test if [...]"""
     g = Grille(None, None, None, None, None)
@@ -32,11 +34,12 @@ def test_creation_arbre_minimal():
     assert g.forme == [1]
     return g, f
 
+
 def test_ajout_fils_feuille_parallele():
     g, f1 = test_creation_arbre_minimal()
     f2 = Feuille()
-    p = f1.ajoutFils(f2, forme='parallele')
-    assert p.fils == [f1,f2]
+    p = f1.ajoutFils(f2, forme="parallele")
+    assert p.fils == [f1, f2]
     assert p.parent is None
     assert f1.parent == p
     assert f2.parent == p
@@ -47,16 +50,18 @@ def test_ajout_fils_feuille_parallele():
     assert g.racine is p
     return g, p
 
+
 def test_ajout_parallele_existant():
     g, p = test_ajout_fils_feuille_parallele()
     f1, f2 = p.fils
     f3 = Feuille()
     p.ajoutFils(f3, index=1)
-    assert g.forme == [1,3]
+    assert g.forme == [1, 3]
     assert f3.grille is g
     assert f3.parent is p
     assert p.fils == [f1, f3, f2]
     return g, p
+
 
 def test_suppression_fils_parallele_simple():
     g, p = test_ajout_parallele_existant()
@@ -67,6 +72,7 @@ def test_suppression_fils_parallele_simple():
     assert p.fils == [f1, f2]
     return g, p
 
+
 def test_suppression_parallele_dernier():
     g, p = test_ajout_fils_feuille_parallele()
     f1, f2 = p.fils
@@ -75,19 +81,21 @@ def test_suppression_parallele_dernier():
     assert pn is f2
     return g, f2
 
+
 def test_ajout_parallele_existant_rang_superieur():
     g, p = test_ajout_parallele_existant()
     f1, f2, f3 = p.fils
     f4 = Feuille()
-    p2 = f3.ajoutFils(f4, forme='parallele')
+    p2 = f3.ajoutFils(f4, forme="parallele")
     assert type(p2) == Parallele
     assert p2.fils == [f3, f4]
     assert p2.grille is g
     assert f3.parent is p2
     assert f4.parent is p2
     assert p2.parent is p
-    assert g.forme == [1,3,2]
+    assert g.forme == [1, 3, 2]
     return g, p, p2
+
 
 def test_suppression_parallele_existant_rang_superieur():
     g, p, p2 = test_ajout_parallele_existant_rang_superieur()
@@ -99,14 +107,16 @@ def test_suppression_parallele_existant_rang_superieur():
     assert g.forme == [1, 3]
     return g, p
 
+
 # Test des fonctions pour les noeuds Serie
+
 
 def test_ajout_fils_feuille_serie():
     g, f1 = test_creation_arbre_minimal()
     f2 = Feuille()
-    p = f1.ajoutFils(f2, forme='serie')
+    p = f1.ajoutFils(f2, forme="serie")
     assert type(p) is Serie
-    assert p.fils == [f1,f2]
+    assert p.fils == [f1, f2]
     assert p.parent is None
     assert f1.parent == p
     assert f2.parent == p
@@ -119,18 +129,20 @@ def test_ajout_fils_feuille_serie():
     assert g.racine is p
     return g, p
 
+
 def test_ajout_serie_existant():
     g, p = test_ajout_fils_feuille_serie()
     f1, f2 = p.fils
     f3 = Feuille()
     p.ajoutFils(f3, index=1)
-    assert g.forme == [1,3]
+    assert g.forme == [1, 3]
     assert f3.grille is g
     assert f3.parent is p
     assert p.fils == [f1, f3, f2]
     assert len(p.capacites) == 2
     assert g.nbCondensateurs == 3
     return g, p
+
 
 def test_suppression_fils_serie_simple():
     g, p = test_ajout_serie_existant()
@@ -142,6 +154,7 @@ def test_suppression_fils_serie_simple():
     assert len(p.capacites) == 1
     assert g.nbCondensateurs == 2
     return g, p
+
 
 def test_suppression_serie_dernier():
     g, p = test_ajout_fils_feuille_serie()
@@ -157,7 +170,7 @@ def test_ajout_serie_existant_rang_superieur():
     g, p = test_ajout_serie_existant()
     f1, f2, f3 = p.fils
     f4 = Feuille()
-    p2 = f3.ajoutFils(f4, forme='serie')
+    p2 = f3.ajoutFils(f4, forme="serie")
     assert type(p2) == Serie
     assert p2.fils == [f3, f4]
     assert p2.grille is g
@@ -167,8 +180,9 @@ def test_ajout_serie_existant_rang_superieur():
     assert f3.parent is p2
     assert f4.parent is p2
     assert p2.parent is p
-    assert g.forme == [1,3,2]
+    assert g.forme == [1, 3, 2]
     return g, p, p2
+
 
 def test_suppression_serie_existant_rang_superieur():
     g, p, p2 = test_ajout_serie_existant_rang_superieur()
@@ -182,13 +196,15 @@ def test_suppression_serie_existant_rang_superieur():
     assert g.nbCondensateurs == 3
     return g, p
 
+
 # Tests mixtes de Parallèle et Série
+
 
 def test_ajout_serie_sur_parallele():
     g, p = test_ajout_parallele_existant()
     f1, f2, f3 = p.fils
     f4 = Feuille()
-    p2 = f3.ajoutFils(f4, forme='serie')
+    p2 = f3.ajoutFils(f4, forme="serie")
     assert type(p2) == Serie
     assert p2.fils == [f3, f4]
     assert p2.grille is g
@@ -198,14 +214,15 @@ def test_ajout_serie_sur_parallele():
     assert f3.parent is p2
     assert f4.parent is p2
     assert p2.parent is p
-    assert g.forme == [1,3,2]
+    assert g.forme == [1, 3, 2]
     return g, p, p2
+
 
 def test_ajout_parallele_sur_serie():
     g, p = test_ajout_serie_existant()
     f1, f2, f3 = p.fils
     f4 = Feuille()
-    p2 = f3.ajoutFils(f4, forme='parallele')
+    p2 = f3.ajoutFils(f4, forme="parallele")
     assert type(p2) == Parallele
     assert p2.fils == [f3, f4]
     assert p2.grille is g
@@ -215,24 +232,25 @@ def test_ajout_parallele_sur_serie():
     assert f3.parent is p2
     assert f4.parent is p2
     assert p2.parent is p
-    assert g.forme == [1,3,2]
+    assert g.forme == [1, 3, 2]
     return g, p, p2
+
 
 def test_complexe_creation():
     g = Grille(None, None, None, None, None)
     f1 = g.racine
     f2 = Feuille()
-    sA = f1.ajoutFils(f2, forme='serie')
+    sA = f1.ajoutFils(f2, forme="serie")
     f3 = Feuille()
     sA.ajoutFils(f3, index=0)
     f4 = Feuille()
-    pB = f1.ajoutFils(f4, forme='parallele')
+    pB = f1.ajoutFils(f4, forme="parallele")
     f5 = Feuille()
     pB.ajoutFils(f5, index=1)
     f6 = Feuille()
-    sC = f2.ajoutFils(f6, forme='serie')
+    sC = f2.ajoutFils(f6, forme="serie")
     # Tests de généalogie
-    assert g.forme == [1,3,5]
+    assert g.forme == [1, 3, 5]
     assert g.racine is sA
     assert sA.parent is None
     assert sA.fils == [f3, pB, sC]
@@ -264,13 +282,13 @@ def test_complexe_destruction():
     assert sA.fils == [f3, pB, f6]
     assert f6.parent is sA
     assert g.nbCondensateurs == 3
-    assert g.forme == [1,3,3]
+    assert g.forme == [1, 3, 3]
     sAt = sA.suppressionFils(1)
     assert sAt is sA
     assert len(sA.capacites) == 1
     assert g.nbCondensateurs == 2
     assert sA.fils == [f3, f6]
-    assert g.forme == [1,2]
+    assert g.forme == [1, 2]
     # On vérifie aussi que pB et ses fils ont bien été détachés
     assert pB.parent is None
     assert pB.grille is None
@@ -285,7 +303,9 @@ def test_complexe_destruction():
     assert g.nbCondensateurs == 1
     return g
 
+
 # Test de fonctions complexes sur les arbres
+
 
 def test_inspecter():
     g = test_complexe_creation()
@@ -293,16 +313,17 @@ def test_inspecter():
     f3, pB, sC = sA.fils
     f1, f5, f4 = pB.fils
     f2, f6 = sC.fils
-    assert g.inspecter(0,0) is sA
-    assert g.inspecter(1,0) is f3
-    assert g.inspecter(1,1) is pB
-    assert g.inspecter(1,2) is sC
-    assert g.inspecter(2,0) is f1
-    assert g.inspecter(2,1) is f5
-    assert g.inspecter(2,2) is f4
-    assert g.inspecter(2,3) is f2
-    assert g.inspecter(2,4) is f6
+    assert g.inspecter(0, 0) is sA
+    assert g.inspecter(1, 0) is f3
+    assert g.inspecter(1, 1) is pB
+    assert g.inspecter(1, 2) is sC
+    assert g.inspecter(2, 0) is f1
+    assert g.inspecter(2, 1) is f5
+    assert g.inspecter(2, 2) is f4
+    assert g.inspecter(2, 3) is f2
+    assert g.inspecter(2, 4) is f6
     return g
+
 
 def test_sousArbre():
     g = test_complexe_creation()

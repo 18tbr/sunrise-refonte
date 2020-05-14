@@ -113,8 +113,8 @@ class Parallele(Noeud):
         if taille < 2:
             # S'il ne reste plus qu'un seul bloc fils il prend la place du bloc parallèle. Il faut juste faire attention à la mémoïzation de la profondeur
             remplacant = self.fils[0]
-            del self.fils[0]    # Pour éviter les problèmes avec détacher
-            remplacant.detacher()    # On va le rattacher dans remplacer
+            del self.fils[0]  # Pour éviter les problèmes avec détacher
+            remplacant.detacher()  # On va le rattacher dans remplacer
             remplacant._profondeur = self.profondeur
             # Notez que replace appelle detacher pour nous en interne
             self.remplacer(remplacant)
@@ -254,8 +254,8 @@ class Serie(Noeud):
         if taille < 2:
             # S'il ne reste plus qu'un seul bloc fils il prend la place du bloc serie. Il faut juste faire attention à la mémoïzation de la profondeur
             remplacant = self.fils[0]
-            del self.fils[0]    # Pour éviter les problèmes avec détacher
-            remplacant.detacher()    # On va le rattacher dans remplacer
+            del self.fils[0]  # Pour éviter les problèmes avec détacher
+            remplacant.detacher()  # On va le rattacher dans remplacer
             remplacant._profondeur = self.profondeur
             # Notez que replace appelle detacher pour nous en interne
             self.remplacer(remplacant)
@@ -362,7 +362,6 @@ class Serie(Noeud):
         self.grille = None
         # On perd aussi la référence à son parent pour éviter les effets de bord étranges
         self.parent = None
-
 
 
 class Feuille(Noeud):

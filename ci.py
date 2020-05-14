@@ -148,7 +148,9 @@ def verifier(richInput):
     if nomGroupe == "all":
         testProcess = richInput.run(f"pytest", shell=True)
     else:
-        testProcess = richInput.run(f"pytest tests/test_{nomGroupe}.py", shell=True)
+        testProcess = richInput.run(
+            f"pytest tests/test_{nomGroupe}.py", shell=True
+        )
     print()
     if testProcess.returncode == 1:
         print(err("Certains tests ont échoué"))

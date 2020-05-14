@@ -17,7 +17,7 @@ class Grille(object):
         # Nombre de condensateurs dans le réseau, il doit au moins y avoir cint
         self.nbCondensateurs = 1
         # La forme du réseau, résumée au nombre de noeuds à chaque profondeur
-        self.forme = [0]    # Sera passé à 1 par le constructeur de Feuille
+        self.forme = [0]  # Sera passé à 1 par le constructeur de Feuille
         # La liste des temps (pour Text, Tint, Pint)
         self.T = T
         # La série des températures extérieures
