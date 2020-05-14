@@ -153,7 +153,7 @@ def verifier(richInput):
     if testProcess.returncode == 1:
         print(err("Certains tests ont échoué"))
     elif testProcess.returncode == 0:
-        print(info("Les tests ont réussi"))
+        print(info("Les tests ont été passés avec succès"))
     else:
         raise CIException(
             "Une erreur est survenue lors des tests. Demandez de l'aide au groupe DevOps pour régler le problème."

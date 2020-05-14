@@ -26,7 +26,7 @@ class Grille(object):
         self.Tint = Tint
         # La série des puissances intérieures
         self.Pint = Pint
-        # IMPORTANT : ne pas ajouter une feuille avant d'avoir défini la forme
+        # IMPORTANT : ne pas ajouter une feuille avant d'avoir défini la forme de la grille
         # La racine de l'arbre
         self.racine = Feuille(self)
 
