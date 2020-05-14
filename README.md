@@ -10,9 +10,9 @@ Le dépôt GitHub pour le projet SunRise de 2020.
 ![Alt text](https://github.com/18tbr/sunrise-refonte/blob/tbr/assets/logoProjet2020.jpg?raw=true "Logo du projet SunRise 2020")
 
 ## Le projet SunRise
-Le projet SunRise est un projet lancé en 2017 par le CES (Centre d'Efficacité des Systèmes) des Mines de Paris. Ce projet a pour but de __valider des modèles novateurs de thermique :fire: de bâtiment__ du CES à l'aide d'une expérience en chambre climatique.
+Le projet SunRise est un projet lancé en 2017 par le [CES](http://www.ces.mines-paristech.fr/Accueil/) (Centre d'Efficacité des Systèmes) des [Mines de Paris](http://www.mines-paristech.fr/). Ce projet a pour but de __valider des modèles novateurs de thermique :fire: de bâtiment :house:__ du CES à l'aide d'une expérience en chambre climatique.
 
-Une particularité de l'expérience du CES (qui donne son nom au projet) est qu'elle utilise un __soleil :sunny: artificiel mobile de grande dimension__ (~2m de diamètre) afin de bénéficier de davantage de précision lors de l'évaluation de l'influence des rayons lumineux.
+Une particularité de l'expérience du CES (qui donne son nom au projet) est qu'elle utilise un __soleil :sunny: artificiel mobile de grande dimension__ (~2m de diamètre) afin de bénéficier de davantage de flexibilité lors de l'évaluation de l'influence des rayons lumineux :flashlight:.
 
 Pour plus de détails, vous pouvez visiter le [site du projet](https://sites.google.com/view/2019-2020-gr12/home) :point_left:
 
