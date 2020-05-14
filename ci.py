@@ -399,7 +399,7 @@ class RichInput(object):
         return return_value
 
     def run(self, commande, *args, **kwargs):
-        print(f"\033[94m>> {commande}\033[m")
+        print(f"\033[93m>> {commande}\033[m")
         return run(commande, *args, **kwargs)
 
 

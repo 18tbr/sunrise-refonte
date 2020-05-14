@@ -48,6 +48,9 @@ class Noeud(object):
             # On trouve l'indice de l'élément actuel dans la liste fils du parent
             indexParent = self.parent.fils.index(self)
             self.parent.fils[indexParent] = nouveau
+        elif self.grille is not None:
+            # Autre cas important à traiter : on est en train de changer la racine de l'arbre
+            self.grille.racine = nouveau
         nouveau.parent = self.parent
         # On attache le nouvel élément à la grille
         nouveau.attacher(self.grille)
@@ -156,7 +159,9 @@ class Parallele(Noeud):
     def sousArbre(self):
         copieNoeud = Parallele(None)
         for fils in self.fils:
-            copieNoeud.fils.append(fils.sousArbre())
+            copieFils = fils.sousArbre()
+            copieFils.parent = copieNoeud
+            copieNoeud.fils.append(copieFils)
         return copieNoeud
 
     def attacher(self, grille):
@@ -179,6 +184,8 @@ class Parallele(Noeud):
             self.grille.forme.pop()
         # On ne perd la référence à la grille qu'à la toute fin de la fonction car on la référence au dessus
         self.grille = None
+        # On perd aussi la référence à son parent pour éviter les effets de bord étranges
+        self.parent = None
 
 
 class Serie(Noeud):
@@ -322,9 +329,11 @@ class Serie(Noeud):
     def sousArbre(self):
         copieNoeud = Serie(None)
         for fils in self.fils:
-            copieNoeud.fils.append(fils.sousArbre())
-        for i in len(self.capacites):
-            copieNoeud.capacites[i] = self.capacites[i]
+            copieFils = fils.sousArbre()
+            copieFils.parent = copieNoeud
+            copieNoeud.fils.append(copieFils)
+        for valeurCapacite in self.capacites:
+            copieNoeud.capacites.append(valeurCapacite)
         return copieNoeud
 
     def attacher(self, grille):
@@ -351,6 +360,8 @@ class Serie(Noeud):
             self.grille.forme.pop()
         # On ne perd la référence à la grille qu'à la toute fin de la fonction car on la référence au dessus
         self.grille = None
+        # On perd aussi la référence à son parent pour éviter les effets de bord étranges
+        self.parent = None
 
 
 
@@ -428,6 +439,8 @@ class Feuille(Noeud):
     def detacher(self):
         self.grille.forme[self.profondeur] -= 1
         self.grille = None
+        # On perd aussi la référence à son parent pour éviter les effets de bord étranges
+        self.parent = None
 
 
 # Une erreur est apparue car vous utilisé une syntaxe invalide sur une feuille.
