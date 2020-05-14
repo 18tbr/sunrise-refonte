@@ -29,7 +29,7 @@ python3 --version
 Une fois le dépôt cloné, il vous faudra vous identifier sur le dépôt. Vous n'aurez besoin de réaliser cela qu'une seule fois. La commande à utiliser est :
 
 ```bash
-cd sunrise-refonte <br>
+cd sunrise-refonte
 python ./ci.py identifiant
 ```
 

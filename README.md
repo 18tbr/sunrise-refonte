@@ -20,3 +20,9 @@ Pour plus de détails, vous pouvez visiter le [site du projet](https://sites.goo
 Ce dépôt contient le travail d'une équipe d'étudiants des Mines de Paris sur une __méthode d'identification de paramètres d'intérêt__ :monocle_face: à partir de mesures de thermique de bâtiment. Il s'agit d'un élément préalable à la réalisation de l'expérience SunRise.
 
 La méthode développée ici est inhabituelle, et l'algorithme proposé tente de fournir une solution à l'inférence de paramètres en utilisant des __méthodes de Machine Learning__ :robot:
+
+## Contribution
+Si vous __souhaitez contribuer à ce dépôt :heart:__, nous vous invitons à consulter les différents documents du [dossier docs](https://github.com/18tbr/sunrise-refonte/tree/master/docs) qui détaillent les façons de contribuer au projet, les conventions de nommage etc...
+
+## License
+Le code de ce dépôt est _sauf contre-indication_ mis à disposition sous license [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
