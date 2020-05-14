@@ -6,7 +6,7 @@
 # sunrise-refonte
 Le dépôt GitHub pour le projet SunRise de 2020.
 
-![Alt text](assets/logoProjet2020.png?raw=true "Logo du projet SunRise 2020")
+![Alt text](https://github.com/18tbr/sunrise-refonte/blob/tbr/assets/logoProjet2020.jpg?raw=true "Logo du projet SunRise 2020")
 
 ## Le projet SunRise
 Le projet SunRise est un projet lancé en 2017 par le CES (Centre d'Efficacité des Systèmes) des Mines de Paris. Ce projet a pour but de valider des modèles novateurs de thermique de bâtiment du CES à l'aide d'une expérience en chambre climatique.
