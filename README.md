@@ -7,7 +7,7 @@
 # Mines de Paris - CES
 Le dépôt GitHub pour le projet SunRise de 2020.
 
-<p style="text-align: center;">
+<p align='center' style="text-align:center;">
     <a href="https://sites.google.com/view/2019-2020-gr12/home" target="_blank">
         <img src="https://github.com/18tbr/sunrise-refonte/blob/tbr/assets/logoProjet2020.png?raw=true" height="250px">
     </a>
@@ -31,7 +31,7 @@ Si vous __souhaitez contribuer à ce dépôt :heart:__, nous vous invitons à co
 ## License
 Le code de ce dépôt est _sauf contre-indication_ mis à disposition sous license [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
-<table style="text-align: center;">
+<table align='center' style="text-align: center;">
   <tr>
     <td>
       <a href="http://www.mines-paristech.fr/" target="_blank">
