@@ -9,7 +9,7 @@ Le dépôt GitHub pour le projet SunRise de 2020.
 
 <p align="center">
     <a href="https://github.com/18tbr/sunrise-refonte/blob/tbr/assets/logoProjet2020.png?raw=true" target="_blank">
-        <img src="https://github.com/18tbr/sunrise-refonte/blob/tbr/assets/logoProjet2020.png?raw=true" height="150px">
+        <img src="https://github.com/18tbr/sunrise-refonte/blob/tbr/assets/logoProjet2020.png?raw=true" height="250px">
     </a>
 </p>
 
@@ -30,3 +30,12 @@ Si vous __souhaitez contribuer à ce dépôt :heart:__, nous vous invitons à co
 
 ## License
 Le code de ce dépôt est _sauf contre-indication_ mis à disposition sous license [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
+
+<p align="center">
+    <a href="https://github.com/18tbr/sunrise-refonte/blob/tbr/assets/logoMinesParisTech.png?raw=true" target="_blank">
+        <img src="https://github.com/18tbr/sunrise-refonte/blob/tbr/assets/logoMinesParisTech.png?raw=true" height="100px">
+    </a>
+    <a href="https://github.com/18tbr/sunrise-refonte/blob/tbr/assets/logoCES.png?raw=true" target="_blank">
+        <img src="https://github.com/18tbr/sunrise-refonte/blob/tbr/assets/logoCES.png?raw=true" height="75px">
+    </a>
+</p>
