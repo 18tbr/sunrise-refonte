@@ -50,8 +50,8 @@ titre = tk.Label(
 titre.pack()
 
 # definition de la fonction qui ouvre l'explorateur de fichiers
-def ajoutFichier1():
-    nomFichier = filedialog.askopennomFichier(
+def ajoutFichier(positiony):
+    nomFichier = filedialog.askopenfilename(
         initialdir="/",
         title="Sélectionnez le fichier de valeurs",
         filetypes=(("tableau de valeurs", "*.npy"), ("all files", "*./")),
@@ -67,58 +67,12 @@ def ajoutFichier1():
             a.plot(Temps, valeursText)
             fenetrePrincipale = FigureCanvasTkAgg(f, vueChoixParametres)
             fenetrePrincipale.get_tk_widget().place(
-                relwidth=0.7, relheight=0.3, relx=0.3, rely=0.1
+                relwidth=0.7, relheight=0.3, relx=0.3, rely=positiony
             )
 
         else:
             print("Le fichier n'est pas exploitable")
 
-
-# definition de la fonction qui ouvre l'explorateur de fichiers
-def ajoutFichier2():
-    nomFichier = filedialog.askopennomFichier(
-        initialdir="/",
-        title="Sélectionnez le fichier de valeurs",
-        filetypes=(("tableau de valeurs", "*.npy"), ("all files", "*./")),
-    )
-    with open(nomFichier, "r") as fichier:  # cf ajoutFichier1
-        donnees = np.load(nomFichier)
-        if len(donnees) == 2:
-            Temps = donnees[0]
-            valeursTint = donnees[1]
-            f = Figure(figsize=(5, 5), dpi=100)
-            a = f.add_subplot(111)
-            a.plot(Temps, valeursTint)
-            fenetrePrincipale = FigureCanvasTkAgg(f, vueChoixParametres)
-            fenetrePrincipale.get_tk_widget().place(
-                relwidth=0.7, relheight=0.3, relx=0.3, rely=0.4
-            )
-
-        else:
-            print("Le fichier n'est pas exploitable")
-
-
-def ajoutFichier3():
-    nomFichier = filedialog.askopennomFichier(
-        initialdir="/",
-        title="Sélectionnez le fichier de valeurs",
-        filetypes=(("tableau de valeurs", "*.npy"), ("all files", "*./")),
-    )
-    with open(nomFichier, "r") as fichier:  # cf ajoutFichier1
-        donnees = np.load(nomFichier)
-        if len(donnees) == 2:
-            Temps = donnees[0]
-            valeursPint = donnees[1]
-            f = Figure(figsize=(5, 5), dpi=100)
-            a = f.add_subplot(111)
-            a.plot(Temps, valeursPint)
-            fenetrePrincipale = FigureCanvasTkAgg(f, vueChoixParametres)
-            fenetrePrincipale.get_tk_widget().place(
-                relwidth=0.7, relheight=0.3, relx=0.3, rely=0.7
-            )
-
-        else:
-            print("Le fichier n'est pas exploitable")
 
 
 # creation des trois boutons de saisie des parametres
@@ -130,7 +84,7 @@ boutonText = tk.Button(
     text="Température extérieure",
     fg="white",
     bg="gray",
-    command=ajoutFichier1,
+    command=lambda: ajoutFichier(0.1),
 )
 boutonText.place(relwidth=0.2, relheight=0.1, relx=0.1, rely=0.2)
 
@@ -142,8 +96,7 @@ boutonTint = tk.Button(
     pady=5,
     fg="white",
     bg="gray",
-    command=ajoutFichier2,
-)
+    command= lambda: ajoutFichier(0.4))
 boutonTint.place(relwidth=0.2, relheight=0.1, relx=0.1, rely=0.5)
 
 
@@ -154,15 +107,16 @@ boutonPint = tk.Button(
     pady=5,
     fg="white",
     bg="gray",
-    command=ajoutFichier3,
+    command= lambda: ajoutFichier(0.7),
 )
 boutonPint.place(relwidth=0.2, relheight=0.1, relx=0.1, rely=0.8)
 
 
 # (TBR) Quelques remarques :
 # (TBR) Si vous voulez que votre interface fonctionne bien, il faut que vous utilisiez une disposition (grid layout est probablement ce que vous voulez ici), sinon l'interface va casser sur un PC avec un écran d'une taille différente ou lorsque la fenètre chage de taille.
-# (TBR) Coder trois fois la même fonction avec juste une petite différente de placement n'est pas une bonne façon de régler le problème. Une solution aussi simple serait d'utiliser une lambda fonction : vous commencer par écrire ajoutFichier qui prend rely en paramètre, puis dans chaque bouton vous remplcez ajoutFichierX par (lambda: ajoutFichier(X)) qui est une lambda fonction qui fait ce que vous voulez. Ce n'est qu'une seule solution parmi d'autres mais je pense que c'est ce que vous voulez ici.
 
+
+###
 
 ############################
 racineInterface.mainloop()
