@@ -5,7 +5,7 @@ Ce fichier est destiné à toutes personne souhaitant contribuer au projet en pa
 > :raised_hand: Pourquoi forcer une convention d'écriture au lieu de laisser les
 > contributeurs faire ce qu'ils veulent ?
 
-Le fait de ne pas respecter la convention d'écriture ne créera pas d'erreurs de code ou de syntaxe, et **python ne fera pas de commentaires sur votre style**. En revanche, le fait d'avoir une unique convention pour le projet permet de le rendre **plus rapide à relire et à comprendre**. Cela accelère sensiblement le processus de revue de code :ok_hand:.
+Le fait de ne pas respecter la convention d'écriture ne créera pas d'erreurs de code ou de syntaxe, et **python ne fera pas de commentaires sur votre style**. En revanche, le fait d'avoir une unique convention pour le projet permet de le rendre **plus rapide à relire et à comprendre**. Cela accélère sensiblement le processus de revue de code :ok_hand:
 
 ## Les règles à respecter
 
@@ -23,22 +23,22 @@ Le fait de ne pas respecter la convention d'écriture ne créera pas d'erreurs d
 
 4. ### Le language
 
-  A travers tout le projet, les __noms de variables__, __noms de fonctions__, __noms d'objets__, __noms de fichiers__, __commentaires__ et __chaînes de caractères__ doivent toujours être écrites __en français__. Cela n'est pas toujours intuitif mais permet à des contributeurs peu anglophones de participer au projet plus facilement :+1:. Toutes fonctions et variables définies dans d'autres librairies sont évidemment utilisées en anglais.
+  A travers tout le projet, les __noms de variables__, __noms de fonctions__, __noms d'objets__, __noms de fichiers__, __commentaires__ et __chaînes de caractères__ doivent toujours être écrites __en français__. Cela n'est pas toujours intuitif mais permet à des contributeurs peu anglophones de participer au projet plus facilement :+1: Toutes fonctions et variables définies dans d'autres librairies sont évidemment utilisées en anglais.
 
 5. ### Formatage de code
 
-  Le formatage du code du projet est assuré par l'outil __black__ de la PSF (Python Software Foundation). L'objectif de taille de ligne est :point_right: __80 caractères par ligne__. Il est permis d'avoir plus de 80 caractères sur une ligne pour des commentaires ou une longue chaîne de caractères dans la mesure où black n'est pas capable de corriger cela seul (à l'heure actuelle :pray:).
+  Le formatage du code du projet est assuré par l'outil `black` de la PSF (Python Software Foundation). L'objectif de taille de ligne est :point_right: __80 caractères par ligne__. Il est permis d'avoir plus de 80 caractères sur une ligne pour des commentaires ou une longue chaîne de caractères dans la mesure où black n'est pas capable de corriger cela seul (à l'heure actuelle :pray:).
 
 6. ### Conseils _(Conventions optionnelles)_
 
-  Les éléments dans cette section ne sont que des conseils pour vous aider à écrire un code plus simple, vous n'êtes pas forcés de les suivre :v:. La première chose est de penser à utiliser les __capacités de pattern matching__ de Python. Le premier cas est que si une fonction f renvoie (par exemple) trois arguments, vous pouvez récupérer les trois arguments avec :
+  Les éléments dans cette section ne sont que des conseils pour vous aider à écrire un code plus simple, vous n'êtes pas forcés de les suivre :v: La première chose est de penser à utiliser les __capacités de pattern matching__ de Python. Le premier cas est que si une fonction `f` renvoie (par exemple) trois arguments, vous pouvez récupérer les trois arguments avec :
   ```python
   a, b, c = f()
   ```
-  De la même façon, si L est une liste avec trois éléments, vous pouvez les récuperer avec la syntaxe :
+  De la même façon, si `L` est une liste avec trois éléments, vous pouvez les récuperer avec la syntaxe :
   ```python
   a, b, c = L
   ```
-  Cette syntaxe est particulièrement utile pour récupérer les fils dans arbre lorsque vous écrivez des tests.
+  Cette syntaxe est particulièrement utile pour récupérer les fils d'un arbre lorsque vous écrivez des tests.
 
-  Nhésitez pas à utiliser des __décorateurs__ dans vos objets. S'ils sont assez pénalisants en termes de performances, il n'empèche que ces décorateurs rendent le code beaucoup plus lisible et simple à modifier. Les principaux décorateurs qui pourront vous êtres utiles sont __\@property__ et __\@item.setter__.
+  Nhésitez pas à utiliser des __décorateurs__ dans vos objets. S'ils sont assez pénalisants en termes de performances, il n'empèche que ces décorateurs rendent le code beaucoup plus lisible et simple à modifier. Les principaux décorateurs qui pourront vous êtres utiles sont `\@property` et `\@item.setter`.
