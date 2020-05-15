@@ -31,7 +31,7 @@ Si vous __souhaitez contribuer à ce dépôt :heart:__, nous vous invitons à co
 ## License
 Le code de ce dépôt est _sauf contre-indication_ mis à disposition sous license [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
-<table align='center' style="text-align: center;">
+<table style="margin-left:auto;margin-right:auto">
   <tr>
     <td>
       <a href="http://www.mines-paristech.fr/" target="_blank">
