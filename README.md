@@ -3,17 +3,42 @@
 [![License](https://img.shields.io/github/license/18tbr/sunrise-refonte)](https://github.com/18tbr/sunrise-refonte/blob/master/LICENSE)
 ![Windows Support](https://img.shields.io/badge/Windows-Support-brightgreen.svg)
 ![Linux Support](https://img.shields.io/badge/Linux-Support-brightgreen.svg)
-# sunrise-refonte
+![Mines de Paris](https://img.shields.io/badge/Organisme-Mines%20de%20Paris-blue)
+# Mines de Paris - CES
 Le dépôt GitHub pour le projet SunRise de 2020.
 
+<p align="center">
+    <a href="https://sites.google.com/view/2019-2020-gr12/home" target="_blank">
+        <img src="https://github.com/18tbr/sunrise-refonte/blob/master/assets/logoProjet2020.png?raw=true" height="250px">
+    </a>
+</p>
+
 ## Le projet SunRise
-Le projet SunRise est un projet lancé en 2017 par le CES (Centre d'Efficacité des Systèmes) des Mines de Paris. Ce projet a pour but de valider des modèles novateurs de thermique de bâtiment du CES à l'aide d'une expérience en chambre climatique.
+Le projet SunRise est un projet lancé en 2017 par le [CES](http://www.ces.mines-paristech.fr/Accueil/) (Centre d'Efficacité des Systèmes) des [Mines de Paris](http://www.mines-paristech.fr/). Ce projet a pour but de __valider des modèles novateurs de thermique :fire: de bâtiment :house:__ du CES à l'aide d'une expérience en chambre climatique.
 
-Une particularité de l'expérience du CES (qui donne son nom au projet) est qu'elle utilise un soleil artificiel mobile de grande dimension (~2m de diamètre) afin de bénéficier de davantage de précision lors de l'évaluation de l'influence des rayons lumineux.
+Une particularité de l'expérience du CES (qui donne son nom au projet) est qu'elle utilise un __soleil :sunny: artificiel mobile de grande dimension__ (~2m de diamètre) afin de bénéficier de davantage de flexibilité lors de l'évaluation de l'influence des rayons lumineux :flashlight:
 
-Pour plus de détails, vous pouvez visiter le [site du projet](https://sites.google.com/view/2019-2020-gr12/home).
+Pour plus de détails, vous pouvez visiter le [site du projet](https://sites.google.com/view/2019-2020-gr12/home) :point_left:
 
 ## Ce dépôt
-Ce dépôt contient le travail d'une équipe d'étudiants des Mines de Paris sur une identification de paramètres d'intérêt à partir de mesures de thermique de bâtiment. Il s'agit d'un élément préalable à la réalisation de l'expérience SunRise.
+Ce dépôt contient le travail d'une équipe d'étudiants des Mines de Paris sur une __méthode d'identification de paramètres d'intérêt__ :monocle_face: à partir de mesures de thermique de bâtiment. Il s'agit d'un élément préalable à la réalisation de l'expérience SunRise.
 
-La méthode développée ici est inhabituelle, et l'algorithme proposé tente de fournir une solution à l'inférence de paramètres en utilisant des méthodes de Machine Learning.
+La méthode développée ici est inhabituelle, et l'algorithme proposé tente de fournir une solution à l'inférence de paramètres en utilisant des __méthodes de Machine Learning__ :robot:
+
+## Contribution
+Si vous __souhaitez contribuer à ce dépôt :heart:__, nous vous invitons à consulter les différents documents du [dossier docs](https://github.com/18tbr/sunrise-refonte/tree/master/docs) qui détaillent les façons de contribuer au projet, les conventions de nommage, etc...
+
+## License
+Le code de ce dépôt est _sauf contre-indication_ mis à disposition sous license [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
+
+<p align="center">
+  <a href="http://www.mines-paristech.fr/" target="_blank">
+      <img src="https://github.com/18tbr/sunrise-refonte/blob/master/assets/logoMinesParisTech.png?raw=true" height="100px">
+  </a>
+</p>
+
+<p align="center">
+  <a href="http://www.ces.mines-paristech.fr/Accueil/" target="_blank">
+      <img src="https://github.com/18tbr/sunrise-refonte/blob/master/assets/logoCES.png?raw=true" height="75px">
+  </a>
+</p>

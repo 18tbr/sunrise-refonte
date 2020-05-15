@@ -3,7 +3,7 @@ from random import randint
 from scipy.integrate import (
     solve_ivp,
 )  # Version moderne et orienté objet de odeint
-import GrilleUtils
+import utils.GrilleUtils
 from Noeuds import Feuille, Parallele, Serie, Noeud
 
 
@@ -12,14 +12,12 @@ class Grille(object):
 
     def __init__(self, cint, T, Text, Tint, Pint):
         super(Grille, self).__init__()
-        # La racine de l'arbre
-        self.racine = Feuille(self)
         # Capacité thermique associée à l'air intérieur
         self.cint = cint
         # Nombre de condensateurs dans le réseau, il doit au moins y avoir cint
         self.nbCondensateurs = 1
         # La forme du réseau, résumée au nombre de noeuds à chaque profondeur
-        self.forme = [1]
+        self.forme = [0]  # Sera passé à 1 par le constructeur de Feuille
         # La liste des temps (pour Text, Tint, Pint)
         self.T = T
         # La série des températures extérieures
@@ -28,6 +26,9 @@ class Grille(object):
         self.Tint = Tint
         # La série des puissances intérieures
         self.Pint = Pint
+        # IMPORTANT : ne pas ajouter une feuille avant d'avoir défini la forme de la grille
+        # La racine de l'arbre
+        self.racine = Feuille(self)
 
     def creationSimulation(self):
         nbTemperatures = self.nbCondensateurs
@@ -141,11 +142,11 @@ class Grille(object):
         return None
 
 
-T = [i for i in range(1, 101)]
-Text = [20] * 100
-Tint = np.log(T)
-Pint = [100 * i for i in range(100)]
-
-a = Grille(1500, T, Text, Tint, Pint)
-a.racine = Feuille(a)
-# a.racine.ajoutFils(Feuille(a),forme='parallele')
+# T = [i for i in range(1, 101)]
+# Text = [20] * 100
+# Tint = np.log(T)
+# Pint = [100 * i for i in range(100)]
+#
+# a = Grille(1500, T, Text, Tint, Pint)
+# a.racine = Feuille(a)
+# # a.racine.ajoutFils(Feuille(a),forme='parallele')

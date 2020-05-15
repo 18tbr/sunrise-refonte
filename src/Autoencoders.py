@@ -1,17 +1,3 @@
-"""
-Script python pour l'implémentation de l'autoencoder.
-Etapes à coder :
-
-1. Transformation d'un arbre en image et vice-versa
-    - création d'une classe Translate par exemple qui
-    permet de passer de l'un à l'autre et réciproquement
-    - pour cela, suivre l'algorithme de la vidéo de vincent
-2. Ecriture du réseau de l'autoencoder qui prend une image en entrée
-    - cf tutos envoyés par vincent
-    - dans un premier temps, autoencoder simple
-    - dans un second temps, VAE
-
-"""
 import os
 import numpy as np
 import matplotlib.pyplot as plt

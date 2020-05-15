@@ -11,6 +11,10 @@ Si vous faites partie du projet SunRise, pour contribuer au projet vous devrez u
 Une fois que le groupe DevOps aura préparé votre arrivé, vous devrez cloner ce dépôt en utilisant git :
 
 ```bash
+# rendez-vous dans le dossier dans lequel vous souhaitez cloner le dépôt
+cd dossier
+cd sous_dossier
+# clonez le dépôt
 git clone https://github.com/18tbr/sunrise-refonte.git
 ```
 
@@ -29,7 +33,7 @@ python3 --version
 Une fois le dépôt cloné, il vous faudra vous identifier sur le dépôt. Vous n'aurez besoin de réaliser cela qu'une seule fois. La commande à utiliser est :
 
 ```bash
-cd sunrise-refonte <br>
+cd sunrise-refonte
 python ./ci.py identifiant
 ```
 
@@ -37,18 +41,14 @@ L'outil `ci.py` vous demandera alors votre identifiant, qui est celui que le gro
 
 Une fois votre authentification réussie, vous n'aurez plus que deux commandes à retenir pour pouvoir contribuer au projet.
 
-En début de séance de travail, vous devez mettre à jour le code sur votre PC par rapport au code sur GitHub. Pour cela, utilisez :
-
+- En début de séance de travail, vous devez mettre à jour le code sur votre PC par rapport au code sur GitHub. Pour cela, utilisez :
 ```bash
 python ./ci.py maj
 ```
-
-Une fois la mise à jour effectuée, vous pourrez commencer votre travail. Modifiez vos fichiers comme vous le feriez en temps normal, puis à la fin de votre travail vous devez envoyer vos modifications sur GitHub. Pour cela, utilisez la commande :
-
+- Une fois la mise à jour effectuée, vous pourrez commencer votre travail. Modifiez vos fichiers comme vous le feriez en temps normal, puis à la fin de votre travail vous devez envoyer vos modifications sur GitHub. Pour cela, utilisez la commande :
 ```bash
 python ./ci.py fini
 ```
-
 L'outil ouvrira alors un éditeur de texte (sans doute `notepad.exe`) sur lequel vous devrez inscrire un court message descriptif résumant les modifications que vous avez réalisées. Lorsque vous fermerez votre éditeur de texte, le message sera enregistré et votre travail envoyé sur GitHub.
 
 ## Vous êtes extérieur au projet SunRise

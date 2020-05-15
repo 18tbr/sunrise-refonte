@@ -6,12 +6,16 @@ from random import randint
 class Noeud(object):
     """docstring for Noeud."""
 
-    def __init__(self, grille, parent=None):
+    def __init__(self, grille=None, parent=None):
+        # IMPORTANT : il est presque toujours meilleur d'appeller le constructeur sans argument et de laisser ajoutFils s'occuper de tout.
         super(Noeud, self).__init__()
         self.parent = parent
-        self.grille = grille
+        self.grille = None
         self.fils = []
         self._profondeur = None
+        # IMPORTANT : il faut toujours attacher en dernier, car attacher peut faire référence à d'autres attributs de la classe.
+        if grille is not None:
+            self.attacher(grille)
 
     # Méthode abstraite, on supprime le fils à l'index i
     # Le noeud est modifié en place, et on renvoie le parent obtenu (car c'est plus pratique pour la mutation des arbres).
@@ -40,9 +44,13 @@ class Noeud(object):
 
     # Une fonction pour remplacer l'instance noeud désignée par nouveau dans son parent. Il s'agit d'une méthode interne à la classe noeud qui ne doit pas être appelée de l'extérieur.
     def remplacer(self, nouveau):
-        # On trouve l'indice de l'élément actuel dans la liste fils du parent
-        indexParent = self.parent.fils.index(self)
-        self.parent.fils[indexParent] = nouveau
+        if self.parent is not None:
+            # On trouve l'indice de l'élément actuel dans la liste fils du parent
+            indexParent = self.parent.fils.index(self)
+            self.parent.fils[indexParent] = nouveau
+        elif self.grille is not None:
+            # Autre cas important à traiter : on est en train de changer la racine de l'arbre
+            self.grille.racine = nouveau
         nouveau.parent = self.parent
         # On attache le nouvel élément à la grille
         nouveau.attacher(self.grille)
@@ -72,22 +80,19 @@ class Noeud(object):
 class Parallele(Noeud):
     """docstring for Parallele."""
 
-    def __init__(self, grille, parent=None):
+    def __init__(self, grille=None, parent=None):
         super(Parallele, self).__init__(grille=grille, parent=parent)
-        if grille is not None:
-            # On attache pour prendre en compte les problèmes de profondeur etc... Inutile (et erroné) si la grille est None
-            self.attacher(self.grille)
 
     # Note : les propriétés ne sont pas héritées en python...
     @property
     def profondeur(self):
         if self.parent is None:
             return 0
-        elif self.profondeur is None:
-            self.profondeur = (
+        elif self._profondeur is None:
+            self._profondeur = (
                 self.parent.profondeur + 1
             )  # On mémoïse la profondeur pour éviter des calculs inutiles
-        return self.profondeur
+        return self._profondeur
 
     def creationSimulationRecursive(self, A, B, C, gauche, droite, curseur):
         result = 0
@@ -101,17 +106,20 @@ class Parallele(Noeud):
 
     def suppressionFils(self, index):
         # On met à jour la forme de la grille en détachant le noeud désigné.
-        self.fils.detacher()
+        self.fils[index].detacher()
         # IndexError out of range si index est trop grand pour self.fils
         del self.fils[index]
         taille = len(self.fils)
         if taille < 2:
             # S'il ne reste plus qu'un seul bloc fils il prend la place du bloc parallèle. Il faut juste faire attention à la mémoïzation de la profondeur
-            self.fils[0]._profondeur = self.profondeur
+            remplacant = self.fils[0]
+            del self.fils[0]  # Pour éviter les problèmes avec détacher
+            remplacant.detacher()  # On va le rattacher dans remplacer
+            remplacant._profondeur = self.profondeur
             # Notez que replace appelle detacher pour nous en interne
-            self.replace(self.fils[0])
+            self.remplacer(remplacant)
             # On renvoie le noeud qui prend notre place dans l'arbre
-            return self.fils[0]
+            return remplacant
         else:
             return self
 
@@ -151,49 +159,54 @@ class Parallele(Noeud):
     def sousArbre(self):
         copieNoeud = Parallele(None)
         for fils in self.fils:
-            copieNoeud.fils.append(fils.sousArbre())
+            copieFils = fils.sousArbre()
+            copieFils.parent = copieNoeud
+            copieNoeud.fils.append(copieFils)
         return copieNoeud
 
     def attacher(self, grille):
-        self.grille = grille
-        if self.profondeur + 1 == len(self.grille.forme):
-            # Comme un noeud parallèle a forcément des enfants, il faut ajouter un niveau à la forme de la grille
-            self.grille.forme.append(0)
-        print(self.grille.forme)
-        print(self.profondeur)
-        self.grille.forme[self.profondeur] += 1
-        for fils in self.fils:
-            fils.attacher(grille)
+        if grille is not self.grille:
+            self.grille = grille
+            if self.profondeur + 1 == len(self.grille.forme):
+                # Comme un noeud parallèle a forcément des enfants, il faut ajouter un niveau à la forme de la grille
+                self.grille.forme.append(0)
+            self.grille.forme[self.profondeur] += 1
+            for fils in self.fils:
+                fils.attacher(grille)
 
     def detacher(self):
         self.grille.forme[self.profondeur] -= 1
-        self.grille = None
         # On détache récursivement tous les fils pour bien prendre en compte l'influence sur la forme.
         for fils in self.fils:
             fils.detacher()
+        if self.grille.forme[self.profondeur + 1] == 0:
+            # i.e. on a détaché tous les noeuds qui étaient à la profondeur suivante (qui est par construction la dernière de l'arbre), alors il faut l'enlever de la forme de la grille pour éviter les 0 inutiles
+            self.grille.forme.pop()
+        # On ne perd la référence à la grille qu'à la toute fin de la fonction car on la référence au dessus
+        self.grille = None
+        # On perd aussi la référence à son parent pour éviter les effets de bord étranges
+        self.parent = None
 
 
 class Serie(Noeud):
     """docstring for Serie."""
 
-    def __init__(self, grille, parent=None):
-        super(Serie, self).__init__(grille=grille, parent=parent)
+    def __init__(self, grille=None, parent=None):
         self.capacites = []
         self.valeurCapaciteDefaut = 1
-        if grille is not None:
-            # On attache pour prendre en compte les problèmes de profondeur etc... Inutile (et erroné) si la grille est None
-            self.attacher(self.grille)
+        # Attacher fait référence à capacites et le constructeur parent fait référence à attacher, donc il faut forcément appeller le constructeur parent en dernier.
+        super(Serie, self).__init__(grille=grille, parent=parent)
 
     # Note : les propriétés ne sont pas héritées en python...
     @property
     def profondeur(self):
         if self.parent == None:
             return 0
-        elif _profondeur is None:
-            _profondeur = (
-                parent.profondeur + 1
+        elif self._profondeur is None:
+            self._profondeur = (
+                self.parent.profondeur + 1
             )  # On mémoïse la profondeur pour éviter des calculs inutiles
-        return _profondeur
+        return self._profondeur
 
     def creationSimulationRecursive(self, A, B, C, gauche, droite, curseur):
         listeTemperatures = [gauche]
@@ -239,12 +252,15 @@ class Serie(Noeud):
         self.grille.nbCondensateurs -= 1
 
         if taille < 2:
-            # S'il ne reste plus qu'un seul bloc fils il prend la place du bloc série. Il faut juste faire attention à la mémoïzation de la profondeur.
-            self.fils[0]._profondeur = self.profondeur
+            # S'il ne reste plus qu'un seul bloc fils il prend la place du bloc serie. Il faut juste faire attention à la mémoïzation de la profondeur
+            remplacant = self.fils[0]
+            del self.fils[0]  # Pour éviter les problèmes avec détacher
+            remplacant.detacher()  # On va le rattacher dans remplacer
+            remplacant._profondeur = self.profondeur
             # Notez que replace appelle detacher pour nous en interne
-            self.replace(self.fils[0])
+            self.remplacer(remplacant)
             # On renvoie le noeud qui prend notre place dans l'arbre
-            return self.fils[0]
+            return remplacant
         else:
             return self
 
@@ -259,12 +275,13 @@ class Serie(Noeud):
             )
         taille = len(self.fils)
         # Il faut aussi aojuter une valeur de capacité intermédiaire dans le cas d'une liaison série. Attention à ne pas ajouter de capacité pour le premier fils !
-        if taille > 0 and (index == taille or index == taille + 1):
-            self.capacites.append(self.valeurCapaciteDefaut)
-        else:
-            self.capacites.insert(index, self.valeurCapaciteDefaut)
-        # On met à jour le nombre de condensateurs dans la grille.
-        self.grille.nbCondensateurs += 1
+        if taille != 0:
+            if index == taille or index == taille + 1:
+                self.capacites.append(self.valeurCapaciteDefaut)
+            else:
+                self.capacites.insert(index, self.valeurCapaciteDefaut)
+            # On met à jour le nombre de condensateurs dans la grille.
+            self.grille.nbCondensateurs += 1
 
         # On insère le noeud dans la liste des fils.
         if index == len(self.fils):
@@ -312,36 +329,45 @@ class Serie(Noeud):
     def sousArbre(self):
         copieNoeud = Serie(None)
         for fils in self.fils:
-            copieNoeud.fils.append(fils.sousArbre())
-        for i in len(self.capacites):
-            copieNoeud.capacites[i] = self.capacites[i]
+            copieFils = fils.sousArbre()
+            copieFils.parent = copieNoeud
+            copieNoeud.fils.append(copieFils)
+        for valeurCapacite in self.capacites:
+            copieNoeud.capacites.append(valeurCapacite)
         return copieNoeud
 
     def attacher(self, grille):
-        self.grille = grille
-        if self.profondeur + 1 == len(self.grille.forme):
-            # Comme un noeud série a forcément des enfants, il faut ajouter un niveau à la forme de la grille
-            self.grille.forme.append(0)
-        self.grille.forme[self.profondeur] += 1
-        # Il faut aussi prendre en compte toutes les capacités que l'on ajoute à l'arbre.
-        self.grille.nbCondensateurs += len(self.capacites)
-        for fils in self.fils:
-            fils.attacher(grille)
+        if grille is not self.grille:
+            self.grille = grille
+            if self.profondeur + 1 == len(self.grille.forme):
+                # Comme un noeud série a forcément des enfants, il faut ajouter un niveau à la forme de la grille
+                self.grille.forme.append(0)
+            self.grille.forme[self.profondeur] += 1
+            # Il faut aussi prendre en compte toutes les capacités que l'on ajoute à l'arbre.
+            self.grille.nbCondensateurs += len(self.capacites)
+            for fils in self.fils:
+                fils.attacher(grille)
 
     def detacher(self):
         self.grille.forme[self.profondeur] -= 1
-        # On décompte toutes les capacités de ce noeud.
-        self.grille.nbCondensateurs -= len(self.capacites)
-        self.grille = None
         # On détache récursivement tous les fils pour bien prendre en compte l'influence sur la forme.
         for fils in self.fils:
             fils.detacher()
+        # On décompte toutes les capacités de ce noeud.
+        self.grille.nbCondensateurs -= len(self.capacites)
+        if self.grille.forme[self.profondeur + 1] == 0:
+            # i.e. on a détaché tous les noeuds qui étaient à la profondeur suivante (qui est par construction la dernière de l'arbre), alors il faut l'enlever de la forme de la grille pour éviter les 0 inutiles
+            self.grille.forme.pop()
+        # On ne perd la référence à la grille qu'à la toute fin de la fonction car on la référence au dessus
+        self.grille = None
+        # On perd aussi la référence à son parent pour éviter les effets de bord étranges
+        self.parent = None
 
 
 class Feuille(Noeud):
     """docstring for Feuille."""
 
-    def __init__(self, grille, parent=None):
+    def __init__(self, grille=None, parent=None):
         super(Feuille, self).__init__(grille=grille, parent=parent)
         self.H = 0
         # Qu'est ce que val ? Vous voulez sans doute parler de H = 1/R non ?
@@ -377,17 +403,17 @@ class Feuille(Noeud):
                 "Pour créer un nouveau noeud à partir d'une feuille il ne faut pas préciser d'index, qui n'est utilisable que pour un noeud Parallele ou Serie."
             )
         elif forme == "parallele":
-            # Si besoin, le constructeur de Parallele changera la taille de forme pour nous
-            nouveauNoeud = Parallele(self.grille, self.parent)
+            nouveauNoeud = Parallele()
+            # On remplace cette feuille par son nouveau parent dans la généalogie de l'arbre. Si besoin, la taille de la grille sera changée automatiquement.
+            self.remplacer(nouveauNoeud)
             nouveauNoeud.ajoutFils(self, index=0)
             nouveauNoeud.ajoutFils(nouveauFils, index=1)
         elif forme == "serie":
-            # Si besoin, le constructeur de Serie changera la taille de forme pour nous
-            nouveauNoeud = Serie(self.grille, self.parent)
+            nouveauNoeud = Serie()
+            # On remplace cette feuille par son nouveau parent dans la généalogie de l'arbre. Si besoin, la taille de la grille sera changée automatiquement.
+            self.remplacer(nouveauNoeud)
             nouveauNoeud.ajoutFils(self, index=0)
             nouveauNoeud.ajoutFils(nouveauFils, index=1)
-        # On remplace cette feuille par son nouveau parent dans la généalogie de l'arbre
-        self.remplacer(nouveauNoeud)
         # Le nouveau noeud prend notre place dans la généalogie, c'est donc lui que l'on renvoie.
         return nouveauNoeud
 
@@ -404,13 +430,16 @@ class Feuille(Noeud):
         return copieNoeud
 
     def attacher(self, grille):
-        self.grille = grille
-        self.grille.forme[self.profondeur] += 1
-        # Une feuille n'a pas de fils donc on n'a pas besoin d'appel récursif içi.
+        if grille is not self.grille:
+            self.grille = grille
+            self.grille.forme[self.profondeur] += 1
+            # Une feuille n'a pas de fils donc on n'a pas besoin d'appel récursif içi.
 
     def detacher(self):
         self.grille.forme[self.profondeur] -= 1
         self.grille = None
+        # On perd aussi la référence à son parent pour éviter les effets de bord étranges
+        self.parent = None
 
 
 # Une erreur est apparue car vous utilisé une syntaxe invalide sur une feuille.
