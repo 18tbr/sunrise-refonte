@@ -3,7 +3,7 @@ from random import randint
 from scipy.integrate import (
     solve_ivp,
 )  # Version moderne et orienté objet de odeint
-import GrilleUtils
+import utils.GrilleUtils
 from Noeuds import Feuille, Parallele, Serie, Noeud
 
 
