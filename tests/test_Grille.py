@@ -5,22 +5,10 @@ import sys
 
 # Il faut ajouter src au PYTHONPATH avant tout, sinon les modules n'auront pas accès à leurs propres imports.
 sys.path.append(f"{os.getcwd()}/src")
-# Import from package
+
 from Grille import Grille, Noeud, Feuille, Parallele, Serie
 
-
-# ===== Fonctions de test pour Grille ===== #
-
-
-# def test_creer_maille():
-#     """Test if [...]"""
-#     grille = Grille(None)
-#     assert Grille.creer_maille() is None
-
-
-# ===== Fonctions de test pour Noeud  ===== #
-
-# Test des fonctions sur les noeuds en parallèle
+# Test des fonctions sur les noeuds en parallèles
 
 
 def test_creation_arbre_minimal():
@@ -364,4 +352,42 @@ def test_sousArbre():
     assert f6s.grille is None
     assert f6s.parent is sCs
     assert f6s.H == f6.H
+    return g
+
+def test_substituer_serie():
+    g = test_complexe_creation()
+    sA = g.racine
+    f3, pB, sC = sA.fils
+    f1, f5, f4 = pB.fils
+    f2, f6 = sC.fils
+    pBr = pB.sousArbre()
+    f6r = f6.sousArbre()
+    ancienCondensateurs = sA.capacites
+    sA.substituerEnfants([f6r, pBr])
+    assert sA.fils == [f6r, pBr]
+    assert f6r.parent is sA
+    assert pBr.parent is sA
+    assert f6r.grille is g
+    assert pBr.grille is g
+    assert sA.capacites == ancienCondensateurs[:1]
+    assert g.forme == [1, 2, 3]
+    assert g.nbCondensateurs == 2
+    return g
+
+def test_substituer_parallele():
+    g = test_complexe_creation()
+    sA = g.racine
+    f3, pB, sC = sA.fils
+    f1, f5, f4 = pB.fils
+    f2, f6 = sC.fils
+    sCr = sC.sousArbre()
+    f6r = f6.sousArbre()
+    pB.substituerEnfants([f6r, sCr])
+    assert pB.fils == [f6r, sCr]
+    assert f6r.parent is pB
+    assert sCr.parent is pB
+    assert f6r.grille is g
+    assert sCr.grille is g
+    assert g.forme == [1, 3, 4, 2]
+    assert g.nbCondensateurs == 5
     return g
