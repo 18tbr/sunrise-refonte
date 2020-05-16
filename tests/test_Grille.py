@@ -354,6 +354,7 @@ def test_sousArbre():
     assert f6s.H == f6.H
     return g
 
+
 def test_substituer_serie():
     g = test_complexe_creation()
     sA = g.racine
@@ -373,6 +374,7 @@ def test_substituer_serie():
     assert g.forme == [1, 2, 3]
     assert g.nbCondensateurs == 2
     return g
+
 
 def test_substituer_parallele():
     g = test_complexe_creation()

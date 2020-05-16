@@ -1,4 +1,4 @@
-from random import randint
+from random import random
 
 # Un fichier qui contient les implémentations des différents noeuds que l'on trouve dans nos arbres.
 
@@ -193,7 +193,7 @@ class Serie(Noeud):
 
     def __init__(self, grille=None, parent=None):
         self.capacites = []
-        self.valeurCapaciteDefaut = 1
+        # self.valeurCapaciteDefaut = 1 # Obsolete, remplacé par une propriété
         # Attacher fait référence à capacites et le constructeur parent fait référence à attacher, donc il faut forcément appeller le constructeur parent en dernier.
         super(Serie, self).__init__(grille=grille, parent=parent)
 
@@ -207,6 +207,10 @@ class Serie(Noeud):
                 self.parent.profondeur + 1
             )  # On mémoïse la profondeur pour éviter des calculs inutiles
         return self._profondeur
+
+    @property
+    def valeurCapaciteDefaut(self):
+        return random()
 
     def creationSimulationRecursive(self, A, B, C, gauche, droite, curseur):
         listeTemperatures = [gauche]
@@ -370,9 +374,7 @@ class Feuille(Noeud):
 
     def __init__(self, grille=None, parent=None):
         super(Feuille, self).__init__(grille=grille, parent=parent)
-        self.H = 0.5    # Valeur test non nulle.
-        # Qu'est ce que val ? Vous voulez sans doute parler de H = 1/R non ?
-        self.val = randint(0, 42)
+        self.H = random()
 
     # Note : les propriétés ne sont pas héritées en python...
     @property

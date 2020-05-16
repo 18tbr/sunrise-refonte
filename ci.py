@@ -4,6 +4,7 @@ import sys
 import json
 from subprocess import run, DEVNULL
 
+
 class ContinuousIntegration:
     def __init__(self):
         super(ContinuousIntegration, self).__init__()
@@ -86,7 +87,6 @@ class ContinuousIntegration:
             # "Format" est déjà une fonction de la librairie standard
             self.black()
 
-
     def identifiant(self):
         """
         Identifie un contributeur en le plaçant sur sa branche.
@@ -119,7 +119,6 @@ class ContinuousIntegration:
             )
         )
 
-
     def maj(self):
         """
         Réalise un pull depuis le dépot distant.
@@ -145,7 +144,6 @@ class ContinuousIntegration:
         #     )
         # else...
         print(info("Mise à jour effectuée avec succès"))
-
 
     def verifier(self):
         """
@@ -178,7 +176,6 @@ class ContinuousIntegration:
             raise CIException(
                 "Une erreur est survenue lors des tests. Demandez de l'aide au groupe DevOps pour régler le problème."
             )
-
 
     def fini(self):
         """
@@ -219,7 +216,6 @@ class ContinuousIntegration:
             )
         print(info("Votre travail a bien été enregistré."))
 
-
     def fusion(self, branch=None):
         if branch is None:
             branch = self.wideInput("Nom de la branche à fusionner :\n>> ")
@@ -231,7 +227,9 @@ class ContinuousIntegration:
         # On passe sur la branche en question
         gitProcess = self.run(f"git checkout {branch}", shell=True)
         if gitProcess.returncode != 0:
-            raise CIException(f"Vous n'avez pas pu passer sur la branche {branch}.")
+            raise CIException(
+                f"Vous n'avez pas pu passer sur la branche {branch}."
+            )
         # else...
         # On la met à jour par rapport à origin/{branch}. Pas besoin de rebase car origin/branch est forcément en avance.
         gitProcess = self.run(f"git pull origin {branch}", shell=True)
@@ -278,7 +276,6 @@ class ContinuousIntegration:
             )
         print(info(f"Fusion de {branch} dans {target} effectuée avec succès"))
 
-
     def union(self):
         # Step 0 : Fusionner devops dans master
         self.fusion("devops")
@@ -311,7 +308,9 @@ class ContinuousIntegration:
                 )
             # else...
             print(
-                info(f"La branche {branch} est à jour par rapport à origin/master")
+                info(
+                    f"La branche {branch} est à jour par rapport à origin/master"
+                )
             )
             # Step 4 : git push
             gitProcess = self.run(f"git push origin {branch}", shell=True)
@@ -321,10 +320,11 @@ class ContinuousIntegration:
                 )
             # else...
             print(
-                info(f"La branche origin/{branch} est à jour par rapport à master")
+                info(
+                    f"La branche origin/{branch} est à jour par rapport à master"
+                )
             )
         print(info("Union des branches réalisée avec succès"))
-
 
     def black(self):
         """
@@ -423,6 +423,6 @@ if __name__ == "__main__":
     except CIException as e:
         print(err(str(e)), file=sys.stderr)
     except EOFError as e:
-        print('\n', info("Fermeture de ci.py (Ctrl-D)"), sep='')
+        print("\n", info("Fermeture de ci.py (Ctrl-D)"), sep="")
     except KeyboardInterrupt as e:
-        print('\n', err("Interruption de ci.py (Ctrl-C)"), sep='')
+        print("\n", err("Interruption de ci.py (Ctrl-C)"), sep="")

@@ -3,8 +3,10 @@ from random import randint
 from scipy.integrate import (
     solve_ivp,
 )  # Version moderne et orienté objet de odeint
-from scipy.interpolate import interp1d  # Interpolation par spline utilisée pour la résolution d'équation différentielle
-import utils.GrilleUtils
+from scipy.interpolate import (
+    interp1d,
+)  # Interpolation par spline utilisée pour la résolution d'équation différentielle
+import GrilleUtils
 from Noeuds import Feuille, Parallele, Serie, Noeud
 
 
@@ -24,7 +26,7 @@ class Grille(object):
         # La série des températures extérieures
         if T is not None and Text is not None:
             # Pour résoudre l'équation différentielle on a besoin d'une interpolation de la température au cours du temps.
-            self.Text = interp1d(T, Text, kind='linear')
+            self.Text = interp1d(T, Text, kind="linear")
         else:
             # Notez que le fait de passer None en argument doit être traduit par une fonction pour que le code fonctionne, mais ne donnera jamais des résultats de simulation correcte. On autorise ce comportement de façon temporaire pour simplifier certains tests.
             self.Text = lambda t: 0
@@ -32,7 +34,7 @@ class Grille(object):
         self.Tint = Tint
         # La série des puissances intérieures
         if T is not None and Pint is not None:
-            self.Pint = interp1d(T, Pint, kind='linear')
+            self.Pint = interp1d(T, Pint, kind="linear")
         else:
             self.Pint = lambda t: 0
         # IMPORTANT : ne pas ajouter une feuille avant d'avoir défini la forme de la grille
@@ -55,7 +57,9 @@ class Grille(object):
         if result is not None:
             A[0, 0] += result
             B[0, 0] = -result
-        B[0, 1] = 1  # La puissance intérieure s'applique sur Tint, indépendamment de si la racine est une liaison série ou non.
+        B[
+            0, 1
+        ] = 1  # La puissance intérieure s'applique sur Tint, indépendamment de si la racine est une liaison série ou non.
         # On crée récursivement le tableau en partant de la racine.
         return A, B, C
 
@@ -67,15 +71,20 @@ class Grille(object):
         T0 = np.full((nbTemperatures), self.Text(0))
 
         curseur = 0
+
         def gradient(t, T):
             # dT/dt = gradient(T,t) = C * (AT + BQ)
-            AT = A @ T
             # Notez que self.Text et self.Pint sont des interpolations par spline des Text et Pint passés en argument à l'origine.
             return C @ (A @ T + B @ np.array([[self.Text(t)], [self.Pint(t)]]))
 
         # Attention à la façon dont solve_ivp fonctionne et en particulier à t_span et t_eval (qui sont différents d'odeint si ma mémoire est bonne).
         return solve_ivp(
-            fun=gradient, t_span=(self.T[0], self.T[-1]), y0=T0, method="RK45", t_eval=self.T, vectorized=True
+            fun=gradient,
+            t_span=(self.T[0], self.T[-1]),
+            y0=T0,
+            method="RK45",
+            t_eval=self.T,
+            vectorized=True,
         )
 
     def score(self):
@@ -85,8 +94,8 @@ class Grille(object):
         calculTint = calcul.y[0]
         # On calcule l'écart entre la température calculée et la référence
         ecart = self.Tint - calculTint
-        # On renvoie l'écart quadratique cumulé
-        return np.sum(np.square(ecart), 0)
+        # On renvoie l'opposé de l'écart quadratique cumulé. Comme cela plus le score est grand, plus l'arbre est bon, ce qui est plus intuitif pour l'algorithme génétique.
+        return -np.sum(np.square(ecart), 0)
 
     # Effectue un parcours en profondeur de l'arbre sous la racine jusqu'à atteindre le index ième noeud à la profondeur donnée. Renvoie le noeud trouvé.
     def inspecter(self, profondeur, index):
@@ -128,12 +137,31 @@ class Grille(object):
         GrilleUtils.creerImage(
             racine=self.racine,
             numRacine=0,
-            NW=(0, 0),
-            SE=dimImage[0:2],
+            coinHautGauche=(0, 0),
+            coinBasDroite=dimImage[0:2],
             profondeur=0,
             image=image,
         )
-        return image
+        # (TBR) Attention, les valeurs d'une image RVB doivent aller de 0 à 255, donc il vous faut régulariser votre image.
+        valeurMaximaleRouge = np.max(image[:, :, 0])
+        print(valeurMaximaleRouge)
+        valeurMaximaleVert = np.max(image[:, :, 1])
+        print(valeurMaximaleVert)
+        valeurMaximaleBleu = np.max(image[:, :, 2])
+        print(valeurMaximaleBleu)
+        image[:, :, 0] /= valeurMaximaleRouge
+        image[:, :, 1] /= valeurMaximaleVert
+        image[:, :, 2] /= valeurMaximaleBleu
+        image *= 255
+        valeurMaximaleRouge = np.max(image[:, :, 0])
+        print(valeurMaximaleRouge)
+        valeurMaximaleVert = np.max(image[:, :, 1])
+        print(valeurMaximaleVert)
+        valeurMaximaleBleu = np.max(image[:, :, 2])
+        print(valeurMaximaleBleu)
+        return image.astype(
+            int
+        )  # On convertit le tableau de flottants en tableau d'entiers
 
     def lectureImage(self, image):
         """
@@ -149,8 +177,8 @@ class Grille(object):
         GrilleUtils.modifierRacine(
             racine=self.racine,
             numRacine=0,
-            NW=(0, 0),
-            SE=dimImage[0:2],
+            coinHautGauche=(0, 0),
+            coinBasDroite=dimImage[0:2],
             image=image,
         )
         return None
