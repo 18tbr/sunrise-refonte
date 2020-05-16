@@ -4,7 +4,7 @@ from scipy.integrate import (
     solve_ivp,
 )  # Version moderne et orienté objet de odeint
 from scipy.interpolate import interp1d  # Interpolation par spline utilisée pour la résolution d'équation différentielle
-import utils.GrilleUtils
+import GrilleUtils
 from Noeuds import Feuille, Parallele, Serie, Noeud
 
 
