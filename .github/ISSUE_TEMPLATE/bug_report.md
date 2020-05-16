@@ -1,38 +1,32 @@
 ---
-name: Bug report
-about: Create a report to help us improve
+name: Signalement de bug
+about: Signalez les bugs et aidez nous à améliorer notre code
 title: ''
 labels: ''
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+__Décrivez le bug__
+Une description claire et concise du bug.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+__Pour reproduire__
+Etapes pour reproduire le bug:
+1. Aller dans '...'
+2. Cliquer sur '....'
+3. Descendre jusqu'à '....'
+4. Voir l'erreur
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+__Comportement attendu__
+Une description claire et concise de ce que vous vous attendiez à avoir à la place du bug.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+__Capture d'écran__
+Si applicable, essayez de prendre une capture d'écran (ou autre) de votre problème.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+__Ordinateur (complétez s'il vous plait les informations suivantes):__
+ - Système d'exploitation [ex : Windows, Linux]
+ - Famille de processeur [ex : Intel, AMD, ARM]
+ - Version de Python [ex : 3.6.1]
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
-
-**Additional context**
-Add any other context about the problem here.
+__Additional context__
+Ajoutez ici toutes les informations additionnelles qui pourraient aider à traiter votre bug.
