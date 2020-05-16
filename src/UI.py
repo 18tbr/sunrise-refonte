@@ -74,7 +74,6 @@ def ajoutFichier(positiony):
             print("Le fichier n'est pas exploitable")
 
 
-
 # creation des trois boutons de saisie des parametres
 # ------> quand on ouvre un fichier, il s'affiche automatiquement à côté
 
@@ -96,7 +95,8 @@ boutonTint = tk.Button(
     pady=5,
     fg="white",
     bg="gray",
-    command= lambda: ajoutFichier(0.4))
+    command=lambda: ajoutFichier(0.4),
+)
 boutonTint.place(relwidth=0.2, relheight=0.1, relx=0.1, rely=0.5)
 
 
@@ -107,7 +107,7 @@ boutonPint = tk.Button(
     pady=5,
     fg="white",
     bg="gray",
-    command= lambda: ajoutFichier(0.7),
+    command=lambda: ajoutFichier(0.7),
 )
 boutonPint.place(relwidth=0.2, relheight=0.1, relx=0.1, rely=0.8)
 
