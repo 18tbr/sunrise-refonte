@@ -3,6 +3,7 @@ from random import randint
 from scipy.integrate import (
     solve_ivp,
 )  # Version moderne et orienté objet de odeint
+from scipy.interpolate import interp1d  # Interpolation par spline utilisée pour la résolution d'équation différentielle
 import utils.GrilleUtils
 from Noeuds import Feuille, Parallele, Serie, Noeud
 
@@ -21,11 +22,19 @@ class Grille(object):
         # La liste des temps (pour Text, Tint, Pint)
         self.T = T
         # La série des températures extérieures
-        self.Text = Text
+        if T is not None and Text is not None:
+            # Pour résoudre l'équation différentielle on a besoin d'une interpolation de la température au cours du temps.
+            self.Text = interp1d(T, Text, kind='linear')
+        else:
+            # Notez que le fait de passer None en argument doit être traduit par une fonction pour que le code fonctionne, mais ne donnera jamais des résultats de simulation correcte. On autorise ce comportement de façon temporaire pour simplifier certains tests.
+            self.Text = lambda t: 0
         # La série des températures intérieures
         self.Tint = Tint
         # La série des puissances intérieures
-        self.Pint = Pint
+        if T is not None and Pint is not None:
+            self.Pint = interp1d(T, Pint, kind='linear')
+        else:
+            self.Pint = lambda t: 0
         # IMPORTANT : ne pas ajouter une feuille avant d'avoir défini la forme de la grille
         # La racine de l'arbre
         self.racine = Feuille(self)
@@ -44,8 +53,9 @@ class Grille(object):
         )
         # Il reste à rentrer dans le tableau la valeur du lien entre Tint et Text
         if result is not None:
-            B[0, 0] = result
-            B[0, 1] = 1  # La puissance intérieure s'applique sur Tint
+            A[0, 0] += result
+            B[0, 0] = -result
+        B[0, 1] = 1  # La puissance intérieure s'applique sur Tint, indépendamment de si la racine est une liaison série ou non.
         # On crée récursivement le tableau en partant de la racine.
         return A, B, C
 
@@ -53,22 +63,26 @@ class Grille(object):
         A, B, C = self.creationSimulation()
         # Résoudre C^-1 dT/dt = AT + BQ
         nbTemperatures = self.nbCondensateurs
-        # Hypothèse : Au début de la simulation, tout est à l'équilibre à la température extérieure Text[0]
-        T0 = np.full((nbTemperatures), self.Text[0])
+        # Hypothèse : Au début de la simulation, tout est à l'équilibre à la température extérieure Text(t=0)
+        T0 = np.full((nbTemperatures), self.Text(0))
 
-        def gradient(T, t):
+        curseur = 0
+        def gradient(t, T):
             # dT/dt = gradient(T,t) = C * (AT + BQ)
-            return C @ (A @ T + B @ np.array([[self.Text[t]], [self.Pint[t]]]))
+            AT = A @ T
+            # Notez que self.Text et self.Pint sont des interpolations par spline des Text et Pint passés en argument à l'origine.
+            return C @ (A @ T + B @ np.array([[self.Text(t)], [self.Pint(t)]]))
 
+        # Attention à la façon dont solve_ivp fonctionne et en particulier à t_span et t_eval (qui sont différents d'odeint si ma mémoire est bonne).
         return solve_ivp(
-            gradient, self.T, T0, method="RK45", t_eval=self.T, vectorized=True
+            fun=gradient, t_span=(self.T[0], self.T[-1]), y0=T0, method="RK45", t_eval=self.T, vectorized=True
         )
 
     def score(self):
         # On calcule toutes le températures internes au fil du temps
         calcul = self.simulation()
-        # On récupère la température intérieure (la première dans la matrice)
-        calculTint = np.array([vecteur[0] for vecteur in calcul.y])
+        # On récupère la température intérieure (la première dans la matrice). Attention, la façon dont solve_ivp restitue les températures n'est pas la même que pour odeint.
+        calculTint = calcul.y[0]
         # On calcule l'écart entre la température calculée et la référence
         ecart = self.Tint - calculTint
         # On renvoie l'écart quadratique cumulé

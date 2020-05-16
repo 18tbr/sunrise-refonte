@@ -98,7 +98,7 @@ class Parallele(Noeud):
         result = 0
         for fils in self.fils:
             resultBranche, curseur = fils.creationSimulationRecursive(
-                tableau, gauche, droite, curseur
+                A, B, C, gauche, droite, curseur
             )
             if resultBranche is not None:
                 result += resultBranche
@@ -223,15 +223,16 @@ class Serie(Noeud):
             )
             if result is not None:
                 # Text (i.e. gauche is None) a un traitement différent
-                if gauche is None:
-                    B[droiteBranche, 0] = result
+                if gaucheBranche is None:
+                    A[droiteBranche, droiteBranche] += result
+                    B[droiteBranche, 0] = -result
                 else:
                     # Termes hors diagonale
                     A[gaucheBranche, droiteBranche] = -result
                     A[droiteBranche, gaucheBranche] = -result
                     # Termes diagonaux
-                    A[droiteBranche, droiteBranche] = result
-                    A[gaucheBranche, gaucheBranche] = result
+                    A[droiteBranche, droiteBranche] += result
+                    A[gaucheBranche, gaucheBranche] += result
             if i + 1 < len(self.fils):
                 C[droiteBranche, droiteBranche] /= self.capacites[i]
         return None, curseur
@@ -369,7 +370,7 @@ class Feuille(Noeud):
 
     def __init__(self, grille=None, parent=None):
         super(Feuille, self).__init__(grille=grille, parent=parent)
-        self.H = 0
+        self.H = 0.5    # Valeur test non nulle.
         # Qu'est ce que val ? Vous voulez sans doute parler de H = 1/R non ?
         self.val = randint(0, 42)
 
