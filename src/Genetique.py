@@ -1,6 +1,7 @@
 from operator import itemgetter  # Permettre de trier des listes
 import random  # Permettre d'introduire du hasard
 
+from Grille import Grille, Noeud, Feuille, Parallele, Serie
 
 class Genetique(object):
     """docstring for Genetique."""
@@ -155,7 +156,7 @@ class Genetique(object):
                             noeudChoisi.fils.remove(indice_fils_enlevé)
                         else:
                             taille = len(noeudChoisi.fils)
-                            indice_ajout = random.randint(0, taile)
+                            indice_ajout = random.randint(0, taille)
                             noeudChoisi.ajoutFils(
                                 Feuille(individu), indice_ajout
                             )
@@ -198,13 +199,13 @@ class Genetique(object):
 
             # La population de la génération suivante
             return (
-                (parents + children),
+                (parents + enfants),
                 [scoreIndividus[k][1] for k in range(0, len(scoreIndividus))],
                 [vecteur[0] for vecteur in scoreIndividus[0][0].Simulation().y],
             )
 
     def AlgoGenetique(self):
-        Generation = Generation(
+        Generation = Genetique(
             cint=self.cint,
             T=self.T,
             Text=self.Text,
