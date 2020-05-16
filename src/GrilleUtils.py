@@ -1,6 +1,7 @@
 import numpy as np
 from Noeuds import Noeud, Feuille, Parallele, Serie
-import matplotlib.pyplot as plt # Utile pour le debuggage uniquement, à supprimer après.
+import matplotlib.pyplot as plt  # Utile pour le debuggage uniquement, à supprimer après.
+
 
 def remplirZone(image, canal, coinHautGauche, coinBasDroite, val):
     """
@@ -288,21 +289,22 @@ def modifierRacine(image, racine, numRacine, coinHautGauche, coinBasDroite):
                 image=image,
             )
 
+
 # Une fonction de Debug, à supprimer plus tard
 def afficherImageDebug(image):
-    R, V, B = image[:,:,0], image[:,:,1], image[:,:,2]
+    R, V, B = image[:, :, 0], image[:, :, 1], image[:, :, 2]
     plt.imshow(image)
     plt.colorbar()
     plt.show()
 
-    plt.imshow(R, cmap='jet')
+    plt.imshow(R, cmap="jet")
     plt.colorbar()
     plt.show()
 
-    plt.imshow(V, cmap='jet')
+    plt.imshow(V, cmap="jet")
     plt.colorbar()
     plt.show()
 
-    plt.imshow(B, cmap='jet')
+    plt.imshow(B, cmap="jet")
     plt.colorbar()
     plt.show()
