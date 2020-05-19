@@ -3,6 +3,7 @@ import random  # Permettre d'introduire du hasard
 
 from Grille import Grille, Noeud, Feuille, Parallele, Serie
 
+
 class Genetique(object):
     """docstring for Genetique."""
 

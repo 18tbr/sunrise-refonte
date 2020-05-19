@@ -6,6 +6,9 @@ from scipy.integrate import (
 from scipy.interpolate import (
     interp1d,
 )  # Interpolation par spline utilisée pour la résolution d'équation différentielle
+from scipy.special import (
+    expit,
+)  # Une implémentation de la fonction sigmoïde utilisée pour la propagation d'erreur.
 import GrilleUtils
 from Noeuds import Feuille, Parallele, Serie, Noeud
 
@@ -51,7 +54,7 @@ class Grille(object):
         C = np.eye(nbTemperatures)
         C[0, 0] /= self.cint  # La capacité sur Tint n'est pas dans l'arbre
         result, curseur = self.racine.creationSimulationRecursive(
-            A, B, C, None, 0, 0
+            A, B, C, gauche=None, droite=0, curseur=0
         )
         # Il reste à rentrer dans le tableau la valeur du lien entre Tint et Text
         if result is not None:
@@ -63,14 +66,42 @@ class Grille(object):
         # On crée récursivement le tableau en partant de la racine.
         return A, B, C
 
+    def creationMarquage(self):
+        # Le début de la fonction de marquage est très proche de celui de creationSimulation
+        nbTemperatures = self.nbCondensateurs
+        A = np.zeros((nbTemperatures, nbTemperatures))
+        B = np.zeros((nbTemperatures, 2))
+        C = np.eye(nbTemperatures)
+        C[0, 0] /= self.cint  # La capacité sur Tint n'est pas dans l'arbre
+        # D est la matrice des délais dans le réseau RC
+        D = np.zeros((nbTemperatures + 1, nbTemperatures + 1))
+        delai, result, curseur = self.racine.creationMarquageRecursif(
+            A,
+            B,
+            C,
+            D,
+            gauche=None,
+            droite=0,
+            curseur=0,
+            conteneur=None,
+            capaciteDroite=self.cint,
+        )
+
+        # Il reste à rentrer dans le tableau la valeur du lien entre Tint et Text comme dans creationSimulation
+        if result is not None:
+            A[0, 0] += result
+            B[0, 0] = -result
+        B[0, 1] = 1
+
+        # Note importante : il est inutile de finir le travail sur D avec le lien entre Tint et Text car nous n'aurons pas à propager l'erreur sur Text. On renvoie enfin ce que l'on a obtenue. Notez que l'on ne renvoie pas la première ligne et la première colonne de D, qui concernent Text et ne seront qu'encombrantes ensuite.
+        return A, B, C, D[1:, 1:], delai
+
     def simulation(self):
         A, B, C = self.creationSimulation()
         # Résoudre C^-1 dT/dt = AT + BQ
         nbTemperatures = self.nbCondensateurs
         # Hypothèse : Au début de la simulation, tout est à l'équilibre à la température extérieure Text(t=0)
         T0 = np.full((nbTemperatures), self.Text(0))
-
-        curseur = 0
 
         def gradient(t, T):
             # dT/dt = gradient(T,t) = C * (AT + BQ)
@@ -87,6 +118,63 @@ class Grille(object):
             vectorized=True,
         )
 
+    def propagationErreur(self):
+        # Le début de l'implémentation de cette fonction est très proche de simulation.
+        A, B, C, D, delay = self.creationMarquage()
+        # Le détail du calcul de simulation effectué ici est documenté dans la méthode simulation
+        nbTemperatures = self.nbCondensateurs
+        T0 = np.full((nbTemperatures), self.Text(0))
+
+        def gradient(t, T):
+            # dT/dt = gradient(T,t) = C * (AT + BQ)
+            # Notez que self.Text et self.Pint sont des interpolations par spline des Text et Pint passés en argument à l'origine.
+            return C @ (A @ T + B @ np.array([[self.Text(t)], [self.Pint(t)]]))
+
+        # Attention à la façon dont solve_ivp fonctionne et en particulier à t_span et t_eval (qui sont différents d'odeint si ma mémoire est bonne).
+        calcul = solve_ivp(
+            fun=gradient,
+            t_span=(self.T[0], self.T[-1]),
+            y0=T0,
+            method="RK45",
+            t_eval=self.T,
+            vectorized=True,
+        )
+
+        calculTint = calcul.y[0]
+        ecart = self.Tint - calculTint
+        # On calcule maintenant l'intégrale de l'erreur pour Tint sur toute la simulation
+        epsilon = np.sum(ecart, 0)
+
+        # np.vectorize sert à créer une fonction vectorisée simplement
+        sig = np.vectorize(lambda t: int(255 * expit(t / 100)), otypes=[int])
+        # Fonction de pénalité de proximité temporelle
+        pi = lambda t: 1 / (1 + t / delay)
+
+        # On alloue le vecteur des erreurs propagées
+        E = np.array([0 for i in range(nbTemperatures)])
+
+        # On initialise en notant l'erreur associée à Tint que l'on va essayer de propager.
+        E[0] = epsilon
+        # La file qui nous permet de traiter de façon cohérente toutes le températures
+        fileTraitementTempérature = [0]
+        for i in range(nbTemperatures):
+            if E.all():
+                # Si jamais on a alloué une erreur à toutes les températures internes, on peut
+                break
+            else:
+                # On traite la première température possible
+                t = fileTraitementTempérature[i]
+                for j in range(nbTemperatures):
+                    if E[j] == 0:  # Sinon la température a déjà été atteinte
+                        delayIJ = D[i, j]
+                        if delayIJ != 0:
+                            # Formule de rétropropagation heuristique de l'erreur
+                            E[j] = E[i] * pi(delayIJ)
+                            fileTraitementTempérature.append(j)
+
+        # On renvoie le vecteur de valeurs (entre 0 et 255) pour la pénalité de chaque couleur sur l'image
+        return sig(E)
+
     def score(self):
         # On calcule toutes le températures internes au fil du temps
         calcul = self.simulation()
@@ -96,6 +184,13 @@ class Grille(object):
         ecart = self.Tint - calculTint
         # On renvoie l'opposé de l'écart quadratique cumulé. Comme cela plus le score est grand, plus l'arbre est bon, ce qui est plus intuitif pour l'algorithme génétique.
         return -np.sum(np.square(ecart), 0)
+
+    # Utilise la rétropropagation d'erreurs heuristiques dans l'arbre pour marquer les trois couleurs sur chaque noeud.
+    def marquage(self):
+        E = self.propagationErreur()
+        self.racine.injectionMarquage(
+            E, gauche=None, droite=0, curseur=0, capaciteDroite=self.cint
+        )
 
     # Effectue un parcours en profondeur de l'arbre sous la racine jusqu'à atteindre le index ième noeud à la profondeur donnée. Renvoie le noeud trouvé.
     def inspecter(self, profondeur, index):

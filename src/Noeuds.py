@@ -24,6 +24,26 @@ class Noeud(object):
             "La suppression d'un fils n'a pas été réimplémenté."
         )
 
+    # Méthode qui permet de calculer les matrices qui seront utilisées pour le calcul du score de l'arbre proposé.
+    def creationSimulationRecursive(self, A, B, C, gauche, droite, curseur):
+        raise NotImplementedError(
+            "La création récursive des matrices de simulation n'a pas été implémentée."
+        )
+
+    # La Méthode abstraite qui parcourt l'arbre en profondeur qui calcule les matrices de simulation et la matrice des délais dans notre arbre afin de pouvoir faire le calcul de rétro propagation d'erreur..
+    def creationMarquageRecursif(
+        self, A, B, C, D, gauche, droite, curseur, conteneur, capaciteDroite
+    ):
+        raise NotImplementedError(
+            "La création récursive du marquage de l'image n'a pas été réimplémentée."
+        )
+
+    # Méthode qui permet de parcourir l'arbre en notant sur chaque noeud les valeurs qui seront utilisées pour l'intensité des trois couleurs de l'image.
+    def injectionMarquage(self, E, gauche, droite, curseur, capaciteDroite):
+        raise NotImplementedError(
+            "L'injection récursive du marquage n'a pas été réimplémentée."
+        )
+
     # Méthode abstraite, contraire de suppressionFils
     # Le noeud est modifié en place, et on renvoie le parent obtenu (car c'est plus pratique pour l'initialisation des arbres)
     def ajoutFils(self, nouveauFils, index, forme=None):
@@ -103,6 +123,50 @@ class Parallele(Noeud):
             if resultBranche is not None:
                 result += resultBranche
         return result, curseur
+
+    def creationMarquageRecursif(
+        self, A, B, C, D, gauche, droite, curseur, conteneur, capaciteDroite
+    ):
+        if conteneur is None:
+            # Si on n'est pas sous une liaison parallèle, on crée un conteneur.
+            nouveauConteneur = []
+        else:
+            # On réutilise le conteneur du parent
+            nouveauConteneur = conteneur
+
+        result = 0
+        for fils in self.fils:
+            (
+                delaiBranche,
+                resultBranche,
+                curseur,
+            ) = fils.creationMarquageRecursif(
+                A,
+                B,
+                C,
+                D,
+                gauche,
+                droite,
+                curseur,
+                nouveauConteneur,
+                capaciteDroite,
+            )
+            if resultBranche is not None:
+                result += resultBranche
+
+        if conteneur is None:
+            # i.e. on n'est pas sous une liaison en paralèle, alors on résout le délai des fils.
+            delai = sum(nouveauConteneur) / len(nouveauConteneur)
+            return delai, result, curseur
+        else:
+            return None, result, curseur
+
+    def injectionMarquage(self, E, gauche, droite, curseur, capaciteDroite):
+        for fils in self.fils:
+            curseur = fils.injectionMarquage(
+                E, gauche, droite, curseur, capaciteDroite
+            )
+        return curseur
 
     def suppressionFils(self, index):
         # On met à jour la forme de la grille en détachant le noeud désigné.
@@ -241,6 +305,92 @@ class Serie(Noeud):
                 C[droiteBranche, droiteBranche] /= self.capacites[i]
         return None, curseur
 
+    def creationMarquageRecursif(
+        self, A, B, C, D, gauche, droite, curseur, conteneur, capaciteDroite
+    ):
+
+        # Un fonction pour convertir l'indice utile pour A, B et C en un indice utile pour D, important car Text ne se trouve pas dans A alors qu'il est dans D
+        def conversionIndice(indice):
+            if indice is None:
+                return 0
+            else:
+                return indice + 1
+
+        listeTemperatures = [gauche]
+        listeCapacite = []
+        for i in range(len(self.capacites)):
+            curseur += 1
+            listeTemperatures.append(curseur)
+            listeCapacite.append(self.capacites[i])
+        listeTemperatures.append(droite)
+        listeCapacite.append(capaciteDroite)
+
+        delai = 0
+        for i in range(len(self.fils)):
+            gaucheBranche = listeTemperatures[i]
+            droiteBranche = listeTemperatures[i + 1]
+            capaciteBranche = listeCapacite[i]
+            delaiBranche, resultBranche, curseur = self.fils[
+                i
+            ].creationMarquageRecursif(
+                A,
+                B,
+                C,
+                D,
+                gaucheBranche,
+                droiteBranche,
+                curseur,
+                None,
+                capaciteBranche,
+            )
+            if resultBranche is not None:
+                # Text (i.e. gauche is None) a un traitement différent
+                if gaucheBranche is None:
+                    A[droiteBranche, droiteBranche] += resultBranche
+                    B[droiteBranche, 0] = -resultBranche
+                else:
+                    # Termes hors diagonale
+                    A[gaucheBranche, droiteBranche] = -resultBranche
+                    A[droiteBranche, gaucheBranche] = -resultBranche
+                    # Termes diagonaux
+                    A[droiteBranche, droiteBranche] += resultBranche
+                    A[gaucheBranche, gaucheBranche] += resultBranche
+
+            if delaiBranche is not None:
+                di = conversionIndice(gaucheBranche)
+                dj = conversionIndice(droiteBranche)
+                D[di, dj] = delaiBranche
+                D[dj, di] = delaiBranche
+                delai += delaiBranche
+
+            if i + 1 < len(self.fils):
+                C[droiteBranche, droiteBranche] /= self.capacites[i]
+
+        if conteneur is not None:
+            conteneur.append(delai)
+
+        return delai, None, curseur
+
+    def injectionMarquage(self, E, gauche, droite, curseur, capaciteDroite):
+        listeTemperatures = [gauche]
+        listeCapacite = []
+        for i in range(len(self.capacites)):
+            curseur += 1
+            listeTemperatures.append(curseur)
+            listeCapacite.append(self.capacites[i])
+        listeTemperatures.append(droite)
+        listeCapacite.append(capaciteDroite)
+
+        for i in range(len(self.fils)):
+            gaucheBranche = listeTemperatures[i]
+            droiteBranche = listeTemperatures[i + 1]
+            capaciteBranche = listeCapacite[i]
+            curseur = self.fils[i].injectionMarquage(
+                E, gaucheBranche, droiteBranche, curseur, capaciteDroite
+            )
+
+        return curseur
+
     def suppressionFils(self, index):
         # On met à jour la forme de la grille en détachant le noeud désigné.
         self.fils[index].detacher()
@@ -375,6 +525,8 @@ class Feuille(Noeud):
     def __init__(self, grille=None, parent=None):
         super(Feuille, self).__init__(grille=grille, parent=parent)
         self.H = random()
+        # Utilisé pour colorer l'image, calculé à l'échelle de la grille par la fonction marquage.
+        self.marquage = (None, None, None)
 
     # Note : les propriétés ne sont pas héritées en python...
     @property
@@ -387,6 +539,20 @@ class Feuille(Noeud):
 
     def creationSimulationRecursive(self, A, B, C, gauche, droite, curseur):
         return self.H, curseur
+
+    def creationMarquageRecursif(
+        self, A, B, C, D, gauche, droite, curseur, conteneur, capaciteDroite
+    ):
+        delai = capaciteDroite / self.H
+        if conteneur is not None:
+            conteneur.append(delai)
+        return delai, self.H, curseur
+
+    def injectionMarquage(self, E, gauche, droite, curseur, capaciteDroite):
+        indiceErreur = conversionIndice(droite)
+        erreur = E[droite]
+        self.marquage = (self.H, capaciteDroite, erreur)
+        return curseur
 
     # Utilité ?
     # @property
