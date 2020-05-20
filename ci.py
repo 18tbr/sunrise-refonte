@@ -217,12 +217,8 @@ class ContinuousIntegration:
         print(info("Votre travail a bien été enregistré."))
 
     def fusion(self, branch=None):
-        if branch is None:
-            branch = self.wideInput("Nom de la branche à fusionner :\n>> ")
-            target = "devops"
-        else:
-            # branch = "devops"
-            target = "master"
+        branch = self.wideInput("Nom de la branche à fusionner :\n>> ")
+        target = "devops"
 
         # On passe sur la branche en question
         gitProcess = self.run(f"git checkout {branch}", shell=True)
@@ -278,7 +274,27 @@ class ContinuousIntegration:
 
     def union(self):
         # Step 0 : Fusionner devops dans master
-        self.fusion("devops")
+        # On met master à jour par rapport à ce qui se trouve sur GitHub
+        gitProcess = self.run(f"git pull origin master", shell=True)
+        if gitProcess.returncode != 0:
+            raise CIException(
+                "La branche master qui se trouve sur GitHub n'a pas pu être récupérée."
+            )
+        # else...
+        # On fusionne devops dans master
+        gitProcess = self.run(f"git pull origin devops", shell=True)
+        if gitProcess.returncode != 0:
+            raise CIException(
+                "Un conflit est apparu lors de la fusion de devops sur master."
+            )
+        # else...
+        # On pousse la nouvelle version de master sur GitHub
+        gitProcess = self.run(f"git push origin master", shell=True)
+        if gitProcess.returncode != 0:
+            raise CIException(
+                "La branche master distante n'a pas pu être mise à jour avec le branche master locale."
+            )
+        # else...
         print()  # Une ligne vide pour le style
         # Step 1 : changer l'id pour prendre celui d'un membre du groupe
         listePrenoms = self.membres
