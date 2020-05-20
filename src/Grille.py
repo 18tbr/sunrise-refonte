@@ -182,14 +182,17 @@ class Grille(object):
                 "L'erreur obtenue sur cette arbre est trop grande pour permettre un traitement numérique correct."
             )
         # La file qui nous permet de traiter de façon cohérente toutes le températures
-        fileTraitementTempérature = [0]
+        fileTraitementTemperature = [0]
         for i in range(nbTemperatures):
             if min(E) > 0:
                 # Si jamais on a alloué une erreur à toutes les températures internes, on peut arrêter notre boucle en avance.
                 break
             else:
+                if i == len(fileTraitementTemperature):
+                    # Si la file est vide par construction on a fini notre travail
+                    break
                 # On traite la première température possible
-                t = fileTraitementTempérature[i]
+                t = fileTraitementTemperature[i]
                 for j in range(nbTemperatures):
                     if E[j] == 0:  # Sinon la température a déjà été atteinte
                         delayIJ = D[i, j]
@@ -201,7 +204,7 @@ class Grille(object):
                                 raise SimulationException(
                                     "L'erreur obtenue sur cette arbre est trop grande pour permettre un traitement numérique correct."
                                 )
-                            fileTraitementTempérature.append(j)
+                            fileTraitementTemperature.append(j)
 
         return E
 
