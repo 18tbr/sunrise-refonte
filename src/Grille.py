@@ -9,12 +9,23 @@ from scipy.interpolate import (
 from scipy.special import (
     expit,
 )  # Une implémentation de la fonction sigmoïde utilisée pour la propagation d'erreur.
-import GrilleUtils
-from Noeuds import Feuille, Parallele, Serie, Noeud
+
+# Notez que pour importer ces classes dans les autres modules, il est préférable de faire "from Grille import Noeud, ..." plutôt que d'importer directement les fichiers concernés.
+from Noeud import Noeud
+from Feuille import Feuille, FeuilleException, NonFeuilleException, NonMarqueException
+from Serie import Serie
+from Parallele import Parallele
+
+# import GrilleUtils
 
 
 class Grille(object):
     """docstring for Grille."""
+
+    # Quelque valeurs statiques d'ordre de grandeur de capacité thermique, résistance thermique et (pour avoir une symétrie dans le code) une valeur de référence pour l'erreur propagée qui doit rester à 100. Le fait de partager ces valeurs pour tous les obets de la classe Grille permet de comparer plusieurs images obtenues simplement et de simplifier le travail de l'autoencodeur.
+    referenceResistance = 1
+    referenceCapacite = 1
+    referenceErreur = 100
 
     def __init__(self, cint, T, Text, Tint, Pint):
         super(Grille, self).__init__()
@@ -145,8 +156,6 @@ class Grille(object):
         # On calcule maintenant l'intégrale de l'erreur pour Tint sur toute la simulation
         epsilon = np.sum(ecart, 0)
 
-        # np.vectorize sert à créer une fonction vectorisée simplement
-        sig = np.vectorize(lambda t: int(255 * expit(t / 100)), otypes=[int])
         # Fonction de pénalité de proximité temporelle
         pi = lambda t: 1 / (1 + t / delay)
 
@@ -172,8 +181,7 @@ class Grille(object):
                             E[j] = E[i] * pi(delayIJ)
                             fileTraitementTempérature.append(j)
 
-        # On renvoie le vecteur de valeurs (entre 0 et 255) pour la pénalité de chaque couleur sur l'image
-        return sig(E)
+        return E
 
     def score(self):
         # On calcule toutes le températures internes au fil du temps
@@ -219,44 +227,39 @@ class Grille(object):
 
         return file[index]
 
-    def ecritureImage(self, dimImage=(100, 100, 3)):
+    def ecritureImage(self, largeur=100, hauteur=100):
         """
         Convertit un arbre en image.
 
         Parameters
         ----------
-        dimImage : (int, int, int)
-            Taille de l'image souhaitée (hauteur, largeur, profondeur).
+        largeur est la largeur horizontale de l'image en nombre de cases
+        hauteur est la hauteur verticale de l'image en nombre de cases
         """
-        image = np.zeros(dimImage)
-        GrilleUtils.creerImage(
-            racine=self.racine,
-            numRacine=0,
-            coinHautGauche=(0, 0),
-            coinBasDroite=dimImage[0:2],
-            profondeur=0,
-            image=image,
-        )
-        # (TBR) Attention, les valeurs d'une image RVB doivent aller de 0 à 255, donc il vous faut régulariser votre image.
-        valeurMaximaleRouge = np.max(image[:, :, 0])
-        print(valeurMaximaleRouge)
-        valeurMaximaleVert = np.max(image[:, :, 1])
-        print(valeurMaximaleVert)
-        valeurMaximaleBleu = np.max(image[:, :, 2])
-        print(valeurMaximaleBleu)
-        image[:, :, 0] /= valeurMaximaleRouge
-        image[:, :, 1] /= valeurMaximaleVert
-        image[:, :, 2] /= valeurMaximaleBleu
-        image *= 255
-        valeurMaximaleRouge = np.max(image[:, :, 0])
-        print(valeurMaximaleRouge)
-        valeurMaximaleVert = np.max(image[:, :, 1])
-        print(valeurMaximaleVert)
-        valeurMaximaleBleu = np.max(image[:, :, 2])
-        print(valeurMaximaleBleu)
+        # Avant de pouvoir écrire l'image il faut marquer les feuilles de l'arbre
+        self.marquage()
+
+        # Le 3 correspond aux trois couleurs de notre image
+        image = np.zeros((hauteur, largeur, 3))
+
+        # On colore récursivement l'image depuis la racine
+        self.racine.dessiner(image, coinHautGauche=(0,0), coinBasDroite=(hauteur, largeur))
+
+        # (TBR) Attention, les valeurs d'une image RVB doivent aller de 0 à 255, donc il vous faut régulariser l'image sur le rouge et le vert (le bleu est déjà normalisé). Pour régulariser le rouge et le vert, on utilise encore la fonction sigmoide en prenant comme paramètres de référence ceux de la classe Grille.
+
+        # np.vectorize sert à créer une fonction vectorisée simplement
+        sigRouge = np.vectorize(lambda t: int(255 * expit(t / Grille.referenceResistance)), otypes=[int])
+        sigVert = np.vectorize(lambda t: int(255 * expit(t / Grille.referenceCapacite)), otypes=[int])
+        sigBleu = np.vectorize(lambda t: int(255 * expit(t / Grille.referenceErreur)), otypes=[int])
+
+        image[:, :, 0] = sigRouge(image[:, :, 0])
+        image[:, :, 1] = sigVert(image[:, :, 1])
+        image[:, :, 2] = sigBleu(image[:, :, 2])
+
+        # On convertit le tableau de flottants en tableau d'entiers (nécessaire pour une raison qui m'échappe).
         return image.astype(
             int
-        )  # On convertit le tableau de flottants en tableau d'entiers
+        )
 
     def lectureImage(self, image):
         """
