@@ -93,8 +93,13 @@ class Noeud(object):
             "Le détachement d'un noeud d'une grille n'a pas été implémenté."
         )
 
+    # Méthode à appeller récursivement pour obtenir la représentation sous forme d'image de l'arbre.
     def dessiner(self, image, coinHautGauche, coinBasDroite):
         raise NotImplementedError("La coloration de l'image à partir d'un noeud n'a pas été réimplémenté.")
+
+    # Méthode à utiliser récursivement pour mettre à jour un arbre à partir d'une image. Renvoie la valeur de la capacité à droite du noeud donné.
+    def lire(self, image, coinHautGauche, coinBasDroite):
+        raise NotImplementedError("La mise à jour d'un arbre à partir d'une image n'a pas été réimplémenté.")
 
 
 # Une fonction pour convertir l'indice utile pour A, B et C en un indice utile pour D, important car Text ne se trouve pas dans A alors qu'il est dans D. Utile dans Serie.creationMarquageRecursif et Feuille.injectionMarquage
