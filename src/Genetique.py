@@ -7,12 +7,30 @@ from Grille import Grille, Noeud, Feuille, Parallele, Serie
 class Genetique(object):
     """docstring for Genetique."""
 
-    def __init__(self, cint, T, Text, Tint, Pint, objectif, numeroGeneration):
+    # Valeurs globales de la classe génétique
+    PROFONDEUR_MAX_ARBRE = 100
+    LARGEUR_MAX_ARBRE = 50
+    CHANCE_DE_MUTATION = 0.1
+    POURCENTAGE_CONSERVATION_FORT = 0.2  # Pourcentage de la population qui va être gardé la génération suivante, les meilleurs individus
+    CHANCE_SURVIE_FAIBLE = 0.05  # Pourcentage de la population qui va être gardé la génération suivante, bien que ne figurant pas parmis les meilleurs individus
+
+    # def __init__(self, Cint, T, Text, Tint, Pint, taillePopulation=100, generationMax=1000, objectif = 10, numeroGeneration):
+    def __init__(
+        self,
+        Cint,
+        T,
+        Text,
+        Tint,
+        Pint,
+        taillePopulation=100,
+        generationMax=1000,
+        objectif=10,
+    ):
         super(Genetique, self).__init__()
         # Liste des individus de la population - chaque individu de type Grille
         self.population = []
         # Capacité thermique associée à l'air intérieur
-        self.cint = cint
+        self.Cint = Cint
         # La liste des temps (pour Text, Tint, Pint)
         self.T = T
         # La série des températures extérieures
@@ -21,70 +39,85 @@ class Genetique(object):
         self.Tint = Tint
         # La série des puissances intérieures
         self.Pint = Pint
-        #L'objectif est le score de la fitness function à partir duquel on cesse de faire évoluer la population
+        # L'objectif est le score de la fitness function à partir duquel on cesse de faire évoluer la population
         self.objectif = objectif
 
-        self.numeroGeneration = numeroGeneration
+        self.taillePopulation = taillePopulation
+        self.generationMax = generationMax
 
-        self.PROFONDEUR_MAX_ARBRE = 100
-        self.LARGEUR_MAX_ARBRE = 50
-
-        self.CHANCE_DE_MUTATION = 0.1
-        self.POURCENTAGE_CONSERVATION_FORT = 0.2  # Pourcentage de la population qui va être gardé la génération suivante, les meilleurs individus
-        self.CHANCE_SURVIE_FAIBLE = 0.05  # Pourcentage de la population qui va être gardé la génération suivante, bien que ne figurant pas parmis les meilleurs individus
-        self.TAILLE_POPULATION = 100
-        self.GENERATION_MAX = 100000
-
-
-    # NB: valeur sûrement à changer, arbitraire
+        # On initialise directement la population à partir du constructeur
+        self.populationAleatoire()
+        # self.numeroGeneration = numeroGeneration
 
     def scorePopulation(self):
         # Calcule le score de la population, renvoie une liste de doublet (individu, score) triée par score sur toute la population. Les individus avec le meilleur score sont au début.
         scoreIndividus = []
+        compteur = 0
+        proportionsAffiche = (
+            []
+        )  # Pour ne pas afficher le même message en boucle
         for individu in self.population:
+            proportion = 100 * compteur // self.taillePopulation
+            if proportion % 5 == 0 and not proportion in proportionsAffiche:
+                proportionsAffiche.append(proportion)
+                print(f"{proportion}% de la population évalué.")
+            compteur += 1
             scoreIndividus.append((individu, individu.score()))
-        return sorted(scoreIndividus, key=itemgetter(1), reverse=True)
+        # On trie la liste selon l'argument d'indice 1, d'où le itemgetter
+        return sorted(scoreIndividus, key=itemgetter(1))
 
     def populationAleatoire(self):
-        for i in range(self.TAILLE_POPULATION):
+        # On remet la population à zéro au cas où.
+        self.population = []
+        proportionsAffiche = []
+        # Méthode qui sert à générer un population aléatoire facilement
+        for i in range(self.taillePopulation):
+            # Dans la mesure où la génération de population est assez longue, on se permet d'afficher des messages pour maintenir l'utilisateur éveillé.
+            proportion = 100 * i // self.taillePopulation
+            if proportion % 5 == 0 and proportion not in proportionsAffiche:
+                proportionsAffiche.append(proportion)
+                print(f"{proportion}% de la population créé.")
             self.population.append(self.individuAleatoire())
 
     def individuAleatoire(self):
-        profondeur = random.randint(1, self.PROFONDEUR_MAX_ARBRE)
-        individu = Grille(self.cint, self.T, self.Text, self.Tint, self.Pint)
-        # Série (1) / Parallèle (2) / Rien (3)
+        # On initialise l'individu que l'on va créer
+        individu = Grille(self.Cint, self.T, self.Text, self.Tint, self.Pint)
 
+        # On tire aléatoirement la profondeur qu'aura notre individu
+        profondeur = random.randint(1, Genetique.PROFONDEUR_MAX_ARBRE)
 
-        for i in range(profondeur-1):
-            print(i)
-            # On détermine au hasard la largeur de la généation suivante
-            largeur = random.randint(1, self.LARGEUR_MAX_ARBRE)
+        # On crée itérativement tous les niveaux de notre arbre
+        for i in range(profondeur - 1):
+            # Pour éviter des configurations absurdes on force l'arbre à avoir une forme un peu conique (c'est à dire à n'avoir pas trop de fils sur les premières générations).
+            largeurAutorisee = min(Genetique.LARGEUR_MAX_ARBRE, 3 * profondeur)
+            # On détermine au hasard la largeur de la profondeur i+1
+            largeur = random.randint(1, largeurAutorisee)
 
-            # On répartit les différents éléments sur les différents indices
-            listeIndices = [k for k in range(0, largeur)]
+            # On choisit (avec remise) les noeuds de la génération i qui accueilleront des enfants à la génération i+1
             indicesChoisis = random.choices(
-                listeIndices, k=max(0,(individu.forme[i] - 1))
+                population=range(individu.forme[i]), k=largeur
             )
-            indicesChoisis.append(0)
-            indicesChoisis.append(individu.forme[i] - 1)
-            indicesChoisis.sort()
 
-            # on créé alors le nombre de fils correspondant
-            for k in range(individu.forme[i]):
+            # On ajoute les enfants aux parents désignés
+            for k in indicesChoisis:
+                # Le noeud auquel on doit ajouter un enfant. Un même indice peut être tiré plusieurs fois.
                 parent = individu.inspecter(i, k)
-                n_fils = indicesChoisis[k + 1] - indicesChoisis[k]
-                if n_fils > 0:
-                    hasard = random.randint(1, 2)
-                    if hasard == 1:
-                        parent = parent.ajoutFils(individu, forme="serie")
-
-                        for j in range(n_fils):
-                            parent.ajoutFils(individu, index=j)
+                enfant = Feuille()
+                if type(parent) is Feuille:
+                    # Hasard a 50% d'être vrai (et 50% d'être faux) et nous permet de choisir entre ajouter un fils en série et en parallèle
+                    hasard = random.random() > 0.5
+                    if hasard:
+                        parent.ajoutFils(enfant, forme="serie")
                     else:
-                        parent = parent.ajoutFils(individu, forme="parallele")
+                        parent.ajoutFils(enfant, forme="parallele")
+                else:
+                    # On tire aléatoirement l'index où l'on va insérer le nouvel enfant parmi les enfants préexistants du parent. Le +1 correspond au fait que l'on peut insérer un enfant tout à la fin de la liste des descendants du parent.
+                    indexAleatoire = random.randrange(len(parent.fils) + 1)
+                    # On insère le nouvel enfant
+                    parent.ajoutFils(enfant, index=indexAleatoire)
 
-                        for j in range(n_fils):
-                            parent.ajoutFils(individu, index=j)
+        # On renvoie la liste ainsi formée
+        return individu
 
     # Fonction qui va faire évoluer la population d'une génération à une autre
     # Sélection
@@ -102,7 +135,8 @@ class Genetique(object):
             for k in range(
                 0,
                 int(
-                    self.POURCENTAGE_CONSERVATION_FORT * self.TAILLE_POPULATION
+                    Genetique.POURCENTAGE_CONSERVATION_FORT
+                    * self.taillePopulation
                 ),
             )
         ]
@@ -112,19 +146,20 @@ class Genetique(object):
             scoreIndividus[k][0]
             for k in range(
                 int(
-                    self.POURCENTAGE_CONSERVATION_FORT * self.TAILLE_POPULATION
+                    Genetique.POURCENTAGE_CONSERVATION_FORT
+                    * self.taillePopulation
                 ),
                 len(scoreIndividus),
             )
         ]:
-            if random() < self.CHANCE_SURVIE_FAIBLE:
+            if random() < Genetique.CHANCE_SURVIE_FAIBLE:
                 parents.append(individu)
 
         # MUTATION
 
         # Il s'agirait ici de faire la mutation
         for individu in parents:
-            if random() < self.CHANCE_DE_MUTATION:
+            if random() < Genetique.CHANCE_DE_MUTATION:
                 # individu va être modifié
                 forme = individu.forme
 
@@ -151,9 +186,7 @@ class Genetique(object):
                     else:
                         if action == 0:
                             nombreFils = len(noeudChoisi.fils)
-                            indiceFilsEnlevé = random.randint(
-                                0, nombreFils - 1
-                            )
+                            indiceFilsEnlevé = random.randint(0, nombreFils - 1)
                             noeudChoisi.fils.remove(indiceFilsEnlevé)
                         else:
                             taille = len(noeudChoisi.fils)
@@ -164,15 +197,15 @@ class Genetique(object):
 
         # CROSSOVER
         nombreParents = len(parents)
-        populationManquante = self.TAILLE_POPULATION - nombreParents
+        populationManquante = self.taillePopulation - nombreParents
         enfants = []
 
         while len(enfants) < populationManquante:
             # On choisit on hasard le père et la mère
-            indexPere = random.randint(0, self.TAILLE_POPULATION - 1)
+            indexPere = random.randint(0, self.taillePopulation - 1)
             indexMere = indexPere
             while indexMere == indexPere:
-                indexMere = random.randint(0, self.TAILLE_POPULATION - 1)
+                indexMere = random.randint(0, self.taillePopulation - 1)
             pere = self.population[indexPere]
             mere = self.population[indexPere]
 
@@ -192,9 +225,7 @@ class Genetique(object):
                 petitPere = pere.inspecter(i, j)
                 petiteMere = mere.inspecter(i, j)
                 filsPotentiels = petitPere.fils + petiteMere.fils
-                nombreFils = (
-                    len(petitPere.fils) + len(petiteMere.fils)
-                ) // 2
+                nombreFils = (len(petitPere.fils) + len(petiteMere.fils)) // 2
                 filsChoisis = random.choices(filsPotentiels, k=nombreFils)
                 enfant.substituerEnfants(filsChoisis)
 
@@ -212,14 +243,12 @@ class Genetique(object):
             Text=self.Text,
             Tint=self.Tint,
             Pint=self.Pint,
-            objectif = self.objectif,
-            numeroGeneration=1
+            objectif=self.objectif,
+            numeroGeneration=1,
         )
         i = 1
         meilleurScore = 2 * self.objectif
-        while (i < self.GENERATION_MAX) & abs(
-            meilleurScore
-        ) > self.objectif:
+        while (i < self.generationMax) & abs(meilleurScore) > self.objectif:
             [
                 Generation,
                 DistributionScore,

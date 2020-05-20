@@ -1,5 +1,6 @@
 # Ce fichier contient la classe parente abstraite des neouds qui composent nos arbres. Presque tous les autres fichiers doivent importer celui ci. La classe parente contient également de la documentation sur les différentes méthodes des noeuds des arbres. Notez que la plupart des méthodes sont implémentées dans les classes filles, d'où les NotImplementedError un peu partout dans cette classe.
 
+
 class Noeud(object):
     """docstring for Noeud."""
 
@@ -95,11 +96,21 @@ class Noeud(object):
 
     # Méthode à appeller récursivement pour obtenir la représentation sous forme d'image de l'arbre.
     def dessiner(self, image, coinHautGauche, coinBasDroite):
-        raise NotImplementedError("La coloration de l'image à partir d'un noeud n'a pas été réimplémenté.")
+        raise NotImplementedError(
+            "La coloration de l'image à partir d'un noeud n'a pas été réimplémenté."
+        )
 
-    # Méthode à utiliser récursivement pour mettre à jour un arbre à partir d'une image. Renvoie la valeur de la capacité à droite du noeud donné.
-    def lire(self, image, coinHautGauche, coinBasDroite):
-        raise NotImplementedError("La mise à jour d'un arbre à partir d'une image n'a pas été réimplémenté.")
+    # Méthode à utiliser récursivement pour mettre à jour un arbre à partir d'une image. Renvoie la valeur de la capacité à droite du noeud donné. On utilise le même système de conteneur que dans creationMarquageRecursif pour éviter les problèmes de non linéarité dans les calculs avec les liaisons parallèles.
+    def lire(self, image, coinHautGauche, coinBasDroite, conteneur):
+        raise NotImplementedError(
+            "La mise à jour d'un arbre à partir d'une image n'a pas été réimplémenté."
+        )
+
+    # Méthode à utiliser récursivement pour normaliser une image en lui donnant la forme de l'arbre souhaité
+    def normaliser(self, image, coinHautGauche, coinBasDroite):
+        raise NotImplementedError(
+            "La normalisation d'une image à partir d'un arbre n'a pas été réimplémenté."
+        )
 
 
 # Une fonction pour convertir l'indice utile pour A, B et C en un indice utile pour D, important car Text ne se trouve pas dans A alors qu'il est dans D. Utile dans Serie.creationMarquageRecursif et Feuille.injectionMarquage

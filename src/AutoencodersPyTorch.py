@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 import os
 
+
 class CESVarAutoencoder(nn.Module):
     def __init__(self):
         super(CESVarAutoencoder, self).__init__()
@@ -40,6 +41,7 @@ class CESVarAutoencoder(nn.Module):
         z = self.reparametrize(mu, logvar)
         return self.decode(z), mu, logvar
 
+
 def fonction_loss(recon_x, x, mu, logvar):
     """
     recon_x: generating images
@@ -56,16 +58,17 @@ def fonction_loss(recon_x, x, mu, logvar):
     return BCE + KLD
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     nb_epochs = 100
     taille_batch = 128
     learning_rate = 1e-3
 
-    img_transform = transforms.Compose([
-        transforms.ToTensor()
-        # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-    ])
+    img_transform = transforms.Compose(
+        [
+            transforms.ToTensor()
+            # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+        ]
+    )
 
     dataset = None  # réfléchir à cela
     dataloader = DataLoader(dataset, batch_size=taille_batch, shuffle=True)
@@ -75,7 +78,6 @@ if __name__ == '__main__':
         VAEmodele.cuda()
 
     optimizer = optim.Adam(VAEmodele.parameters(), lr=1e-3)
-
 
     # === entrainement ===
     for epoch in range(nb_epochs):
@@ -99,9 +101,13 @@ if __name__ == '__main__':
             # affichage tous les 1OO batchs
             if batch_idx % 100 == 0:
                 img_nb = batch_idx * len(img)
-                print(f'Entraînement epoch {epoch} [{img_nb}/{len(dataloader.dataset)} ({100. * batch_idx / len(dataloader):.0f}%)]\tLoss: {loss.data[0] / len(img):.6f}')
+                print(
+                    f"Entraînement epoch {epoch} [{img_nb}/{len(dataloader.dataset)} ({100. * batch_idx / len(dataloader):.0f}%)]\tLoss: {loss.data[0] / len(img):.6f}"
+                )
 
         # affichage toutes les epochs
-        print(f'====> Epoch: {epoch} Loss moyenne : {loss_entrainement / len(dataloader.dataset):.4f}')
+        print(
+            f"====> Epoch: {epoch} Loss moyenne : {loss_entrainement / len(dataloader.dataset):.4f}"
+        )
 
-    torch.save(VAEmodele.state_dict(), './cesvae.pth')
+    torch.save(VAEmodele.state_dict(), "./cesvae.pth")
