@@ -11,7 +11,7 @@ class Genetique(object):
     PROFONDEUR_MAX_ARBRE = 100
     LARGEUR_MAX_ARBRE = 50
     CHANCE_DE_MUTATION = 0.1
-    POURCENTAGE_CONSERVATION_FORT = 0.2  # Pourcentage de la population qui va être gardé la génération suivante, les meilleurs individus
+    POURCENTAGE_CONSERVATION_FORT = 0.5  # Pourcentage de la population qui va être gardé la génération suivante, les meilleurs individus
     CHANCE_SURVIE_FAIBLE = 0.05  # Pourcentage de la population qui va être gardé la génération suivante, bien que ne figurant pas parmis les meilleurs individus
 
     # def __init__(self, Cint, T, Text, Tint, Pint, taillePopulation=100, generationMax=1000, objectif = 10, numeroGeneration):
@@ -119,6 +119,25 @@ class Genetique(object):
         # On renvoie la liste ainsi formée
         return individu
 
+    def selectionPopulation():
+        # Réduit la population pour n'en conserver que les meilleurs individus
+        scoreIndividus = self.scorePopulation()
+        individus = [elt[0] for elt in scoreIndividus]
+
+        # Le rang au dela duquel un individu dans la population est forcémentconservé
+        seuilSurvie = self.taillePopulation - int(
+            Genetique.POURCENTAGE_CONSERVATION_FORT * self.taillePopulation
+        )
+        # On sélectionne les meilleurs individus dans la population
+        parents = individus[seuilSurvie:]
+
+        # Afin d'éviter de tomber dans des minimas locaux trop rapidement, on va faire survivre quelques individus faibles
+        for individu in individus[:seuilSurvie]:
+            if randoms.random() < Genetique.CHANCE_SURVIE_FAIBLE:
+                parents.append(individu)
+
+        return parents
+
     # Fonction qui va faire évoluer la population d'une génération à une autre
     # Sélection
     # Mutation
@@ -127,33 +146,7 @@ class Genetique(object):
     def ameliorerPopulation(self):
 
         # SELECTION
-        scoreIndividus = self.scorePopulation()
-
-        # On a les meilleurs individus qu'on sélectionne oklm
-        parents = [
-            scoreIndividus[k][0]
-            for k in range(
-                0,
-                int(
-                    Genetique.POURCENTAGE_CONSERVATION_FORT
-                    * self.taillePopulation
-                ),
-            )
-        ]
-
-        # On va prendre quelques autres indidividus histoire d'avoir un peu de diversité
-        for individu in [
-            scoreIndividus[k][0]
-            for k in range(
-                int(
-                    Genetique.POURCENTAGE_CONSERVATION_FORT
-                    * self.taillePopulation
-                ),
-                len(scoreIndividus),
-            )
-        ]:
-            if random() < Genetique.CHANCE_SURVIE_FAIBLE:
-                parents.append(individu)
+        self.selectionPopulation()
 
         # MUTATION
 
