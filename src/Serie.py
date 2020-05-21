@@ -18,7 +18,7 @@ class Serie(Noeud):
     # Note : les propriétés ne sont pas héritées en python...
     @property
     def profondeur(self):
-        if self.parent == None:
+        if self.parent is None:
             return 0
         elif self._profondeur is None:
             self._profondeur = (
@@ -158,7 +158,7 @@ class Serie(Noeud):
             del self.fils[0]  # Pour éviter les problèmes avec détacher
             remplacant.detacher()  # On va le rattacher dans remplacer
             remplacant._profondeur = self.profondeur
-            # Notez que replace appelle detacher pour nous en interne
+            # Notez que remplacer appelle detacher pour nous en interne
             self.remplacer(remplacant)
             # On renvoie le noeud qui prend notre place dans l'arbre
             return remplacant
@@ -220,7 +220,7 @@ class Serie(Noeud):
         else:
             # On ajoute des capacités jusqu'à satisfaction
             nouvellesCapacites = [
-                self.valeurCapaciteDefaut for i in differenceCapacites
+                self.valeurCapaciteDefaut for i in range(differenceCapacites)
             ]
             self.capacites += nouvellesCapacites
         # Enfin, il faut remettre à jour le nombre de capacités de la grille.
@@ -249,11 +249,11 @@ class Serie(Noeud):
             for fils in self.fils:
                 fils.attacher(grille)
 
-    def detacher(self):
+    def detacher(self, perdreParent=True):
         self.grille.forme[self.profondeur] -= 1
         # On détache récursivement tous les fils pour bien prendre en compte l'influence sur la forme.
         for fils in self.fils:
-            fils.detacher()
+            fils.detacher(perdreParent=False)
         # On décompte toutes les capacités de ce noeud.
         self.grille.nbCondensateurs -= len(self.capacites)
         if self.grille.forme[self.profondeur + 1] == 0:
@@ -261,8 +261,11 @@ class Serie(Noeud):
             self.grille.forme.pop()
         # On ne perd la référence à la grille qu'à la toute fin de la fonction car on la référence au dessus
         self.grille = None
-        # On perd aussi la référence à son parent pour éviter les effets de bord étranges
-        self.parent = None
+        # On perd aussi la mémoïzation de la profondeur pour éviter de la réutiliser si on est à l'intérieur d'un sous arbre qui est déplacé
+        self._profondeur = None
+        if perdreParent:
+            # On perd aussi la référence à son parent pour éviter les effets de bord étranges
+            self.parent = None
 
     def dessiner(self, image, coinHautGauche, coinBasDroite):
         # On récupère les coordonnées dont on a besoin pour colorer l'image

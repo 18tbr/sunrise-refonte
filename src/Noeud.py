@@ -69,6 +69,8 @@ class Noeud(object):
         elif self.grille is not None:
             # Autre cas important à traiter : on est en train de changer la racine de l'arbre
             self.grille.racine = nouveau
+        else:
+            raise IndexError("L'indivdu selectionné n'a pas de parent et n'est pas la racine d'un arbre, il n'y a donc nulle part où le remplacer.")
         nouveau.parent = self.parent
         # On attache le nouvel élément à la grille
         nouveau.attacher(self.grille)
@@ -88,8 +90,8 @@ class Noeud(object):
             "L'attachement d'un noeud à une grille n'a pas été implémentée."
         )
 
-    # Pendant de attacher utilisé pour la suppression.
-    def detacher(self):
+    # Pendant de attacher utilisé pour la suppression. L'attribut perdre parent a été ajouté suite à des bugs, enfait si on détache tout un sous arbre on veut que seul le sommet le sommet du sous arbre perde le référence à son parent, mais l'intérieur de l'arbre doit rester cohérent. De l'extérieur, il n'y a normalement jamais besoin d'appeler detacher du tout, mais s'il le faut il est sans doute plus judicieux de ne pas passer d'argument.
+    def detacher(self, perdreParent=True):
         raise NotImplementedError(
             "Le détachement d'un noeud d'une grille n'a pas été implémenté."
         )

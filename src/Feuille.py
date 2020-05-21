@@ -109,11 +109,12 @@ class Feuille(Noeud):
             self.grille.forme[self.profondeur] += 1
             # Une feuille n'a pas de fils donc on n'a pas besoin d'appel récursif içi.
 
-    def detacher(self):
+    def detacher(self, perdreParent=True):
         self.grille.forme[self.profondeur] -= 1
         self.grille = None
-        # On perd aussi la référence à son parent pour éviter les effets de bord étranges
-        self.parent = None
+        if perdreParent:
+            # On perd aussi la référence à son parent pour éviter les effets de bord étranges
+            self.parent = None
 
     def dessiner(self, image, coinHautGauche, coinBasDroite):
         # On récupère le marquage de ce noeud.

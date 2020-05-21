@@ -143,19 +143,22 @@ class Parallele(Noeud):
             self.grille.forme[self.profondeur] += 1
             for fils in self.fils:
                 fils.attacher(grille)
-
-    def detacher(self):
+                
+    def detacher(self, perdreParent=True):
         self.grille.forme[self.profondeur] -= 1
         # On détache récursivement tous les fils pour bien prendre en compte l'influence sur la forme.
         for fils in self.fils:
-            fils.detacher()
+            fils.detacher(perdreParent=False)
         if self.grille.forme[self.profondeur + 1] == 0:
             # i.e. on a détaché tous les noeuds qui étaient à la profondeur suivante (qui est par construction la dernière de l'arbre), alors il faut l'enlever de la forme de la grille pour éviter les 0 inutiles
             self.grille.forme.pop()
         # On ne perd la référence à la grille qu'à la toute fin de la fonction car on la référence au dessus
         self.grille = None
-        # On perd aussi la référence à son parent pour éviter les effets de bord étranges
-        self.parent = None
+        # On perd aussi la mémoïzation de la profondeur pour éviter de la réutiliser si on est à l'intérieur d'un sous arbre qui est déplacé
+        self._profondeur = None
+        if perdreParent:
+            # On perd aussi la référence à son parent pour éviter les effets de bord étranges
+            self.parent = None
 
     def dessiner(self, image, coinHautGauche, coinBasDroite):
         # On récupère les coordonnées dont on a besoin pour colorer l'image

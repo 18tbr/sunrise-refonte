@@ -34,7 +34,7 @@ class Grille(object):
     referenceCapacite = Coefficients.referenceC
     referenceErreur = Coefficients.referenceE
 
-    def __init__(self, cint, T, Text, Tint, Pint):
+    def __init__(self, cint, T, Text, Tint, Pint, racine=None):
         super(Grille, self).__init__()
         # Capacité thermique associée à l'air intérieur
         self.cint = cint
@@ -59,8 +59,12 @@ class Grille(object):
         else:
             self.Pint = lambda t: 0
         # IMPORTANT : ne pas ajouter une feuille avant d'avoir défini la forme de la grille
-        # La racine de l'arbre
-        self.racine = Feuille(self)
+        # La racine de l'arbre. Cet argument optionnel a été ajouté pour simplifier la syntaxe de la fonction fusion.
+        if racine is None:
+            self.racine = Feuille(self)
+        else:
+            self.racine = racine
+            self.racine.attacher(self)
 
     def creationSimulation(self):
         nbTemperatures = self.nbCondensateurs
