@@ -48,7 +48,7 @@ class Genetique(object):
         Le nombre maximal d'itérations de l'algorithme.
     """
 
-    # Valeurs globales
+    # Variables globales
     PROFONDEUR_MAX_ARBRE = 100
     LARGEUR_MAX_ARBRE = 50
     CHANCE_DE_MUTATION = 0.1
@@ -67,6 +67,7 @@ class Genetique(object):
         generationMax=1000,
         objectif=10,
     ):
+        """Initialisation de la classe."""
         super(Genetique, self).__init__()
         self.population = []
         self.Cint = Cint

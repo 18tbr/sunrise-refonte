@@ -1,38 +1,67 @@
-# Ce fichier contient l'implémentation des feuilles de nos arbres (i.e. les résistances). La documentation de toutes les méthodes des noeuds est disponible dans la classe parente.
+"""Implémentation des feuilles de nos arbres (i.e. les résistances).
 
+La documentation de toutes les méthodes des noeuds est disponible dans la classe
+parente.
+"""
 from Noeud import Noeud, conversionIndice
-
 # Les deux imports qui suivent sont utiles pour ajoutFils
 from Serie import Serie
 from Parallele import Parallele
 import numpy as np  # Utile pour np.mean dans la lecture d'image
-import Coefficients  # Utile pour s'assurer que les valuers lues sont bien plus grandes que les valeurs minimales.
-from Coefficients import (
-    conductance,
-)  # Initialisation de coefficients H aléatoires
+import Coefficients  # Utile pour s'assurer que les valeurs lues sont bien plus
+# grandes que les valeurs minimales
+from Coefficients import conductance  # Initialisation de coefficients H
+# aléatoires
 
 
 class Feuille(Noeud):
-    """docstring for Feuille."""
+    """Classe pour les feuilles des arbres.
+
+    Attributes
+    ----------
+    H : float
+        Initialisation de coefficients `H` aléatoires.
+    _marquage : (float, float, float)
+        propriété.
+    _profondeur : int
+        propriété.
+    """
 
     def __init__(self, grille=None, parent=None):
+        """Initialisation de la classe."""
         super(Feuille, self).__init__(grille=grille, parent=parent)
         self.H = conductance()
-        # Utilisé pour colorer l'image, calculé à l'échelle de la grille par la fonction marquage.
         self._marquage = (None, None, None)
 
     # Note : les propriétés ne sont pas héritées en python...
     @property
     def profondeur(self):
+        """Profondeur de la feuille.
+
+        La profondeur de la racine est 0, celle d'un fils est égal à la
+        profondeur de son parent plus 1.
+        """
         if self.parent == None:
             return 0
         else:
-            # Pas de mémoïzation de la profondeur pour une feuille car elle sera amenée à changer
+            # Pas de mémoïzation de la profondeur pour une feuille car elle sera
+            # amenée à changer
             return self.parent.profondeur + 1
 
-    # On fait une propriété de marquage pour éviter qu'il ne soit lu plusieurs fois entre des générations par erreur.
+    #
     @property
     def marquage(self):
+        """Utilisé pour colorer l'image, calculé à l'échelle de la grille par la
+        fonction marquage.
+
+        On en fait une propriété pour éviter qu'il ne soit lu plusieurs fois
+        entre des générations par erreur.
+
+        Raises
+        ------
+        NonMarqueException
+            Lorsque la feuille désignée n'a pas encore été marquée.
+        """
         if self._marquage != (None, None, None):
             result = self._marquage
             self._marquage = (None, None, None)
@@ -59,11 +88,6 @@ class Feuille(Noeud):
         self._marquage = (self.H, capaciteDroite, erreur)
         return curseur
 
-    # Utilité ?
-    # @property
-    # def fini(self):
-    #     raise FeuilleException("Une feuille n'a pas de fils !")
-
     def suppressionFils(self, index):
         raise FeuilleException("Une feuille n'a pas de fils !")
 
@@ -78,20 +102,27 @@ class Feuille(Noeud):
             )
         elif forme == "parallele":
             nouveauNoeud = Parallele()
-            # On remplace cette feuille par son nouveau parent dans la généalogie de l'arbre. Si besoin, la taille de la grille sera changée automatiquement.
+            # On remplace cette feuille par son nouveau parent dans la
+            # généalogie de l'arbre. Si besoin, la taille de la grille sera
+            # changée automatiquement.
             self.remplacer(nouveauNoeud)
             nouveauNoeud.ajoutFils(self, index=0)
             nouveauNoeud.ajoutFils(nouveauFils, index=1)
         elif forme == "serie":
             nouveauNoeud = Serie()
-            # On remplace cette feuille par son nouveau parent dans la généalogie de l'arbre. Si besoin, la taille de la grille sera changée automatiquement.
+            # On remplace cette feuille par son nouveau parent dans la
+            # généalogie de l'arbre. Si besoin, la taille de la grille sera
+            # changée automatiquement.
             self.remplacer(nouveauNoeud)
             nouveauNoeud.ajoutFils(self, index=0)
             nouveauNoeud.ajoutFils(nouveauFils, index=1)
-        # Le nouveau noeud prend notre place dans la généalogie, c'est donc lui que l'on renvoie.
+        # Le nouveau noeud prend notre place dans la généalogie, c'est donc lui
+        # que l'on renvoie.
         return nouveauNoeud
 
-    # Pour ajouter des fils à substituerEnfants ils faut d'abord en ajouter un (même un faux, peu importe) avec ajoutFils, puis remplacer correctement les parents du fils obtenu.
+    # Pour ajouter des fils à substituerEnfants il faut d'abord en ajouter un
+    # (même un faux, peu importe) avec ajoutFils, puis remplacer correctement
+    # les parents du fils obtenu.
     def substituerEnfants(self, listeFils):
         raise FeuilleException(
             "Vous ne pouvez pas substituer de fils a une feuille, car une feuille n'a pas de fils."
@@ -107,13 +138,15 @@ class Feuille(Noeud):
         if grille is not self.grille:
             self.grille = grille
             self.grille.forme[self.profondeur] += 1
-            # Une feuille n'a pas de fils donc on n'a pas besoin d'appel récursif içi.
+            # Une feuille n'a pas de fils donc on n'a pas besoin d'appel
+            # récursif ici.
 
     def detacher(self, perdreParent=True):
         self.grille.forme[self.profondeur] -= 1
         self.grille = None
         if perdreParent:
-            # On perd aussi la référence à son parent pour éviter les effets de bord étranges
+            # On perd aussi la référence à son parent pour éviter les effets de
+            # bord étranges
             self.parent = None
 
     def dessiner(self, image, coinHautGauche, coinBasDroite):
@@ -140,7 +173,8 @@ class Feuille(Noeud):
         # On récupère les coordonnées dont on a besoin pour lire l'image
         coinHautGaucheY, coinHautGaucheX = coinHautGauche
         coinBasDroiteY, coinBasDroiteX = coinBasDroite
-        # On calcule la moyenne des valeurs de coefficients de transmissions sur la zone dédiée et on l'affecte à cette feuille.
+        # On calcule la moyenne des valeurs de coefficients de transmissions sur
+        # la zone dédiée et on l'affecte à cette feuille.
         self.H = max(
             np.mean(
                 image[
@@ -151,7 +185,10 @@ class Feuille(Noeud):
             ),
             Coefficients.minH,
         )
-        # On calcule la moyenne des valeurs de capacites sur la zone dediée et on la renvoie. Notez que l'on a rien à faire avec l'erreur proposée, elle n'est qu'un indice en entrée pour aider l'autoencodeur à faire son travail.
+        # On calcule la moyenne des valeurs de capacites sur la zone dediée et
+        # on la renvoie. Notez que l'on a rien à faire avec l'erreur proposée,
+        # elle n'est qu'un indice en entrée pour aider l'autoencodeur à faire
+        # son travail.
         capaciteDroite = max(
             np.mean(
                 image[
@@ -167,10 +204,11 @@ class Feuille(Noeud):
         return capaciteDroite
 
     def normaliser(self, image, coinHautGauche, coinBasDroite):
-        # On récupère les coordonnées dont on a besoin pour normaliser l'image
+        # On récupère les coordonnées dont on a besoin pour normaliser l'image.
         coinHautGaucheY, coinHautGaucheX = coinHautGauche
         coinBasDroiteY, coinBasDroiteX = coinBasDroite
-        # On calcule la moyenne des valeurs de coefficients de transmissions sur la zone dédiée on l'affecte à toute la zone
+        # On calcule la moyenne des valeurs de coefficients de transmissions sur
+        # la zone dédiée on l'affecte à toute la zone.
         image[
             coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 0
         ] = np.mean(
@@ -202,18 +240,19 @@ class Feuille(Noeud):
         )
 
 
-# Une erreur est apparue car vous utilisé une syntaxe invalide sur une feuille.
 class FeuilleException(Exception):
-    # Syntaxe spéciale pour une déclaration d'exceptions plus rapide
+    """Une erreur est apparue car vous utilisé une syntaxe invalide sur une
+    feuille."""
     pass
 
 
-# Une erreur est apparue car vous avez utilisé une syntaxe spécifique aux feuilles pour un noeud.
 class NonFeuilleException(Exception):
-    # Syntaxe spéciale pour une déclaration d'exceptions plus rapide
+    """Une erreur est apparue car vous avez utilisé une syntaxe spécifique aux
+    feuilles pour un noeud."""
     pass
 
 
-# Une erreur qui signale que l'on tente de récupérer le marquage (i.e. la couleur) d'un noeud qui n'a pas encore été marqué.
 class NonMarqueException(Exception):
+    """Une erreur qui signale que l'on tente de récupérer le marquage (i.e. la
+    couleur) d'un noeud qui n'a pas encore été marqué."""
     pass
