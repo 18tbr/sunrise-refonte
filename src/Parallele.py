@@ -2,6 +2,7 @@
 
 from Noeud import Noeud
 
+
 class Parallele(Noeud):
     """docstring for Parallele."""
 
@@ -142,19 +143,22 @@ class Parallele(Noeud):
             self.grille.forme[self.profondeur] += 1
             for fils in self.fils:
                 fils.attacher(grille)
-
-    def detacher(self):
+                
+    def detacher(self, perdreParent=True):
         self.grille.forme[self.profondeur] -= 1
         # On détache récursivement tous les fils pour bien prendre en compte l'influence sur la forme.
         for fils in self.fils:
-            fils.detacher()
+            fils.detacher(perdreParent=False)
         if self.grille.forme[self.profondeur + 1] == 0:
             # i.e. on a détaché tous les noeuds qui étaient à la profondeur suivante (qui est par construction la dernière de l'arbre), alors il faut l'enlever de la forme de la grille pour éviter les 0 inutiles
             self.grille.forme.pop()
         # On ne perd la référence à la grille qu'à la toute fin de la fonction car on la référence au dessus
         self.grille = None
-        # On perd aussi la référence à son parent pour éviter les effets de bord étranges
-        self.parent = None
+        # On perd aussi la mémoïzation de la profondeur pour éviter de la réutiliser si on est à l'intérieur d'un sous arbre qui est déplacé
+        self._profondeur = None
+        if perdreParent:
+            # On perd aussi la référence à son parent pour éviter les effets de bord étranges
+            self.parent = None
 
     def dessiner(self, image, coinHautGauche, coinBasDroite):
         # On récupère les coordonnées dont on a besoin pour colorer l'image
@@ -167,17 +171,30 @@ class Parallele(Noeud):
         # On appelle récursivement la méthode dessiner sur les enfants
         for i in range(nombreDivisions - 1):
             fils = self.fils[i]
-            coinHautGaucheFils = (coinHautGaucheY + i *hauteur, coinHautGaucheX)
-            coinBasDroiteFils = (coinHautGaucheY + (i+1) *hauteur, coinBasDroiteX)
+            coinHautGaucheFils = (
+                coinHautGaucheY + i * hauteur,
+                coinHautGaucheX,
+            )
+            coinBasDroiteFils = (
+                coinHautGaucheY + (i + 1) * hauteur,
+                coinBasDroiteX,
+            )
             fils.dessiner(image, coinHautGaucheFils, coinBasDroiteFils)
         # Pour être certain de bien colorer toute l'image et de ne pas laisser des bords noirs à cause de problèmes d'arrondis, on effectue la dernière coloration séparément.
         fils = self.fils[-1]
-        coinHautGaucheFils = (coinHautGaucheY + (nombreDivisions-1)*hauteur, coinHautGaucheX)
+        coinHautGaucheFils = (
+            coinHautGaucheY + (nombreDivisions - 1) * hauteur,
+            coinHautGaucheX,
+        )
         coinBasDroiteFils = (coinBasDroiteY, coinBasDroiteX)
         fils.dessiner(image, coinHautGaucheFils, coinBasDroiteFils)
 
     # La façon dont on calcule les moyennes pour les capacités dans cette implémentation est sans doute une source d'erreur.
-    def lire(self, image, coinHautGauche, coinBasDroite):
+    def lire(self, image, coinHautGauche, coinBasDroite, conteneur):
+        if conteneur is None:
+            nouveauConteneur = []
+        else:
+            nouveauConteneur = conteneur
         # On récupère les coordonnées dont on a besoin pour colorer l'image
         coinHautGaucheY, coinHautGaucheX = coinHautGauche
         coinBasDroiteY, coinBasDroiteX = coinBasDroite
@@ -186,20 +203,35 @@ class Parallele(Noeud):
         # On calcule la hauteur de chaque subdivision verticale que l'on s'apprète à créer. On rappelle que le 0,0 est tout en haut à gauche de l'image.
         hauteur = int((coinBasDroiteY - coinHautGaucheY) / nombreDivisions)
         # Dans la mesure où l'autoencodeur ne renvoie pas la même valeur de capacité à droite pour tous les fils, nous devons en faire la moyenne ici pour conserver la cohérence par rapport à l'image et ne pas en favoriser une partie.
-        propositionsCapacite = [0 for i in range(nombreDivisions)]
         # On appelle récursivement la méthode dessiner sur les enfants
-        for i in range(nombreDivisions-1):
+        for i in range(nombreDivisions - 1):
             fils = self.fils[i]
-            coinHautGaucheFils = (coinHautGaucheY + i*hauteur, coinHautGaucheX)
-            coinBasDroiteFils = (coinHautGaucheY + (i+1)*hauteur, coinBasDroiteX)
-            propositionsCapacite[i] = fils.lire(image, coinHautGaucheFils, coinBasDroiteFils)
+            coinHautGaucheFils = (
+                coinHautGaucheY + i * hauteur,
+                coinHautGaucheX,
+            )
+            coinBasDroiteFils = (
+                coinHautGaucheY + (i + 1) * hauteur,
+                coinBasDroiteX,
+            )
+            fils.lire(
+                image, coinHautGaucheFils, coinBasDroiteFils, nouveauConteneur
+            )
         # Pour être certain de bien colorer toute l'image et de ne pas laisser des bords noirs à cause de problèmes d'arrondis, on effectue la dernière coloration séparément.
         fils = self.fils[-1]
-        coinHautGaucheFils = (coinHautGaucheY + (nombreDivisions-1)*hauteur, coinHautGaucheX)
+        coinHautGaucheFils = (
+            coinHautGaucheY + (nombreDivisions - 1) * hauteur,
+            coinHautGaucheX,
+        )
         coinBasDroiteFils = (coinBasDroiteY, coinBasDroiteX)
-        propositionsCapacite[-1] = fils.lire(image, coinHautGaucheFils, coinBasDroiteFils)
+        fils.lire(image, coinHautGaucheFils, coinBasDroiteFils, conteneur)
         # On renvoie la moyenne des valeurs des capacites proposées.
-        return sum(propositionsCapacite)/len(propositionsCapacite)
+        if conteneur is None:
+            # On a créé notre propre conteneur, il faut à présent le résoudre.
+            return sum(nouveauConteneur) / len(nouveauConteneur)
+        else:
+            # L'un des parents résoudra le conteneur le moment venu
+            return None
 
     def normaliser(self, image, coinHautGauche, coinBasDroite):
         # On récupère les coordonnées dont on a besoin pour colorer l'image
@@ -211,13 +243,22 @@ class Parallele(Noeud):
         hauteur = int((coinBasDroiteY - coinHautGaucheY) / nombreDivisions)
         # Dans la mesure où l'autoencodeur ne renvoie pas la même valeur de capacité à droite pour tous les fils, nous devons en faire la moyenne ici pour conserver la cohérence par rapport à l'image et ne pas en favoriser une partie.
         # On appelle récursivement la méthode dessiner sur les enfants
-        for i in range(nombreDivisions-1):
+        for i in range(nombreDivisions - 1):
             fils = self.fils[i]
-            coinHautGaucheFils = (coinHautGaucheY + i*hauteur, coinHautGaucheX)
-            coinBasDroiteFils = (coinHautGaucheY + (i+1)*hauteur, coinBasDroiteX)
+            coinHautGaucheFils = (
+                coinHautGaucheY + i * hauteur,
+                coinHautGaucheX,
+            )
+            coinBasDroiteFils = (
+                coinHautGaucheY + (i + 1) * hauteur,
+                coinBasDroiteX,
+            )
             fils.normaliser(image, coinHautGaucheFils, coinBasDroiteFils)
         # Pour être certain de bien colorer toute l'image et de ne pas laisser des bords noirs à cause de problèmes d'arrondis, on effectue la dernière coloration séparément.
         fils = self.fils[-1]
-        coinHautGaucheFils = (coinHautGaucheY + (nombreDivisions-1)*hauteur, coinHautGaucheX)
+        coinHautGaucheFils = (
+            coinHautGaucheY + (nombreDivisions - 1) * hauteur,
+            coinHautGaucheX,
+        )
         coinBasDroiteFils = (coinBasDroiteY, coinBasDroiteX)
         fils.normaliser(image, coinHautGaucheFils, coinBasDroiteFils)

@@ -1,7 +1,10 @@
 # Ce fichier contient l'implémentation des noeuds de type série. La documentation de toutes les méthodes des noeuds est disponible dans la classe parente.
 
 from Noeud import Noeud, conversionIndice
-from Coefficients import capacite   # Détermination aléatoire des valeurs de capacités
+from Coefficients import (
+    capacite,
+)  # Détermination aléatoire des valeurs de capacités
+
 
 class Serie(Noeud):
     """docstring for Serie."""
@@ -15,7 +18,7 @@ class Serie(Noeud):
     # Note : les propriétés ne sont pas héritées en python...
     @property
     def profondeur(self):
-        if self.parent == None:
+        if self.parent is None:
             return 0
         elif self._profondeur is None:
             self._profondeur = (
@@ -155,7 +158,7 @@ class Serie(Noeud):
             del self.fils[0]  # Pour éviter les problèmes avec détacher
             remplacant.detacher()  # On va le rattacher dans remplacer
             remplacant._profondeur = self.profondeur
-            # Notez que replace appelle detacher pour nous en interne
+            # Notez que remplacer appelle detacher pour nous en interne
             self.remplacer(remplacant)
             # On renvoie le noeud qui prend notre place dans l'arbre
             return remplacant
@@ -217,7 +220,7 @@ class Serie(Noeud):
         else:
             # On ajoute des capacités jusqu'à satisfaction
             nouvellesCapacites = [
-                self.valeurCapaciteDefaut for i in differenceCapacites
+                self.valeurCapaciteDefaut for i in range(differenceCapacites)
             ]
             self.capacites += nouvellesCapacites
         # Enfin, il faut remettre à jour le nombre de capacités de la grille.
@@ -246,11 +249,11 @@ class Serie(Noeud):
             for fils in self.fils:
                 fils.attacher(grille)
 
-    def detacher(self):
+    def detacher(self, perdreParent=True):
         self.grille.forme[self.profondeur] -= 1
         # On détache récursivement tous les fils pour bien prendre en compte l'influence sur la forme.
         for fils in self.fils:
-            fils.detacher()
+            fils.detacher(perdreParent=False)
         # On décompte toutes les capacités de ce noeud.
         self.grille.nbCondensateurs -= len(self.capacites)
         if self.grille.forme[self.profondeur + 1] == 0:
@@ -258,9 +261,11 @@ class Serie(Noeud):
             self.grille.forme.pop()
         # On ne perd la référence à la grille qu'à la toute fin de la fonction car on la référence au dessus
         self.grille = None
-        # On perd aussi la référence à son parent pour éviter les effets de bord étranges
-        self.parent = None
-
+        # On perd aussi la mémoïzation de la profondeur pour éviter de la réutiliser si on est à l'intérieur d'un sous arbre qui est déplacé
+        self._profondeur = None
+        if perdreParent:
+            # On perd aussi la référence à son parent pour éviter les effets de bord étranges
+            self.parent = None
 
     def dessiner(self, image, coinHautGauche, coinBasDroite):
         # On récupère les coordonnées dont on a besoin pour colorer l'image
@@ -273,17 +278,25 @@ class Serie(Noeud):
         # On appelle récursivement la méthode dessiner sur les enfants
         for i in range(nombreDivisions - 1):
             fils = self.fils[i]
-            coinHautGaucheFils = (coinHautGaucheY, coinHautGaucheX + i*largeur)
-            coinBasDroiteFils = (coinBasDroiteY, coinHautGaucheX + (i+1)*largeur)
+            coinHautGaucheFils = (
+                coinHautGaucheY,
+                coinHautGaucheX + i * largeur,
+            )
+            coinBasDroiteFils = (
+                coinBasDroiteY,
+                coinHautGaucheX + (i + 1) * largeur,
+            )
             fils.dessiner(image, coinHautGaucheFils, coinBasDroiteFils)
         # Pour être certain de bien colorer toute l'image et de ne pas laisser des bords noirs à cause de problèmes d'arrondis, on effectue la dernière coloration séparément.
         fils = self.fils[-1]
-        coinHautGaucheFils = (coinHautGaucheY, coinHautGaucheX + (nombreDivisions-1)*largeur)
+        coinHautGaucheFils = (
+            coinHautGaucheY,
+            coinHautGaucheX + (nombreDivisions - 1) * largeur,
+        )
         coinBasDroiteFils = (coinBasDroiteY, coinBasDroiteX)
         fils.dessiner(image, coinHautGaucheFils, coinBasDroiteFils)
 
-
-    def lire(self, image, coinHautGauche, coinBasDroite):
+    def lire(self, image, coinHautGauche, coinBasDroite, conteneur):
         # On récupère les coordonnées dont on a besoin pour colorer l'image
         coinHautGaucheY, coinHautGaucheX = coinHautGauche
         coinBasDroiteY, coinBasDroiteX = coinBasDroite
@@ -294,15 +307,31 @@ class Serie(Noeud):
         # On appelle récursivement la méthode dessiner sur les enfants
         for i in range(nombreDivisions - 1):
             fils = self.fils[i]
-            coinHautGaucheFils = (coinHautGaucheY, coinHautGaucheX + i*largeur)
-            coinBasDroiteFils = (coinBasDroiteY, coinHautGaucheX + (i+1)*largeur)
+            coinHautGaucheFils = (
+                coinHautGaucheY,
+                coinHautGaucheX + i * largeur,
+            )
+            coinBasDroiteFils = (
+                coinBasDroiteY,
+                coinHautGaucheX + (i + 1) * largeur,
+            )
             # On met à jour la capacité à droite du fils avec la valeur renvoyée par lire
-            self.capacites[i] = fils.lire(image, coinHautGaucheFils, coinBasDroiteFils)
+            self.capacites[i] = fils.lire(
+                image, coinHautGaucheFils, coinBasDroiteFils, conteneur=None
+            )
         # Pour être certain de bien colorer toute l'image et de ne pas laisser des bords noirs à cause de problèmes d'arrondis, on effectue la dernière coloration séparément.
         fils = self.fils[-1]
-        coinHautGaucheFils = (coinHautGaucheY, coinHautGaucheX + (nombreDivisions-1)*largeur)
+        coinHautGaucheFils = (
+            coinHautGaucheY,
+            coinHautGaucheX + (nombreDivisions - 1) * largeur,
+        )
         coinBasDroiteFils = (coinBasDroiteY, coinBasDroiteX)
-        return fils.lire(image, coinHautGaucheFils, coinBasDroiteFils)
+        capaciteDroite = fils.lire(
+            image, coinHautGaucheFils, coinBasDroiteFils, conteneur=None
+        )
+        if conteneur is not None:
+            conteneur.append(capaciteDroite)
+        return capaciteDroite
 
     def normaliser(self, image, coinHautGauche, coinBasDroite):
         # On récupère les coordonnées dont on a besoin pour colorer l'image
@@ -315,12 +344,21 @@ class Serie(Noeud):
         # On appelle récursivement la méthode dessiner sur les enfants
         for i in range(nombreDivisions - 1):
             fils = self.fils[i]
-            coinHautGaucheFils = (coinHautGaucheY, coinHautGaucheX + i*largeur)
-            coinBasDroiteFils = (coinBasDroiteY, coinHautGaucheX + (i+1)*largeur)
+            coinHautGaucheFils = (
+                coinHautGaucheY,
+                coinHautGaucheX + i * largeur,
+            )
+            coinBasDroiteFils = (
+                coinBasDroiteY,
+                coinHautGaucheX + (i + 1) * largeur,
+            )
             # On met à jour la capacité à droite du fils avec la valeur renvoyée par lire
             fils.normaliser(image, coinHautGaucheFils, coinBasDroiteFils)
         # Pour être certain de bien colorer toute l'image et de ne pas laisser des bords noirs à cause de problèmes d'arrondis, on effectue la dernière coloration séparément.
         fils = self.fils[-1]
-        coinHautGaucheFils = (coinHautGaucheY, coinHautGaucheX + (nombreDivisions-1)*largeur)
+        coinHautGaucheFils = (
+            coinHautGaucheY,
+            coinHautGaucheX + (nombreDivisions - 1) * largeur,
+        )
         coinBasDroiteFils = (coinBasDroiteY, coinBasDroiteX)
         fils.normaliser(image, coinHautGaucheFils, coinBasDroiteFils)

@@ -12,12 +12,13 @@ sys.path.append(f"{os.getcwd()}/src")
 from Grille import Grille, Noeud, Feuille, Parallele, Serie, SimulationException
 import Coefficients
 
+
 def test_representation_image_complexe():
     len = 30
     Cint = Coefficients.muC
     T = list(range(len))
     Text = list(range(len))
-    Tint = [-1.4*(i/len) for i in range(len)]
+    Tint = [-1.4 * (i / len) for i in range(len)]
     Pint = [0 for i in range(len)]
     # scores = []
     iterations = 100
@@ -58,7 +59,7 @@ def test_representation_image_complexe():
         f6 = Feuille()
         sC = f2.ajoutFils(f6, forme="serie")
         image = g.ecritureImage(largeur=100, hauteur=100)
-        # print("(1) score=", g.score())
+        print("(1) score=", g.score())
         ancienneImage = image.copy()
         # R, V, B = image[:,:,0], image[:,:,1], image[:,:,2]
         # plt.imshow(image)
@@ -73,8 +74,9 @@ def test_representation_image_complexe():
         # plt.colorbar()
         # plt.show()
         g.lectureImage(image)
-        print(i)
-        # print("(2) score=", g.score())
+        # print(i)
+        print("(2) score=", g.score())
+        print()
         # image2 = g.ecritureImage(largeur=100, hauteur=100)
         # g.lectureImage(image2.copy())
         # print("(3) score=", g.score())
@@ -93,5 +95,5 @@ def test_representation_image_complexe():
     # plt.show()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_representation_image_complexe()

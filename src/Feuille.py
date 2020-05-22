@@ -1,12 +1,16 @@
 # Ce fichier contient l'implémentation des feuilles de nos arbres (i.e. les résistances). La documentation de toutes les méthodes des noeuds est disponible dans la classe parente.
 
 from Noeud import Noeud, conversionIndice
+
 # Les deux imports qui suivent sont utiles pour ajoutFils
 from Serie import Serie
 from Parallele import Parallele
 import numpy as np  # Utile pour np.mean dans la lecture d'image
 import Coefficients  # Utile pour s'assurer que les valuers lues sont bien plus grandes que les valeurs minimales.
-from Coefficients import conductance # Initialisation de coefficients H aléatoires
+from Coefficients import (
+    conductance,
+)  # Initialisation de coefficients H aléatoires
+
 
 class Feuille(Noeud):
     """docstring for Feuille."""
@@ -34,8 +38,9 @@ class Feuille(Noeud):
             self._marquage = (None, None, None)
             return result
         else:
-            raise NonMarqueException("La feuille désignée n'a pas encore été marquée.")
-
+            raise NonMarqueException(
+                "La feuille désignée n'a pas encore été marquée."
+            )
 
     def creationSimulationRecursive(self, A, B, C, gauche, droite, curseur):
         return self.H, curseur
@@ -104,11 +109,12 @@ class Feuille(Noeud):
             self.grille.forme[self.profondeur] += 1
             # Une feuille n'a pas de fils donc on n'a pas besoin d'appel récursif içi.
 
-    def detacher(self):
+    def detacher(self, perdreParent=True):
         self.grille.forme[self.profondeur] -= 1
         self.grille = None
-        # On perd aussi la référence à son parent pour éviter les effets de bord étranges
-        self.parent = None
+        if perdreParent:
+            # On perd aussi la référence à son parent pour éviter les effets de bord étranges
+            self.parent = None
 
     def dessiner(self, image, coinHautGauche, coinBasDroite):
         # On récupère le marquage de ce noeud.
@@ -117,7 +123,9 @@ class Feuille(Noeud):
         coinHautGaucheY, coinHautGaucheX = coinHautGauche
         coinBasDroiteY, coinBasDroiteX = coinBasDroite
         # On colore d'abord les résistances
-        image[coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 0] = rouge
+        image[
+            coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 0
+        ] = rouge
         # On colore ensuite les capacités
         image[
             coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 1
@@ -128,25 +136,71 @@ class Feuille(Noeud):
             coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 2
         ] = bleu
 
-    def lire(self, image, coinHautGauche, coinBasDroite):
+    def lire(self, image, coinHautGauche, coinBasDroite, conteneur):
         # On récupère les coordonnées dont on a besoin pour lire l'image
         coinHautGaucheY, coinHautGaucheX = coinHautGauche
         coinBasDroiteY, coinBasDroiteX = coinBasDroite
         # On calcule la moyenne des valeurs de coefficients de transmissions sur la zone dédiée et on l'affecte à cette feuille.
-        self.H = max(np.mean(image[coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 0]), Coefficients.minH)
+        self.H = max(
+            np.mean(
+                image[
+                    coinHautGaucheY:coinBasDroiteY,
+                    coinHautGaucheX:coinBasDroiteX,
+                    0,
+                ]
+            ),
+            Coefficients.minH,
+        )
         # On calcule la moyenne des valeurs de capacites sur la zone dediée et on la renvoie. Notez que l'on a rien à faire avec l'erreur proposée, elle n'est qu'un indice en entrée pour aider l'autoencodeur à faire son travail.
-        return max(np.mean(image[coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 1]), Coefficients.minC)
+        capaciteDroite = max(
+            np.mean(
+                image[
+                    coinHautGaucheY:coinBasDroiteY,
+                    coinHautGaucheX:coinBasDroiteX,
+                    1,
+                ]
+            ),
+            Coefficients.minC,
+        )
+        if conteneur is not None:
+            conteneur.append(capaciteDroite)
+        return capaciteDroite
 
     def normaliser(self, image, coinHautGauche, coinBasDroite):
         # On récupère les coordonnées dont on a besoin pour normaliser l'image
         coinHautGaucheY, coinHautGaucheX = coinHautGauche
         coinBasDroiteY, coinBasDroiteX = coinBasDroite
         # On calcule la moyenne des valeurs de coefficients de transmissions sur la zone dédiée on l'affecte à toute la zone
-        image[coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 0] = np.mean(image[coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 0])
+        image[
+            coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 0
+        ] = np.mean(
+            image[
+                coinHautGaucheY:coinBasDroiteY,
+                coinHautGaucheX:coinBasDroiteX,
+                0,
+            ]
+        )
         # De même on normalise pour les capacités
-        image[coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 1] = np.mean(image[coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 1])
+        image[
+            coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 1
+        ] = np.mean(
+            image[
+                coinHautGaucheY:coinBasDroiteY,
+                coinHautGaucheX:coinBasDroiteX,
+                1,
+            ]
+        )
         # Et enfin pour l'erreur
-        image[coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 2] = np.mean(image[coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 2])
+        image[
+            coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 2
+        ] = np.mean(
+            image[
+                coinHautGaucheY:coinBasDroiteY,
+                coinHautGaucheX:coinBasDroiteX,
+                2,
+            ]
+        )
+
 
 # Une erreur est apparue car vous utilisé une syntaxe invalide sur une feuille.
 class FeuilleException(Exception):
@@ -158,6 +212,7 @@ class FeuilleException(Exception):
 class NonFeuilleException(Exception):
     # Syntaxe spéciale pour une déclaration d'exceptions plus rapide
     pass
+
 
 # Une erreur qui signale que l'on tente de récupérer le marquage (i.e. la couleur) d'un noeud qui n'a pas encore été marqué.
 class NonMarqueException(Exception):
