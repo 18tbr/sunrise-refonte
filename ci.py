@@ -274,6 +274,13 @@ class ContinuousIntegration:
 
     def union(self):
         # Step 0 : Fusionner devops dans master
+        # On se place dans la branche master
+        gitProcess = self.run(f"git checkout master", shell=True)
+        if gitProcess.returncode != 0:
+            raise CIException(
+                "Vous n'avez pas pu vous placer dans votre branche master."
+            )
+        # else...
         # On met master à jour par rapport à ce qui se trouve sur GitHub
         gitProcess = self.run(f"git pull origin master", shell=True)
         if gitProcess.returncode != 0:
