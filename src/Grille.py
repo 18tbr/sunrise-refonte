@@ -23,7 +23,7 @@ from Serie import Serie
 from Parallele import Parallele
 import Coefficients
 
-from math import ceil, floor
+from math import ceil
 
 
 class Grille(object):
@@ -268,7 +268,6 @@ class Grille(object):
 
         return file[index]
 
-    # Note importante : si vous écrivez une image puis la relisez directement, vous risquez d'obtenir un arbre assez différent. Cela vient du fait que l'on contracte notre espace de valeurs avec la fonction expit, puis on convertit les valeurs contractées en entiers et enfin on les expanse avec logit. A cause de cette expansion, l'influence de l'arrondi en entier est décuplé, mais cela n'est en général un problème que pour des valeurs qui sont très importantes donc moins intéressantes de toute façon. Le fait d'utiliser la fonction ceil plutôt qu'un arrondi dans la sigmoide permet de s'assurer que l'image lue sera toujours au moins meilleure que l'image écrite.
     def ecritureImage(self, largeur=100, hauteur=100):
         """
         Convertit un arbre en image.
@@ -289,21 +288,18 @@ class Grille(object):
             image, coinHautGauche=(0, 0), coinBasDroite=(hauteur, largeur)
         )
 
-        # Attention, les valeurs d'une image RVB doivent aller de 0 à 255, donc il vous faut régulariser l'image sur le rouge et le vert (le bleu est déjà normalisé). Pour régulariser le rouge et le vert, on utilise encore la fonction sigmoide en prenant comme paramètres de référence ceux de la classe Grille.
-
-        # np.vectorize sert à créer une fonction vectorisée simplement
-        # Pour une raison que je ne m'explique pas complètement, le fait de toujours prendre l'entier supérieur ici avec ceil plutôt que de faire un arrondi semble donner de meilleurs résultats de façon consistante.
+        # La plupart des autoencodeurs préfèrent travailler avec des coefficients dans 0,1 plutôt que dans 0, 255 donc on n'a pas besoin de passer nos valeurs sous forme d'entiers.
         sigRouge = np.vectorize(
-            lambda t: ceil(255 * expit(t / Grille.referenceConductance)),
-            otypes=[int],
+            lambda t: expit(t / Grille.referenceConductance),
+            otypes=[float],
         )
         sigVert = np.vectorize(
-            lambda t: ceil(255 * expit(t / Grille.referenceCapacite)),
-            otypes=[int],
+            lambda t: expit(t / Grille.referenceCapacite),
+            otypes=[float],
         )
         sigBleu = np.vectorize(
-            lambda t: ceil(255 * expit(t / Grille.referenceErreur)),
-            otypes=[int],
+            lambda t: expit(t / Grille.referenceErreur),
+            otypes=[float],
         )
 
         # print("Ecriture rouge:", np.mean(image[:, :, 0]))
@@ -313,8 +309,7 @@ class Grille(object):
         image[:, :, 1] = sigVert(image[:, :, 1])
         image[:, :, 2] = sigBleu(image[:, :, 2])
 
-        # On convertit le tableau de flottants en tableau d'entiers (nécessaire à cause du fonctionnement des types de tableaux de numpy)
-        return image.astype(int)
+        return image
 
     def lectureImage(self, image):
         """
@@ -326,18 +321,16 @@ class Grille(object):
             Image à partir de laquelle créer un arbre. Attention, cette image sera détruite pendant la lecture.
         """
         hauteur, largeur, couleurs = image.shape
-        # Nous devons convertir notre tableau numpy en tableau de flottant, sinon numpy va caster tous nos résultats vers des entiers et nous ne pourrons pas avoir des nombres plus petits que 1 dans notre tableau.
-        image = image.astype(float)
-        # Avant de donner l'image pour mettre à jour notre arbre, il faut repasser les valeurs sur 0, 255 en valeurs réelles.
+        # Avant de donner l'image pour mettre à jour notre arbre, il faut repasser les valeurs (qui sont sur [0,1]) en valeurs réelles.
         invSigRouge = np.vectorize(
-            lambda t: logit(t / 255) * Grille.referenceConductance,
+            lambda t: logit(t) * Grille.referenceConductance,
             otypes=[float],
         )
         invSigVert = np.vectorize(
-            lambda t: logit(t / 255) * Grille.referenceCapacite, otypes=[float]
+            lambda t: logit(t) * Grille.referenceCapacite, otypes=[float]
         )
         invSigBleu = np.vectorize(
-            lambda t: logit(t / 255) * Grille.referenceErreur, otypes=[float]
+            lambda t: logit(t) * Grille.referenceErreur, otypes=[float]
         )
 
         image[:, :, 0] = invSigRouge(image[:, :, 0])
