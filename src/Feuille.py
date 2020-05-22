@@ -4,14 +4,16 @@ from Noeud import Noeud, conversionIndice
 # Les deux imports qui suivent sont utiles pour ajoutFils
 from Serie import Serie
 from Parallele import Parallele
-from random import random   # Initialisation de coefficients H aléatoire
+import numpy as np  # Utile pour np.mean dans la lecture d'image
+import Coefficients  # Utile pour s'assurer que les valuers lues sont bien plus grandes que les valeurs minimales.
+from Coefficients import conductance # Initialisation de coefficients H aléatoires
 
 class Feuille(Noeud):
     """docstring for Feuille."""
 
     def __init__(self, grille=None, parent=None):
         super(Feuille, self).__init__(grille=grille, parent=parent)
-        self.H = random()
+        self.H = conductance()
         # Utilisé pour colorer l'image, calculé à l'échelle de la grille par la fonction marquage.
         self._marquage = (None, None, None)
 
@@ -126,6 +128,25 @@ class Feuille(Noeud):
             coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 2
         ] = bleu
 
+    def lire(self, image, coinHautGauche, coinBasDroite):
+        # On récupère les coordonnées dont on a besoin pour lire l'image
+        coinHautGaucheY, coinHautGaucheX = coinHautGauche
+        coinBasDroiteY, coinBasDroiteX = coinBasDroite
+        # On calcule la moyenne des valeurs de coefficients de transmissions sur la zone dédiée et on l'affecte à cette feuille.
+        self.H = max(np.mean(image[coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 0]), Coefficients.minH)
+        # On calcule la moyenne des valeurs de capacites sur la zone dediée et on la renvoie. Notez que l'on a rien à faire avec l'erreur proposée, elle n'est qu'un indice en entrée pour aider l'autoencodeur à faire son travail.
+        return max(np.mean(image[coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 1]), Coefficients.minC)
+
+    def normaliser(self, image, coinHautGauche, coinBasDroite):
+        # On récupère les coordonnées dont on a besoin pour normaliser l'image
+        coinHautGaucheY, coinHautGaucheX = coinHautGauche
+        coinBasDroiteY, coinBasDroiteX = coinBasDroite
+        # On calcule la moyenne des valeurs de coefficients de transmissions sur la zone dédiée on l'affecte à toute la zone
+        image[coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 0] = np.mean(image[coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 0])
+        # De même on normalise pour les capacités
+        image[coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 1] = np.mean(image[coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 1])
+        # Et enfin pour l'erreur
+        image[coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 2] = np.mean(image[coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 2])
 
 # Une erreur est apparue car vous utilisé une syntaxe invalide sur une feuille.
 class FeuilleException(Exception):

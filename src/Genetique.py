@@ -7,7 +7,7 @@ from Grille import Grille, Noeud, Feuille, Parallele, Serie
 class Genetique(object):
     """docstring for Genetique."""
 
-    def __init__(self, cint, T, Text, Tint, Pint, numeroGeneration):
+    def __init__(self, cint, T, Text, Tint, Pint, objectif, numeroGeneration):
         super(Genetique, self).__init__()
         # Liste des individus de la population - chaque individu de type Grille
         self.population = []
@@ -21,6 +21,8 @@ class Genetique(object):
         self.Tint = Tint
         # La série des puissances intérieures
         self.Pint = Pint
+        #L'objectif est le score de la fitness function à partir duquel on cesse de faire évoluer la population
+        self.objectif = objectif
 
         self.numeroGeneration = numeroGeneration
 
@@ -32,7 +34,7 @@ class Genetique(object):
         self.CHANCE_SURVIE_FAIBLE = 0.05  # Pourcentage de la population qui va être gardé la génération suivante, bien que ne figurant pas parmis les meilleurs individus
         self.TAILLE_POPULATION = 100
         self.GENERATION_MAX = 100000
-        self.NIVEAU_PRECISION = 5
+
 
     # NB: valeur sûrement à changer, arbitraire
 
@@ -52,27 +54,25 @@ class Genetique(object):
         individu = Grille(self.cint, self.T, self.Text, self.Tint, self.Pint)
         # Série (1) / Parallèle (2) / Rien (3)
 
-        individu.racine = Feuille(individu)
 
-        individu.forme = [1]
-
-        for i in range(profondeur):
+        for i in range(profondeur-1):
+            print(i)
             # On détermine au hasard la largeur de la généation suivante
             largeur = random.randint(1, self.LARGEUR_MAX_ARBRE)
 
             # On répartit les différents éléments sur les différents indices
-            liste_indices = [k for k in range(0, largeur)]
-            indices_choisis = random.choices(
-                liste_indices, k=(individu.forme[i] - 1)
+            listeIndices = [k for k in range(0, largeur)]
+            indicesChoisis = random.choices(
+                listeIndices, k=max(0,(individu.forme[i] - 1))
             )
-            indices_choisis.append(0)
-            indices_choisis.append(individu.forme[i] - 1)
-            indices_choisis.sort()
+            indicesChoisis.append(0)
+            indicesChoisis.append(individu.forme[i] - 1)
+            indicesChoisis.sort()
 
             # on créé alors le nombre de fils correspondant
             for k in range(individu.forme[i]):
                 parent = individu.inspecter(i, k)
-                n_fils = indices_choisis[k + 1] - indices_choisis[k]
+                n_fils = indicesChoisis[k + 1] - indicesChoisis[k]
                 if n_fils > 0:
                     hasard = random.randint(1, 2)
                     if hasard == 1:
@@ -151,10 +151,10 @@ class Genetique(object):
                     else:
                         if action == 0:
                             nombreFils = len(noeudChoisi.fils)
-                            indice_fils_enlevé = random.randint(
+                            indiceFilsEnlevé = random.randint(
                                 0, nombreFils - 1
                             )
-                            noeudChoisi.fils.remove(indice_fils_enlevé)
+                            noeudChoisi.fils.remove(indiceFilsEnlevé)
                         else:
                             taille = len(noeudChoisi.fils)
                             indice_ajout = random.randint(0, taille)
@@ -189,14 +189,14 @@ class Genetique(object):
             enfant.racine = pere.sousArbre()
 
             for j in range(pere.forme[i]):
-                petit_pere = pere.inspecter(i, j)
-                petite_mere = mere.inspecter(i, j)
-                fils_potentiels = petit_pere.fils + petite_mere.fils
-                nombre_fils = (
-                    len(petit_pere.fils) + len(petite_mere.fils)
+                petitPere = pere.inspecter(i, j)
+                petiteMere = mere.inspecter(i, j)
+                filsPotentiels = petitPere.fils + petiteMere.fils
+                nombreFils = (
+                    len(petitPere.fils) + len(petiteMere.fils)
                 ) // 2
-                fils_choisis = random.choices(fils_potentiels, k=nombre_fils)
-                enfant.substituerEnfants(fils_choisis)
+                filsChoisis = random.choices(filsPotentiels, k=nombreFils)
+                enfant.substituerEnfants(filsChoisis)
 
             # La population de la génération suivante
             return (
@@ -212,18 +212,20 @@ class Genetique(object):
             Text=self.Text,
             Tint=self.Tint,
             Pint=self.Pint,
-            numeroGeneration=1,
+            objectif = self.objectif,
+            numeroGeneration=1
         )
         i = 1
-        meilleur_score = 2 * self.NIVEAU_PRECISION
+        meilleurScore = 2 * self.objectif
         while (i < self.GENERATION_MAX) & abs(
-            meilleur_score
-        ) > self.NIVEAU_PRECISION:
+            meilleurScore
+        ) > self.objectif:
             [
                 Generation,
-                Distribution_score,
-                Temperature_meilleur_arbre,
+                DistributionScore,
+                TemperatureMeilleurArbre,
             ] = Generation.ameliorerPopulation()
             Generation.numeroGeneration += 1
-            meilleur_score = abs(Distribution_score[0])
+            meilleurScore = abs(DistributionScore[0])
             i += 1
+        return Generation[0], DistributionScore[0], TemperatureMeilleurArbre[0]

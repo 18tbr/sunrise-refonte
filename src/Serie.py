@@ -1,7 +1,7 @@
 # Ce fichier contient l'implémentation des noeuds de type série. La documentation de toutes les méthodes des noeuds est disponible dans la classe parente.
 
 from Noeud import Noeud, conversionIndice
-from random import random   # Détermination aléatoire des valeurs de capacités
+from Coefficients import capacite   # Détermination aléatoire des valeurs de capacités
 
 class Serie(Noeud):
     """docstring for Serie."""
@@ -25,7 +25,7 @@ class Serie(Noeud):
 
     @property
     def valeurCapaciteDefaut(self):
-        return random()
+        return capacite()
 
     def creationSimulationRecursive(self, A, B, C, gauche, droite, curseur):
         listeTemperatures = [gauche]
@@ -281,3 +281,46 @@ class Serie(Noeud):
         coinHautGaucheFils = (coinHautGaucheY, coinHautGaucheX + (nombreDivisions-1)*largeur)
         coinBasDroiteFils = (coinBasDroiteY, coinBasDroiteX)
         fils.dessiner(image, coinHautGaucheFils, coinBasDroiteFils)
+
+
+    def lire(self, image, coinHautGauche, coinBasDroite):
+        # On récupère les coordonnées dont on a besoin pour colorer l'image
+        coinHautGaucheY, coinHautGaucheX = coinHautGauche
+        coinBasDroiteY, coinBasDroiteX = coinBasDroite
+        # On compte le nombre de divisions qu'il faut faire sur l'image
+        nombreDivisions = len(self.fils)
+        # On calcule la largeur de chaque subdivision horizontale que l'on s'apprète à créer. On rappelle que le 0,0 est tout en haut à gauche de l'image.
+        largeur = int((coinBasDroiteX - coinHautGaucheX) / nombreDivisions)
+        # On appelle récursivement la méthode dessiner sur les enfants
+        for i in range(nombreDivisions - 1):
+            fils = self.fils[i]
+            coinHautGaucheFils = (coinHautGaucheY, coinHautGaucheX + i*largeur)
+            coinBasDroiteFils = (coinBasDroiteY, coinHautGaucheX + (i+1)*largeur)
+            # On met à jour la capacité à droite du fils avec la valeur renvoyée par lire
+            self.capacites[i] = fils.lire(image, coinHautGaucheFils, coinBasDroiteFils)
+        # Pour être certain de bien colorer toute l'image et de ne pas laisser des bords noirs à cause de problèmes d'arrondis, on effectue la dernière coloration séparément.
+        fils = self.fils[-1]
+        coinHautGaucheFils = (coinHautGaucheY, coinHautGaucheX + (nombreDivisions-1)*largeur)
+        coinBasDroiteFils = (coinBasDroiteY, coinBasDroiteX)
+        return fils.lire(image, coinHautGaucheFils, coinBasDroiteFils)
+
+    def normaliser(self, image, coinHautGauche, coinBasDroite):
+        # On récupère les coordonnées dont on a besoin pour colorer l'image
+        coinHautGaucheY, coinHautGaucheX = coinHautGauche
+        coinBasDroiteY, coinBasDroiteX = coinBasDroite
+        # On compte le nombre de divisions qu'il faut faire sur l'image
+        nombreDivisions = len(self.fils)
+        # On calcule la largeur de chaque subdivision horizontale que l'on s'apprète à créer. On rappelle que le 0,0 est tout en haut à gauche de l'image.
+        largeur = int((coinBasDroiteX - coinHautGaucheX) / nombreDivisions)
+        # On appelle récursivement la méthode dessiner sur les enfants
+        for i in range(nombreDivisions - 1):
+            fils = self.fils[i]
+            coinHautGaucheFils = (coinHautGaucheY, coinHautGaucheX + i*largeur)
+            coinBasDroiteFils = (coinBasDroiteY, coinHautGaucheX + (i+1)*largeur)
+            # On met à jour la capacité à droite du fils avec la valeur renvoyée par lire
+            fils.normaliser(image, coinHautGaucheFils, coinBasDroiteFils)
+        # Pour être certain de bien colorer toute l'image et de ne pas laisser des bords noirs à cause de problèmes d'arrondis, on effectue la dernière coloration séparément.
+        fils = self.fils[-1]
+        coinHautGaucheFils = (coinHautGaucheY, coinHautGaucheX + (nombreDivisions-1)*largeur)
+        coinBasDroiteFils = (coinBasDroiteY, coinBasDroiteX)
+        fils.normaliser(image, coinHautGaucheFils, coinBasDroiteFils)

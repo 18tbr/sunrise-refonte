@@ -7,25 +7,25 @@ from scipy.interpolate import (
     interp1d,
 )  # Interpolation par spline utilisée pour la résolution d'équation différentielle
 from scipy.special import (
-    expit,
-)  # Une implémentation de la fonction sigmoïde utilisée pour la propagation d'erreur.
+    expit, logit
+)  # Une implémentation de la fonction sigmoïde utilisée pour normaliser les valeurs des coefficients pour les mettre dans les images. Logit est la fonction inverse de expit.
 
 # Notez que pour importer ces classes dans les autres modules, il est préférable de faire "from Grille import Noeud, ..." plutôt que d'importer directement les fichiers concernés.
 from Noeud import Noeud
 from Feuille import Feuille, FeuilleException, NonFeuilleException, NonMarqueException
 from Serie import Serie
 from Parallele import Parallele
+import Coefficients
 
-# import GrilleUtils
-
+from math import ceil, floor
 
 class Grille(object):
     """docstring for Grille."""
 
-    # Quelque valeurs statiques d'ordre de grandeur de capacité thermique, résistance thermique et (pour avoir une symétrie dans le code) une valeur de référence pour l'erreur propagée qui doit rester à 100. Le fait de partager ces valeurs pour tous les obets de la classe Grille permet de comparer plusieurs images obtenues simplement et de simplifier le travail de l'autoencodeur.
-    referenceResistance = 1
-    referenceCapacite = 1
-    referenceErreur = 100
+    # Quelque valeurs statiques d'ordre de grandeur de capacité thermique, coefficient de transmission thermique et (pour avoir une symétrie dans le code) une valeur de référence pour l'erreur propagée qui doit rester à 100. Le fait de partager ces valeurs pour tous les obets de la classe Grille permet de comparer plusieurs images obtenues simplement et de simplifier le travail de l'autoencodeur.
+    referenceConductance = Coefficients.referenceH
+    referenceCapacite = Coefficients.referenceC
+    referenceErreur = Coefficients.referenceE
 
     def __init__(self, cint, T, Text, Tint, Pint):
         super(Grille, self).__init__()
@@ -114,14 +114,14 @@ class Grille(object):
         # Hypothèse : Au début de la simulation, tout est à l'équilibre à la température extérieure Text(t=0)
         T0 = np.full((nbTemperatures), self.Text(0))
 
-        def gradient(t, T):
-            # dT/dt = gradient(T,t) = C * (AT + BQ)
+        def diff(t, T):
+            # dT/dt = diff(T,t) = C * (AT + BQ)
             # Notez que self.Text et self.Pint sont des interpolations par spline des Text et Pint passés en argument à l'origine.
             return C @ (A @ T + B @ np.array([[self.Text(t)], [self.Pint(t)]]))
 
         # Attention à la façon dont solve_ivp fonctionne et en particulier à t_span et t_eval (qui sont différents d'odeint si ma mémoire est bonne).
         return solve_ivp(
-            fun=gradient,
+            fun=diff,
             t_span=(self.T[0], self.T[-1]),
             y0=T0,
             method="RK45",
@@ -136,20 +136,23 @@ class Grille(object):
         nbTemperatures = self.nbCondensateurs
         T0 = np.full((nbTemperatures), self.Text(0))
 
-        def gradient(t, T):
-            # dT/dt = gradient(T,t) = C * (AT + BQ)
+        def diff(t, T):
+            # dT/dt = diff(T,t) = C * (AT + BQ)
             # Notez que self.Text et self.Pint sont des interpolations par spline des Text et Pint passés en argument à l'origine.
             return C @ (A @ T + B @ np.array([[self.Text(t)], [self.Pint(t)]]))
 
         # Attention à la façon dont solve_ivp fonctionne et en particulier à t_span et t_eval (qui sont différents d'odeint si ma mémoire est bonne).
         calcul = solve_ivp(
-            fun=gradient,
+            fun=diff,
             t_span=(self.T[0], self.T[-1]),
             y0=T0,
             method="RK45",
             t_eval=self.T,
             vectorized=True,
         )
+
+        if not calcul.success:
+            raise SimulationException("La simulation de l'arbre n'a pas pu être menée à son terme.")
 
         calculTint = calcul.y[0]
         ecart = self.Tint - calculTint
@@ -159,16 +162,19 @@ class Grille(object):
         # Fonction de pénalité de proximité temporelle
         pi = lambda t: 1 / (1 + t / delay)
 
-        # On alloue le vecteur des erreurs propagées
-        E = np.array([0 for i in range(nbTemperatures)])
+        # On alloue le vecteur des erreurs propagées.
+        E = [0 for i in range(nbTemperatures)]
 
         # On initialise en notant l'erreur associée à Tint que l'on va essayer de propager.
-        E[0] = epsilon
+        try:
+            E[0] = epsilon
+        except OverflowError:
+            raise SimulationException("L'erreur obtenue sur cette arbre est trop grande pour permettre un traitement numérique correct.")
         # La file qui nous permet de traiter de façon cohérente toutes le températures
         fileTraitementTempérature = [0]
         for i in range(nbTemperatures):
-            if E.all():
-                # Si jamais on a alloué une erreur à toutes les températures internes, on peut
+            if min(E)>0:
+                # Si jamais on a alloué une erreur à toutes les températures internes, on peut arrêter notre boucle en avance.
                 break
             else:
                 # On traite la première température possible
@@ -178,7 +184,10 @@ class Grille(object):
                         delayIJ = D[i, j]
                         if delayIJ != 0:
                             # Formule de rétropropagation heuristique de l'erreur
-                            E[j] = E[i] * pi(delayIJ)
+                            try:
+                                E[j] = E[i] * pi(delayIJ)
+                            except ValueError:
+                                raise SimulationException("L'erreur obtenue sur cette arbre est trop grande pour permettre un traitement numérique correct.")
                             fileTraitementTempérature.append(j)
 
         return E
@@ -186,12 +195,20 @@ class Grille(object):
     def score(self):
         # On calcule toutes le températures internes au fil du temps
         calcul = self.simulation()
+        if not calcul.success:
+            raise SimulationException("La simulation de l'arbre n'a pas pu être menée à son terme.")
         # On récupère la température intérieure (la première dans la matrice). Attention, la façon dont solve_ivp restitue les températures n'est pas la même que pour odeint.
         calculTint = calcul.y[0]
         # On calcule l'écart entre la température calculée et la référence
         ecart = self.Tint - calculTint
         # On renvoie l'opposé de l'écart quadratique cumulé. Comme cela plus le score est grand, plus l'arbre est bon, ce qui est plus intuitif pour l'algorithme génétique.
-        return -np.sum(np.square(ecart), 0)
+        # score = -np.sum(np.square(ecart), 0)
+        # Le calcul précédent a de forts problèmes d'overflow en pratique, donc on en propose une formulation alternative qui devrait poser moins de problèmes. On propose d'utiliser la moyenne à la place, qui sera plus petite mais différente seulement d'un coefficient multiplicatif qui est constant sur tous les arbres.
+        score = -np.mean(np.square(ecart), 0)
+        if score == float('Nan') or score == -float('Inf'):
+            raise SimulationException("L'erreur obtenue sur cette arbre est trop grande pour permettre un traitement numérique correct.")
+        # else ...
+        return score
 
     # Utilise la rétropropagation d'erreurs heuristiques dans l'arbre pour marquer les trois couleurs sur chaque noeud.
     def marquage(self):
@@ -227,6 +244,7 @@ class Grille(object):
 
         return file[index]
 
+    # Note importante : si vous écrivez une image puis la relisez directement, vous risquez d'obtenir un arbre assez différent. Cela vient du fait que l'on contracte notre espace de valeurs avec la fonction expit, puis on convertit les valeurs contractées en entiers et enfin on les expanse avec logit. A cause de cette expansion, l'influence de l'arrondi en entier est décuplé, mais cela n'est en général un problème que pour des valeurs qui sont très importantes donc moins intéressantes de toute façon. Le fait d'utiliser la fonction ceil plutôt qu'un arrondi dans la sigmoide permet de s'assurer que l'image lue sera toujours au moins meilleure que l'image écrite.
     def ecritureImage(self, largeur=100, hauteur=100):
         """
         Convertit un arbre en image.
@@ -245,18 +263,21 @@ class Grille(object):
         # On colore récursivement l'image depuis la racine
         self.racine.dessiner(image, coinHautGauche=(0,0), coinBasDroite=(hauteur, largeur))
 
-        # (TBR) Attention, les valeurs d'une image RVB doivent aller de 0 à 255, donc il vous faut régulariser l'image sur le rouge et le vert (le bleu est déjà normalisé). Pour régulariser le rouge et le vert, on utilise encore la fonction sigmoide en prenant comme paramètres de référence ceux de la classe Grille.
+        # Attention, les valeurs d'une image RVB doivent aller de 0 à 255, donc il vous faut régulariser l'image sur le rouge et le vert (le bleu est déjà normalisé). Pour régulariser le rouge et le vert, on utilise encore la fonction sigmoide en prenant comme paramètres de référence ceux de la classe Grille.
 
         # np.vectorize sert à créer une fonction vectorisée simplement
-        sigRouge = np.vectorize(lambda t: int(255 * expit(t / Grille.referenceResistance)), otypes=[int])
-        sigVert = np.vectorize(lambda t: int(255 * expit(t / Grille.referenceCapacite)), otypes=[int])
-        sigBleu = np.vectorize(lambda t: int(255 * expit(t / Grille.referenceErreur)), otypes=[int])
+        sigRouge = np.vectorize(lambda t: ceil(255 * expit(t / Grille.referenceConductance)), otypes=[int])
+        sigVert = np.vectorize(lambda t: ceil(255 * expit(t / Grille.referenceCapacite)), otypes=[int])
+        sigBleu = np.vectorize(lambda t: ceil(255 * expit(t / Grille.referenceErreur)), otypes=[int])
+
+        # print("Ecriture rouge:", np.mean(image[:, :, 0]))
+        # print("Ecriture vert:", np.mean(image[:, :, 1]))
 
         image[:, :, 0] = sigRouge(image[:, :, 0])
         image[:, :, 1] = sigVert(image[:, :, 1])
         image[:, :, 2] = sigBleu(image[:, :, 2])
 
-        # On convertit le tableau de flottants en tableau d'entiers (nécessaire pour une raison qui m'échappe).
+        # On convertit le tableau de flottants en tableau d'entiers (nécessaire pour une raison qui m'échappe)
         return image.astype(
             int
         )
@@ -268,25 +289,35 @@ class Grille(object):
         Parameters
         ----------
         image : numpy array
-            Image à partir de laquelle créer un arbre.
+            Image à partir de laquelle créer un arbre. Attention, cette image sera détruite pendant la lecture.
         """
-
-        dimImage = image.shape
-        GrilleUtils.modifierRacine(
-            racine=self.racine,
-            numRacine=0,
-            coinHautGauche=(0, 0),
-            coinBasDroite=dimImage[0:2],
-            image=image,
-        )
-        return None
+        hauteur, largeur, couleurs = image.shape
+        # Nous devons convertir notre tableau numpy en tableau de flottant, sinon numpy va caster tous nos résultats vers des entiers et nous ne pourrons pas avoir des nombres plus petits que 1 dans notre tableau.
+        image = image.astype(float)
+        # Avant de donner l'image pour mettre à jour notre arbre, il faut repasser les valeurs sur 0, 255 en valeurs réelles.
+        invSigRouge = np.vectorize(lambda t: logit(t/255) * Grille.referenceConductance, otypes=[float])
+        invSigVert = np.vectorize(lambda t: logit(t/255) * Grille.referenceCapacite, otypes=[float])
+        invSigBleu = np.vectorize(lambda t: logit(t/255) * Grille.referenceErreur, otypes=[float])
 
 
-# T = [i for i in range(1, 101)]
-# Text = [20] * 100
-# Tint = np.log(T)
-# Pint = [100 * i for i in range(100)]
-#
-# a = Grille(1500, T, Text, Tint, Pint)
-# a.racine = Feuille(a)
-# # a.racine.ajoutFils(Feuille(a),forme='parallele')
+        image[:, :, 0] = invSigRouge(image[:, :, 0])
+        image[:, :, 1] = invSigVert(image[:, :, 1])
+        image[:, :, 2] = invSigBleu(image[:, :, 2])
+
+        # print("Lecture rouge:", np.mean(image[:, :, 0]))
+        # print("Lecture vert:", np.mean(image[:, :, 1]))
+
+        propositionCint = self.racine.lire(image, coinHautGauche=(0,0), coinBasDroite=(hauteur, largeur))
+
+        # Cette valeur n'est pas utilisée par la suite, mais dans la mesure où elle est calculée on peut toujours l'afficher.
+        # print("propositionCint:", propositionCint)
+
+    def normalisationImage(self, image):
+        # Sert à normaliser une image sans modifier l'arbre, utile en particulier pour l'entrainement des autoencodeurs
+        hauteur, largeur, couleurs = image.shape
+        self.racine.normaliser(image,  coinHautGauche=(0,0), coinBasDroite=(hauteur, largeur))
+
+
+# Une exception utile pour signifier qu'une simulation a échoué pour des raisons mathématiques.
+class SimulationException(Exception):
+    pass
