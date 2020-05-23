@@ -6,12 +6,12 @@ from random import (
 
 # Note : les valeurs définies ci dessous sont accessibles de l'exterieur comme Coefficients.<nom> dans les autres modules où Coefficeints est importé.
 
-# IMPORTANT : En pratique, les équations différentielles ne sont solubles que si C >> H, (il faut 1 à 2 ordres de grandeur de différence). La raison est, il me semble, que le temps caractéristique de l'équation ne doit pas être plus petit que le temps de discrétisation par le solveur. Notez également que le solveur met significativement plus de temps à traiter les équations en cas de problèmes que s'il n'y en a pas.
+# IMPORTANT : En pratique, les équations différentielles ne sont solubles que si C >> H, (il faut 1 à 2 ordres de grandeur de différence) pour un pas de temps de 1. La raison est, il me semble, que le temps caractéristique de l'équation ne doit pas être plus petit que le temps de discrétisation par le solveur. Notez également que le solveur met significativement plus de temps à traiter les équations en cas de problèmes que s'il n'y en a pas.
 
 # Ces valeurs donnent la loi des coefficients de transmission H
-muH = 5e-1  # Valeur moyenne
-sigH = 10e-1  # Ecart type
-minH = 1e-1  # Valeur minimale (> 0)
+muH = 5e-2  # Valeur moyenne
+sigH = 10e-2  # Ecart type
+minH = 1e-2  # Valeur minimale (> 0)
 
 # Fonction de génération de conductances aléatoires
 def conductance():
@@ -19,9 +19,9 @@ def conductance():
 
 
 # Ces valeurs donnent la loi des coefficients de capacités C
-muC = 5e1  # Valeur moyenne
-sigC = 10e1  # Ecart type
-minC = 1e1  # Valeur minimale (> 0)
+muC = 5e6  # Valeur moyenne
+sigC = 10e6  # Ecart type
+minC = 1e6  # Valeur minimale (> 0)
 
 # Bien régler les valeurs minimales pour même dans le pire des cas on conserve deux ordres de grandeur de différence entre C et H accélère sensiblement l'algorithme.
 
