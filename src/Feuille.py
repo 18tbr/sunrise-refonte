@@ -12,7 +12,7 @@ import Coefficients  # Utile pour s'assurer que les valeurs lues sont bien plus
 # grandes que les valeurs minimales
 from Coefficients import conductance  # Initialisation de coefficients H
 # aléatoires
-
+from SunRiseException import FeuilleException, NonMarqueException
 
 class Feuille(Noeud):
     """Classe pour les feuilles des arbres.
@@ -238,21 +238,3 @@ class Feuille(Noeud):
                 2,
             ]
         )
-
-
-class FeuilleException(Exception):
-    """Une erreur est apparue car vous utilisé une syntaxe invalide sur une
-    feuille."""
-    pass
-
-
-class NonFeuilleException(Exception):
-    """Une erreur est apparue car vous avez utilisé une syntaxe spécifique aux
-    feuilles pour un noeud."""
-    pass
-
-
-class NonMarqueException(Exception):
-    """Une erreur qui signale que l'on tente de récupérer le marquage (i.e. la
-    couleur) d'un noeud qui n'a pas encore été marqué."""
-    pass

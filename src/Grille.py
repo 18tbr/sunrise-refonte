@@ -14,11 +14,9 @@ from scipy.special import (
 # Notez que pour importer ces classes dans les autres modules, il est préférable de faire "from Grille import Noeud, ..." plutôt que d'importer directement les fichiers concernés.
 from Noeud import Noeud
 from Feuille import (
-    Feuille,
-    FeuilleException,
-    NonFeuilleException,
-    NonMarqueException,
+    Feuille
 )
+from SunRiseException import FeuilleException, NonFeuilleException, NonMarqueException, SimulationException
 from Serie import Serie
 from Parallele import Parallele
 import Coefficients
@@ -356,8 +354,3 @@ class Grille(object):
         self.racine.normaliser(
             image, coinHautGauche=(0, 0), coinBasDroite=(hauteur, largeur)
         )
-
-
-# Une exception utile pour signifier qu'une simulation a échoué pour des raisons mathématiques.
-class SimulationException(Exception):
-    pass

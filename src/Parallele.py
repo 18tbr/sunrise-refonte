@@ -1,7 +1,7 @@
 # Ce fichier contient l'implémentation des noeuds de type parallèle. La documentation de toutes les méthodes des noeuds est disponible dans la classe parente.
 
 from Noeud import Noeud
-
+from SunRiseException import NonFeuilleException
 
 class Parallele(Noeud):
     """docstring for Parallele."""
@@ -143,7 +143,7 @@ class Parallele(Noeud):
             self.grille.forme[self.profondeur] += 1
             for fils in self.fils:
                 fils.attacher(grille)
-                
+
     def detacher(self, perdreParent=True):
         self.grille.forme[self.profondeur] -= 1
         # On détache récursivement tous les fils pour bien prendre en compte l'influence sur la forme.

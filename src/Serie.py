@@ -4,7 +4,7 @@ from Noeud import Noeud, conversionIndice
 from Coefficients import (
     capacite,
 )  # Détermination aléatoire des valeurs de capacités
-
+from SunRiseException import NonFeuilleException
 
 class Serie(Noeud):
     """docstring for Serie."""

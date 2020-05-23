@@ -37,7 +37,7 @@ class CreateurAutoencodeur(object):
     """docstring for CreateurAutoencodeur."""
 
     def __init__(self, largeur=100, hauteur=100, facteurReduction = 2, baseConvolution = 9, baseNoyau = 4):
-        super(Autoencodeur, self).__init__()
+        super(CreateurAutoencodeur, self).__init__()
         # La meilleure configuration d'autoencodeur que j'ai trouvée pour notre problème.
 
         # La fonction utilisée par la librairie Keras pour construire notre autoencodeur. Dans la notation Keras, la forme de entree est (None, hauteur, largeur, 3). None designe la taille du groupe d'entrainement, qui peut être spécifiée plus tard.
