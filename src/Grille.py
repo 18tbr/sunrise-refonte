@@ -13,10 +13,13 @@ from scipy.special import (
 
 # Notez que pour importer ces classes dans les autres modules, il est préférable de faire "from Grille import Noeud, ..." plutôt que d'importer directement les fichiers concernés.
 from Noeud import Noeud
-from Feuille import (
-    Feuille
+from Feuille import Feuille
+from SunRiseException import (
+    FeuilleException,
+    NonFeuilleException,
+    NonMarqueException,
+    SimulationException,
 )
-from SunRiseException import FeuilleException, NonFeuilleException, NonMarqueException, SimulationException
 from Serie import Serie
 from Parallele import Parallele
 import Coefficients
@@ -288,16 +291,13 @@ class Grille(object):
 
         # La plupart des autoencodeurs préfèrent travailler avec des coefficients dans 0,1 plutôt que dans 0, 255 donc on n'a pas besoin de passer nos valeurs sous forme d'entiers.
         sigRouge = np.vectorize(
-            lambda t: expit(t / Grille.referenceConductance),
-            otypes=[float],
+            lambda t: expit(t / Grille.referenceConductance), otypes=[float],
         )
         sigVert = np.vectorize(
-            lambda t: expit(t / Grille.referenceCapacite),
-            otypes=[float],
+            lambda t: expit(t / Grille.referenceCapacite), otypes=[float],
         )
         sigBleu = np.vectorize(
-            lambda t: expit(t / Grille.referenceErreur),
-            otypes=[float],
+            lambda t: expit(t / Grille.referenceErreur), otypes=[float],
         )
 
         # print("Ecriture rouge:", np.mean(image[:, :, 0]))
@@ -321,8 +321,7 @@ class Grille(object):
         hauteur, largeur, couleurs = image.shape
         # Avant de donner l'image pour mettre à jour notre arbre, il faut repasser les valeurs (qui sont sur [0,1]) en valeurs réelles.
         invSigRouge = np.vectorize(
-            lambda t: logit(t) * Grille.referenceConductance,
-            otypes=[float],
+            lambda t: logit(t) * Grille.referenceConductance, otypes=[float],
         )
         invSigVert = np.vectorize(
             lambda t: logit(t) * Grille.referenceCapacite, otypes=[float]

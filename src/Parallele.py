@@ -3,6 +3,7 @@
 from Noeud import Noeud
 from SunRiseException import NonFeuilleException
 
+
 class Parallele(Noeud):
     """docstring for Parallele."""
 

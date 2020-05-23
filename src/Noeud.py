@@ -70,7 +70,9 @@ class Noeud(object):
             # Autre cas important à traiter : on est en train de changer la racine de l'arbre
             self.grille.racine = nouveau
         else:
-            raise IndexError("L'indivdu selectionné n'a pas de parent et n'est pas la racine d'un arbre, il n'y a donc nulle part où le remplacer.")
+            raise IndexError(
+                "L'indivdu selectionné n'a pas de parent et n'est pas la racine d'un arbre, il n'y a donc nulle part où le remplacer."
+            )
         nouveau.parent = self.parent
         # On attache le nouvel élément à la grille
         nouveau.attacher(self.grille)

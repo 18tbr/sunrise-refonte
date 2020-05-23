@@ -66,9 +66,10 @@ def test_population_aleatoire():
             print("rouge")
             break
     plt.plot(range(len(listeScores)), listeScores)
-    plt.title("Convergence de l'algorithme génétique seul (sans auto-encodeurs)")
+    plt.title(
+        "Convergence de l'algorithme génétique seul (sans auto-encodeurs)"
+    )
     plt.show()
-
 
 
 if __name__ == "__main__":

@@ -11,7 +11,12 @@ sys.path.append(f"{os.getcwd()}/src")
 
 import Coefficients
 from Genetique import Genetique
-from Entrainement import lectureBlob, unificationPopulation, CreateurAutoencodeur
+from Entrainement import (
+    lectureBlob,
+    unificationPopulation,
+    CreateurAutoencodeur,
+)
+
 
 def test_entrainement():
     Genetique.PROFONDEUR_MAX_ARBRE = 20
@@ -19,7 +24,9 @@ def test_entrainement():
     taille = 5
     l, h = 32, 32
     Cint = Coefficients.muC
-    listeGenetiques = lectureBlob(Cint, taillePopulation=taille, generationMax=100, objectif=10)
+    listeGenetiques = lectureBlob(
+        Cint, taillePopulation=taille, generationMax=100, objectif=10
+    )
     print(len(listeGenetiques))
     population = unificationPopulation(listeGenetiques)
     taille = len(population)

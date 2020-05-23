@@ -6,6 +6,7 @@ from Coefficients import (
 )  # Détermination aléatoire des valeurs de capacités
 from SunRiseException import NonFeuilleException
 
+
 class Serie(Noeud):
     """docstring for Serie."""
 

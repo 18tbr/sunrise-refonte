@@ -1,8 +1,9 @@
 """Ce fichier contient plusieurs fonctions utiles pour rendre le code de
 l'interface graphique plus simple et lisible."""
 
-import os   # Utile pour les manipulations de noms de fichiers
+import os  # Utile pour les manipulations de noms de fichiers
 import numpy as np  # Utile pour les manipulations de tableaux
+
 
 def lireTableau(nomDuFichier):
     """Lit un tableau et le renvoie sous la forme d'un np.array.
@@ -18,7 +19,10 @@ def lireTableau(nomDuFichier):
     elif extension == ".csv":
         return np.loadtxt(nomDuFichier, dtype=float, delimiter=",")
     else:
-        raise ValueError("Le fichier présenté ne ressemble à aucun type de fichiers connus.")
+        raise ValueError(
+            "Le fichier présenté ne ressemble à aucun type de fichiers connus."
+        )
+
 
 def lireDossier(nomDuDossier):
     # Une fonction qui simplifie l'entrainement récupérant directement toutes les grandeurs d'intérêt à partir des fichiers csv contenus dans un dossier. Renvoie une erreur si les fichiers (Tint.csv, Text.csv et Pint.csv) attendus n'existent pas dans le dossier
@@ -37,6 +41,8 @@ def lireDossier(nomDuDossier):
     tempsPint, Pint = tableauPint[0], tableauPint[1]
 
     if (tempsTint - tempsText).any() or (tempsPint - tempsText).any():
-        raise ValueError("Les différentes grnadeurs données n'ont pas la même base de temps et ne peuvent donc pas être utilisées ensemble.")
+        raise ValueError(
+            "Les différentes grnadeurs données n'ont pas la même base de temps et ne peuvent donc pas être utilisées ensemble."
+        )
     # si tout à fonctionné, on renvoie les tableaux d'intérêt
     return tempsTint, Tint, Text, Pint

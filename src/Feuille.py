@@ -4,15 +4,19 @@ La documentation de toutes les méthodes des noeuds est disponible dans la class
 parente.
 """
 from Noeud import Noeud, conversionIndice
+
 # Les deux imports qui suivent sont utiles pour ajoutFils
 from Serie import Serie
 from Parallele import Parallele
 import numpy as np  # Utile pour np.mean dans la lecture d'image
 import Coefficients  # Utile pour s'assurer que les valeurs lues sont bien plus
+
 # grandes que les valeurs minimales
 from Coefficients import conductance  # Initialisation de coefficients H
+
 # aléatoires
 from SunRiseException import FeuilleException, NonMarqueException
+
 
 class Feuille(Noeud):
     """Classe pour les feuilles des arbres.
