@@ -390,11 +390,12 @@ class ContinuousIntegration:
         print(info(inputMessage))
         editor = ""
         if sys.platform == "linux":
-            geditExists = self.run(
-                "gedit --version", shell=True, stdout=DEVNULL, stderr=DEVNULL
+            atomExists = self.run(
+                "atom --version", shell=True, stdout=DEVNULL, stderr=DEVNULL
             )
-            if geditExists.returncode == 0:
-                editor = "gedit"
+            if atomExists.returncode == 0:
+                # Le flag "w" permet de lancer atom en premier plan. Le process se terminera lorsque l'onglet utilisé sera fermé (et pas l'éditeur entier.)
+                editor = "atom -w"
             else:
                 editor = "nano"
         elif sys.platform == "win32":
