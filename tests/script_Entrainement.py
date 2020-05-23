@@ -11,10 +11,7 @@ sys.path.append(f"{os.getcwd()}/src")
 
 import Coefficients
 from Genetique import Genetique
-from Entrainement import lectureBlob, unificationPopulation
-
-# On importe l'autoencodeur de test pour expérimenter
-from script_aide_Autoencodeur import Autoencodeur
+from Entrainement import lectureBlob, unificationPopulation, CreateurAutoencodeur
 
 def test_entrainement():
     Genetique.PROFONDEUR_MAX_ARBRE = 20
@@ -44,8 +41,8 @@ def test_entrainement():
         del images[index]
     # Le réseau progresse en général beaucoup moins vite au dela de 50
     # itérations
-    testeur = Autoencodeur(tailleGroupeEntrainement=8, largeur=l, hauteur=h)
-    testeur.entrainer(images, iterations=10)
+    testeur = CreateurAutoencodeur(largeur=l, hauteur=h)
+    testeur.entrainer(images, iterations=10, tailleGroupeEntrainement=8)
     # resultats = testeur.predire(test)
     # for i in range(5):
     #     plt.imshow(test[i])
