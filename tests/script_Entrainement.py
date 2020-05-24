@@ -14,8 +14,8 @@ from Genetique import Genetique
 from Entrainement import (
     lectureBlob,
     unificationPopulation,
-    CreateurAutoencodeur,
 )
+from Autoencodeur import Autoencodeur
 
 
 def test_entrainement():
@@ -48,16 +48,19 @@ def test_entrainement():
         del images[index]
     # Le réseau progresse en général beaucoup moins vite au dela de 50
     # itérations
-    testeur = CreateurAutoencodeur(largeur=l, hauteur=h)
-    testeur.entrainer(images, iterations=10, tailleGroupeEntrainement=8)
+    testeur = Autoencodeur(largeur=l, hauteur=h, nomDuModele=None)
+    testeur.creationNouveau(baseNoyau=2, baseConvolution=2)
+    testeur.entrainementImitation(
+        images, iterations=10, tailleGroupeEntrainement=8
+    )
     # resultats = testeur.predire(test)
     # for i in range(5):
     #     plt.imshow(test[i])
     #     plt.show()
     #     plt.imshow(resultats[i])
     #     plt.show()
-    testeur.sauver("blob/model.md5")
-    testChargement = load_model("blob/model.md5")
+    testeur.sauver("test")
+    testChargement = load_model(os.path.join("src", "modeles", "test.md5"))
     testChargement.summary()
     print("Chargement réussi.")
 

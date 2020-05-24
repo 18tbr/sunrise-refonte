@@ -269,7 +269,7 @@ class Grille(object):
 
         return file[index]
 
-    def ecritureImage(self, largeur=100, hauteur=100):
+    def ecritureImage(self, largeur=32, hauteur=32):
         """
         Convertit un arbre en image.
 
