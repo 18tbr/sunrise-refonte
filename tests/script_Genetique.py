@@ -9,19 +9,25 @@ sys.path.append(f"{os.getcwd()}/src")
 
 import Coefficients
 from Genetique import Genetique
+from Outils import lireDossier  # Pour récupérer des valeurs crédibles sur lesquelles lancer l'algorithme.
 
 
 def test_population_aleatoire():
     taille = 20
     Cint = Coefficients.muC
-    T = list(range(taille))
-    Text = list(range(taille))
-    Tint = [10 * i for i in range(taille)]
-    Pint = [0 for i in range(taille)]
-    Genetique.PROFONDEUR_MAX_ARBRE = 20
-    Genetique.LARGEUR_MAX_ARBRE = 20
+    T, Tint, Text, Pint = lireDossier(os.path.join("blob","mesures","mesure4"))
+    # T = list(range(taille))
+    # Text = list(range(taille))
+    # Tint = [10 * i for i in range(taille)]
+    # Pint = [0 for i in range(taille)]
+    Genetique.PROFONDEUR_MAX_ARBRE = 10
+    Genetique.LARGEUR_MAX_ARBRE = 10
+    Genetique.SILENCE = True
+    # Genetique.ELAGUAGE_FORCE = False
+    # choixAutoencodeur = None
+    choixAutoencodeur = "base"
     print("Création de la population initiale")
-    evolution = Genetique(Cint, T, Text, Tint, Pint, generationMax=30)
+    evolution = Genetique(Cint, T, Text, Tint, Pint, generationMax=30, imageLargeur=32, imageHauteur=32, autoencodeur=choixAutoencodeur)
     # print("\nCalcul du score de tous les individus de la population")
     # listeScores = evolution.scorePopulation()
     # plt.plot(range(evolution.taillePopulation), [elt[1] for elt in listeScores])
@@ -58,17 +64,19 @@ def test_population_aleatoire():
             generation, meilleurIndividu, meilleurScore = next(optimiseur)
             listeScores.append(meilleurScore)
             print(f"Génération {generation} - score {meilleurScore}.")
-            # image = meilleurIndividu.ecritureImage(largeur=100, hauteur=100)
+            # image = meilleurIndividu.ecritureImage(largeur=32, hauteur=32)
             # plt.imshow(image)
             # plt.title(f"Image RVB du meilleur arbre de la population")
             # plt.show()
         except StopIteration:
-            print("rouge")
             break
     plt.plot(range(len(listeScores)), listeScores)
-    plt.title(
-        "Convergence de l'algorithme génétique seul (sans auto-encodeurs)"
-    )
+    if evolution.autoencodeur is None:
+        plt.title(
+            "Convergence de l'algorithme génétique seul (sans auto-encodeurs)"
+        )
+    else:
+        plt.title(f"Convergence de l'algorithme génétique avec l'auto-encodeur {choixAutoencodeur}")
     plt.show()
 
 

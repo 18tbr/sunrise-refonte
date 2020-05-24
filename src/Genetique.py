@@ -5,6 +5,7 @@ import random  # Pour introduire du hasard
 from Grille import Grille, Noeud, Feuille, Parallele, Serie
 from GenerateurArbres import GenerateurArbres   # Utilisé en interne pour créer une population d'arbres aléatoires.
 from Autoencodeur import Autoencodeur   # L'interface permettant de manipuler les autoencodeurs
+from AutoencodeurDeterministe import AutoencodeurDeterministe   # Pour pouvoir instancier des autoencodeurs déterministes à partir de leurs noms.
 
 class Genetique(object):
     """Classe pour l'algorithme génétique.
@@ -56,6 +57,7 @@ class Genetique(object):
     CHANCE_SURVIE_FAIBLE = 0.05
     # Si ELAGUAGE_FORCE vaut True, alors chaque individu créé sera élagué pour tenir dans les dimension d'image spécifiées en argument du constructeur.
     ELAGUAGE_FORCE = True
+    SILENCE = False     # Permet de lancer l'algorithme sans afficher d'information de debug dans la console.
 
     def __init__(
         self,
@@ -84,7 +86,14 @@ class Genetique(object):
         self.imageLargeur = imageLargeur
         self.imageHauteur = imageHauteur
         # Si autoencodeur est None pendant l'algorithme génétique, alors la phase d'amélioration des coefficients sera ignorée.
-        self.autoencodeur = autoencodeur
+        if autoencodeur is None:
+            self.autoencodeur = None
+        elif type(autoencodeur) is str:
+            # On peut aussi donner le nom d'un autoencodeur pour qu'il soit récupéré depuis un fichier
+            self.autoencodeur = AutoencodeurDeterministe(nomDuModele=autoencodeur, largeur=imageLargeur, hauteur=imageHauteur)
+        else:
+            # On récupère l'autoencodeur directement de l'instance qui a été fournie
+            self.autoencodeur = autoencodeur
         # GénérateurArbres va automatiquement générer une population convenable lors de sa construction
         generateur = GenerateurArbres(self.Cint, self.T, self.Text, self.Tint, self.Pint, self.taillePopulation, self.imageLargeur, self.imageHauteur, Genetique.ELAGUAGE_FORCE)
         # On récupère la population crée.
@@ -97,16 +106,18 @@ class Genetique(object):
         la population. Les individus avec le meilleur score sont à la fin.
         """
         scoreIndividus = []
-        compteur = 0
-        # Pour ne pas afficher le même message en boucle
-        proportionsAffiche = []
+        if not Genetique.SILENCE:
+            compteur = 0
+            # Pour ne pas afficher le même message en boucle
+            proportionsAffiche = []
 
         for individu in self.population:
-            proportion = 100 * compteur // self.taillePopulation
-            if proportion % 5 == 0 and not proportion in proportionsAffiche:
-                proportionsAffiche.append(proportion)
-                print(f"{proportion}% de la population évalué.")
-            compteur += 1
+            if not Genetique.SILENCE:
+                proportion = 100 * compteur // self.taillePopulation
+                if proportion % 5 == 0 and not proportion in proportionsAffiche:
+                    proportionsAffiche.append(proportion)
+                    print(f"{proportion}% de la population évalué.")
+                compteur += 1
             scoreIndividus.append((individu, individu.score()))
 
         # On trie la liste selon l'argument d'indice 1, d'où le itemgetter.
@@ -321,8 +332,9 @@ class Genetique(object):
         )
 
         # AMELIORATION
-        print("Amelioration")
-        self.autoencodeur.ameliorerArbres(self.population)
+        if self.autoencodeur is not None:
+            print("Amelioration")
+            self.autoencodeur.ameliorerArbres(self.population)
 
         # MUTATION
         print("Mutation")
