@@ -151,7 +151,7 @@ class Genetique(object):
         # On crée itérativement tous les niveaux de notre arbre.
         for i in range(profondeur - 1):
             # cf. docstring pour `largeurAutorisee`.
-            largeurAutorisee = min(Genetique.LARGEUR_MAX_ARBRE, 3 * profondeur)
+            largeurAutorisee = min(Genetique.LARGEUR_MAX_ARBRE, 3 * (i+1))
             # On détermine au hasard la largeur de la profondeur i+1.
             largeur = random.randint(1, largeurAutorisee)
 

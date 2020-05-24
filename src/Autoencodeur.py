@@ -41,8 +41,8 @@ class Autoencodeur(object):
         if nomDuModele is None:
             self.autoencodeur = None
         else:
-            # sinon on charge le modèle demandé
-            cheminModele = os.path.join("modeles", f"{nomDuModele}.md5")
+            # sinon on charge le modèle demandé. On suppose que l'on se trouve dans la racine du dépôt git
+            cheminModele = os.path.join("src", "modeles", f"{nomDuModele}.md5")
             if os.path.exists(cheminModele):
                 self.autoencodeur = load_model(cheminModele)
             else:
@@ -51,19 +51,38 @@ class Autoencodeur(object):
                 )
 
     def creationNouveau(
-        self, facteurReduction=2, baseConvolution=9, baseNoyau=4
+        self, facteurReduction=2, baseDimensions=9, baseNoyau=4, baseDense=50
     ):
         # Méthode à utiliser pour créer un nouveau modèle dans le contexte d'un entrainement.
 
         # La meilleure configuration d'autoencodeur que j'ai trouvée pour notre problème. Il est concu pour des images de taille 32 x 32 mais d'autres configurations sont possibles.
+
+        # On peut donner soit une liste, soit un unique coefficient dans baseDimensions, baseDense et baseNoyau. Si on donne une liste, ce sont les coefficients dans cette liste qui sont utilisés.
+        if type(baseDimensions) is list:
+            dimensions = baseDimensions[:4]
+        else:
+            # On a fourni un unique coefficent en argument
+            dimensions = [i*baseDimensions for i in range(1,5)]
+
+        # De même pour baseNoyau
+        if type(baseNoyau) is list:
+            noyau = baseNoyau[:4]
+        else:
+            noyau =  [(5-i)*baseNoyau for i in range(1,5)]
+
+        # Et enfin pour baseDense
+        if type(baseDense) is list:
+            dense = baseDense[:2]
+        else:
+            dense = [2*baseDense, baseDense]
 
         # La fonction utilisée par la librairie Keras pour construire notre autoencodeur. Dans la notation Keras, la forme de entree est (None, hauteur, largeur, 3).
         entree = Input(shape=(self.hauteur, self.largeur, 3))
 
         # x sera de taille (None, hauteur, largeur, 6)
         x = Conv2D(
-            filters=1 * baseConvolution,
-            kernel_size=4 * baseNoyau,
+            filters=dimensions[0],
+            kernel_size=noyau[0],
             activation="relu",
             padding="same",
         )(entree)
@@ -71,57 +90,57 @@ class Autoencodeur(object):
         x = MaxPooling2D(pool_size=facteurReduction, strides=None)(x)
 
         x = Conv2D(
-            filters=2 * baseConvolution,
-            kernel_size=3 * baseNoyau,
+            filters=dimensions[1],
+            kernel_size=noyau[1],
             activation="relu",
             padding="same",
         )(x)
         x = MaxPooling2D(pool_size=facteurReduction, strides=None)(x)
 
         x = Conv2D(
-            filters=3 * baseConvolution,
-            kernel_size=2 * baseNoyau,
+            filters=dimensions[2],
+            kernel_size=noyau[2],
             activation="relu",
             padding="same",
         )(x)
         x = MaxPooling2D(pool_size=facteurReduction, strides=None)(x)
 
         x = Conv2D(
-            filters=4 * baseConvolution,
-            kernel_size=1 * baseNoyau,
+            filters=dimensions[3],
+            kernel_size=noyau[3],
             activation="relu",
             padding="same",
         )(x)
         x = MaxPooling2D(pool_size=facteurReduction, strides=None)(x)
 
-        x = Dense(200, activation="relu")(x)
-        x = MaxPooling2D(pool_size=facteurReduction, strides=None)(x)
+        x = Dense(dense[0], activation="relu")(x)
+        # x = MaxPooling2D(pool_size=facteurReduction, strides=None)(x)
 
-        x = Dense(100, activation="relu")(x)
+        x = Dense(dense[1], activation="relu")(x)
 
-        x = UpSampling2D(size=facteurReduction)(x)
-        x = Dense(200, activation="relu")(x)
+        # x = UpSampling2D(size=facteurReduction)(x)
+        x = Dense(dense[0], activation="relu")(x)
 
         x = UpSampling2D(size=facteurReduction)(x)
         x = Conv2D(
-            filters=4 * baseConvolution,
-            kernel_size=1 * baseNoyau,
+            filters=dimensions[3],
+            kernel_size=noyau[3],
             activation="relu",
             padding="same",
         )(x)
 
         x = UpSampling2D(size=facteurReduction)(x)
         x = Conv2D(
-            filters=3 * baseConvolution,
-            kernel_size=2 * baseNoyau,
+            filters=dimensions[2],
+            kernel_size=noyau[2],
             activation="relu",
             padding="same",
         )(x)
 
         x = UpSampling2D(size=facteurReduction)(x)
         x = Conv2D(
-            filters=2 * baseConvolution,
-            kernel_size=3 * baseNoyau,
+            filters=dimensions[1],
+            kernel_size=noyau[1],
             activation="relu",
             padding="same",
         )(x)
@@ -130,8 +149,8 @@ class Autoencodeur(object):
         x = UpSampling2D(size=facteurReduction)(x)
         # z sera de taille (None, hauteur, largeur, 6)
         x = Conv2D(
-            filters=1 * baseConvolution,
-            kernel_size=4 * baseNoyau,
+            filters=dimensions[0],
+            kernel_size=noyau[0],
             activation="relu",
             padding="same",
         )(x)

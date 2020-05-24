@@ -353,3 +353,5 @@ class Grille(object):
         self.racine.normaliser(
             image, coinHautGauche=(0, 0), coinBasDroite=(hauteur, largeur)
         )
+        # Pour plus de facilité, on renvoie l'image (qui est modifiée par effet de bord)
+        return image

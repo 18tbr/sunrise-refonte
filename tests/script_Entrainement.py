@@ -21,7 +21,7 @@ from Autoencodeur import Autoencodeur
 def test_entrainement():
     Genetique.PROFONDEUR_MAX_ARBRE = 20
     Genetique.LARGEUR_MAX_ARBRE = 20
-    taille = 5
+    taille = 1
     l, h = 32, 32
     Cint = Coefficients.muC
     listeGenetiques = lectureBlob(
@@ -44,25 +44,36 @@ def test_entrainement():
     test = []
     for i in range(5):
         index = randrange(len(images))
-        test.append(images[index])
-        del images[index]
+        test.append((images[index], population[index]))
+        # del images[index]
     # Le réseau progresse en général beaucoup moins vite au dela de 50
     # itérations
-    testeur = Autoencodeur(largeur=l, hauteur=h, nomDuModele=None)
-    testeur.creationNouveau(baseNoyau=2, baseConvolution=2)
-    testeur.entrainementImitation(
-        images, iterations=10, tailleGroupeEntrainement=8
-    )
-    # resultats = testeur.predire(test)
-    # for i in range(5):
-    #     plt.imshow(test[i])
-    #     plt.show()
-    #     plt.imshow(resultats[i])
-    #     plt.show()
-    testeur.sauver("test")
-    testChargement = load_model(os.path.join("src", "modeles", "test.md5"))
-    testChargement.summary()
-    print("Chargement réussi.")
+
+    # testeur = Autoencodeur(largeur=l, hauteur=h, nomDuModele=None)
+    # testeur.creationNouveau(baseNoyau=[9,7,5,3], baseDimensions=7, baseDense=50)
+    # testeur.entrainementImitation(
+    #     images, iterations=50, tailleGroupeEntrainement=8
+    # )
+
+    testeur = Autoencodeur(largeur=l, hauteur=h, nomDuModele="test")
+    resultats = testeur.predire([elt[0] for elt in test])
+    for i in range(5):
+        imageReference, arbre = test[i]
+        print(arbre.forme)
+        plt.imshow(imageReference)
+        plt.title("Reference")
+        plt.show()
+        plt.imshow(resultats[i])
+        plt.title("Proposition brute")
+        plt.show()
+        imageNormalisee = arbre.normalisationImage(resultats[i])
+        plt.imshow(imageNormalisee)
+        plt.title("Proposition normalisée")
+        plt.show()
+    # testeur.sauver("test")
+    # testChargement = load_model(os.path.join("src", "modeles", "test.md5"))
+    # testChargement.summary()
+    # print("Chargement réussi.")
 
 
 if __name__ == "__main__":
