@@ -30,3 +30,7 @@ class SimulationException(Exception):
 # Une exception lancée lorsqu'un modèle keras demandé ne peut être trouvé.
 class ModeleIntrouvable(Exception):
     pass
+
+# Une exception lancée lorsqu'un arbre est trop gros pour être représenté dans une image demandée.
+class ImageTropPetite(Exception):
+    pass

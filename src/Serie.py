@@ -4,7 +4,7 @@ from Noeud import Noeud, conversionIndice
 from Coefficients import (
     capacite,
 )  # Détermination aléatoire des valeurs de capacités
-from SunRiseException import NonFeuilleException
+from SunRiseException import NonFeuilleException, ImageTropPetite
 
 
 class Serie(Noeud):
@@ -276,6 +276,8 @@ class Serie(Noeud):
         nombreDivisions = len(self.fils)
         # On calcule la largeur de chaque subdivision horizontale que l'on s'apprète à créer. On rappelle que le 0,0 est tout en haut à gauche de l'image.
         largeur = int((coinBasDroiteX - coinHautGaucheX) / nombreDivisions)
+        if largeur == 0:
+            raise ImageTropPetite(f"La largeur d'une liaison série écrite à la profondeur {self.profondeur} serait 0.")
         # On appelle récursivement la méthode dessiner sur les enfants
         for i in range(nombreDivisions - 1):
             fils = self.fils[i]
@@ -305,6 +307,8 @@ class Serie(Noeud):
         nombreDivisions = len(self.fils)
         # On calcule la largeur de chaque subdivision horizontale que l'on s'apprète à créer. On rappelle que le 0,0 est tout en haut à gauche de l'image.
         largeur = int((coinBasDroiteX - coinHautGaucheX) / nombreDivisions)
+        if largeur == 0:
+            raise ImageTropPetite(f"La largeur d'une liaison série écrite à la profondeur {self.profondeur} serait 0.")
         # On appelle récursivement la méthode dessiner sur les enfants
         for i in range(nombreDivisions - 1):
             fils = self.fils[i]
@@ -342,6 +346,8 @@ class Serie(Noeud):
         nombreDivisions = len(self.fils)
         # On calcule la largeur de chaque subdivision horizontale que l'on s'apprète à créer. On rappelle que le 0,0 est tout en haut à gauche de l'image.
         largeur = int((coinBasDroiteX - coinHautGaucheX) / nombreDivisions)
+        if largeur == 0:
+            raise ImageTropPetite(f"La largeur d'une liaison série écrite à la profondeur {self.profondeur} serait 0.")
         # On appelle récursivement la méthode dessiner sur les enfants
         for i in range(nombreDivisions - 1):
             fils = self.fils[i]

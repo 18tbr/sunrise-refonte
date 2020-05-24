@@ -12,51 +12,45 @@ sys.path.append(f"{os.getcwd()}/src")
 import Coefficients
 from Genetique import Genetique
 from Entrainement import (
+    creationGenetiqueLectureDossier,
     lectureBlob,
     unificationPopulation,
 )
 from Autoencodeur import Autoencodeur
+from AutoencodeurDeterministe import AutoencodeurDeterministe
 
 
 def test_entrainement():
-    Genetique.PROFONDEUR_MAX_ARBRE = 20
-    Genetique.LARGEUR_MAX_ARBRE = 20
+    Genetique.PROFONDEUR_MAX_ARBRE = 6
+    Genetique.LARGEUR_MAX_ARBRE = 6
     taille = 1
     l, h = 32, 32
     Cint = Coefficients.muC
-    listeGenetiques = lectureBlob(
-        Cint, taillePopulation=taille, generationMax=100, objectif=10
-    )
-    print(len(listeGenetiques))
-    population = unificationPopulation(listeGenetiques)
-    taille = len(population)
-    print(taille)
-    # scores = []
-    images = []
-    for i in range(len(population)):
-        print(f"{i}/{taille}")
-        # scores.append(-population[i].score())
-        images.append(population[i].ecritureImage(largeur=l, hauteur=h))
-    # plt.plot(range(taille), np.log(np.array(scores)))
-    # plt.show()
-    print("Creation de l'autoencodeur")
+
+    # On prend 5 arbres aléatoires pour faire nos tests
+    populationTest = creationGenetiqueLectureDossier(
+        os.path.join("blob", "mesures", "mesure4"), Cint, taillePopulation=l, generationMax=None, objectif=None
+    ).population[:5]
+
     # La liste des images sur lesquelles on va faire des tests à la fin
     test = []
-    for i in range(5):
-        index = randrange(len(images))
-        test.append((images[index], population[index]))
-        # del images[index]
-    # Le réseau progresse en général beaucoup moins vite au dela de 50
-    # itérations
+    for arbre in populationTest:
+        test.append((arbre.ecritureImage(largeur=l, hauteur=h), arbre))
 
-    # testeur = Autoencodeur(largeur=l, hauteur=h, nomDuModele=None)
-    # testeur.creationNouveau(baseNoyau=[9,7,5,3], baseDimensions=7, baseDense=50)
-    # testeur.entrainementImitation(
-    #     images, iterations=50, tailleGroupeEntrainement=8
+    # ENTRAINEMENT
+    # # Le réseau progresse en général beaucoup moins vite au dela de 50
+    # # itérations en général
+    # testeur = AutoencodeurDeterministe(largeur=l, hauteur=h, nomDuModele=None)
+    # testeur.creation(baseNoyau=[9,7,5,3], baseDimensions=7, baseDense=50)
+    # testeur.entrainementImitationBlob(
+    #     Cint, taillePopulation=taille, iterations=50, tailleGroupeEntrainement=8
     # )
 
-    testeur = Autoencodeur(largeur=l, hauteur=h, nomDuModele="test")
-    resultats = testeur.predire([elt[0] for elt in test])
+    # UTILISATION
+    testeur = AutoencodeurDeterministe(largeur=l, hauteur=h, nomDuModele="base")
+    # On améliore nos arbres par effet de bord
+    testeur.ameliorerArbres([elt[1] for elt in test])
+    resultats = [arbre.ecritureImage(largeur=l, hauteur=h) for arbre in [elt[1] for elt in test]]
     for i in range(5):
         imageReference, arbre = test[i]
         print(arbre.forme)

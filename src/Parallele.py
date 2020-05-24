@@ -1,7 +1,7 @@
 # Ce fichier contient l'implémentation des noeuds de type parallèle. La documentation de toutes les méthodes des noeuds est disponible dans la classe parente.
 
 from Noeud import Noeud
-from SunRiseException import NonFeuilleException
+from SunRiseException import NonFeuilleException, ImageTropPetite
 
 
 class Parallele(Noeud):
@@ -169,6 +169,8 @@ class Parallele(Noeud):
         nombreDivisions = len(self.fils)
         # On calcule la hauteur de chaque subdivision verticale que l'on s'apprète à créer. On rappelle que le 0,0 est tout en haut à gauche de l'image.
         hauteur = int((coinBasDroiteY - coinHautGaucheY) / nombreDivisions)
+        if hauteur == 0:
+            raise ImageTropPetite(f"La hauteur d'une liaison parallèle écrite à la profondeur {self.profondeur} serait 0.")
         # On appelle récursivement la méthode dessiner sur les enfants
         for i in range(nombreDivisions - 1):
             fils = self.fils[i]
@@ -203,6 +205,8 @@ class Parallele(Noeud):
         nombreDivisions = len(self.fils)
         # On calcule la hauteur de chaque subdivision verticale que l'on s'apprète à créer. On rappelle que le 0,0 est tout en haut à gauche de l'image.
         hauteur = int((coinBasDroiteY - coinHautGaucheY) / nombreDivisions)
+        if hauteur == 0:
+            raise ImageTropPetite(f"La hauteur d'une liaison parallèle lue à la profondeur {self.profondeur} serait 0.")
         # Dans la mesure où l'autoencodeur ne renvoie pas la même valeur de capacité à droite pour tous les fils, nous devons en faire la moyenne ici pour conserver la cohérence par rapport à l'image et ne pas en favoriser une partie.
         # On appelle récursivement la méthode dessiner sur les enfants
         for i in range(nombreDivisions - 1):
@@ -242,6 +246,8 @@ class Parallele(Noeud):
         nombreDivisions = len(self.fils)
         # On calcule la hauteur de chaque subdivision verticale que l'on s'apprète à créer. On rappelle que le 0,0 est tout en haut à gauche de l'image.
         hauteur = int((coinBasDroiteY - coinHautGaucheY) / nombreDivisions)
+        if hauteur == 0:
+            raise ImageTropPetite(f"La hauteur d'une liaison parallèle normalisée à la profondeur {self.profondeur} serait 0.")
         # Dans la mesure où l'autoencodeur ne renvoie pas la même valeur de capacité à droite pour tous les fils, nous devons en faire la moyenne ici pour conserver la cohérence par rapport à l'image et ne pas en favoriser une partie.
         # On appelle récursivement la méthode dessiner sur les enfants
         for i in range(nombreDivisions - 1):
