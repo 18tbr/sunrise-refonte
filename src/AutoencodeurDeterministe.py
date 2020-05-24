@@ -3,11 +3,22 @@
 import os  # Utile pour les manipulations de fichiers.
 import numpy as np  # Utile pour fournir des données à Keras.
 
-from keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D   # Eléments constitutifs de notre réseau de neurones
-from keras.models import Model, load_model  # Outils pour manipuler facilement des modèles
+from keras.layers import (
+    Input,
+    Dense,
+    Conv2D,
+    MaxPooling2D,
+    UpSampling2D,
+)  # Eléments constitutifs de notre réseau de neurones
+from keras.models import (
+    Model,
+    load_model,
+)  # Outils pour manipuler facilement des modèles
 from keras import backend as K
 
-from Autoencodeur import Autoencodeur   # La classe que l'on cherche à implémenter
+from Autoencodeur import (
+    Autoencodeur,
+)  # La classe que l'on cherche à implémenter
 
 
 class AutoencodeurDeterministe(Autoencodeur):
@@ -21,7 +32,9 @@ class AutoencodeurDeterministe(Autoencodeur):
         *args,
         **kwargs
     ):
-        super(AutoencodeurDeterministe, self).__init__(nomDuModele, largeur, hauteur, *args, *kwargs)
+        super(AutoencodeurDeterministe, self).__init__(
+            nomDuModele, largeur, hauteur, *args, *kwargs
+        )
         # Le constructeur est partagé avec AutoencodeurNonDeterministe donc on n'a rien de plus à faire ici.
 
     def creation(
@@ -36,19 +49,19 @@ class AutoencodeurDeterministe(Autoencodeur):
             dimensions = baseDimensions[:4]
         else:
             # On a fourni un unique coefficent en argument
-            dimensions = [i*baseDimensions for i in range(1,5)]
+            dimensions = [i * baseDimensions for i in range(1, 5)]
 
         # De même pour baseNoyau
         if type(baseNoyau) is list:
             noyau = baseNoyau[:4]
         else:
-            noyau =  [(5-i)*baseNoyau for i in range(1,5)]
+            noyau = [(5 - i) * baseNoyau for i in range(1, 5)]
 
         # Et enfin pour baseDense
         if type(baseDense) is list:
             dense = baseDense[:2]
         else:
-            dense = [2*baseDense, baseDense]
+            dense = [2 * baseDense, baseDense]
 
         # La fonction utilisée par la librairie Keras pour construire notre autoencodeur. Dans la notation Keras, la forme de entree est (None, hauteur, largeur, 3).
         entree = Input(shape=(self.hauteur, self.largeur, 3))
@@ -140,15 +153,16 @@ class AutoencodeurDeterministe(Autoencodeur):
         # Utile pour avoir la forme de l'autoencodeur lorsque l'on fait du debuggage.
         self.autoencodeur.summary()
 
-
     def ameliorerArbres(self, listeArbres, iterations=1):
         # ameliorerArbres est une version plus haut niveau de predire qui travaille directement sur des arbres pour plus de simplicité dans l'algorithme génétique.
 
         # On crée les images de tous nos arbres
-        listeImages = np.array([
-            arbre.ecritureImage(largeur=self.largeur, hauteur=self.hauteur)
-            for arbre in listeArbres
-        ])
+        listeImages = np.array(
+            [
+                arbre.ecritureImage(largeur=self.largeur, hauteur=self.hauteur)
+                for arbre in listeArbres
+            ]
+        )
         # On propose des version améliorées de toutes ces images
         listeImagesAmeliorees = self.autoencodeur.predict(listeImages)
 
@@ -161,7 +175,9 @@ class AutoencodeurDeterministe(Autoencodeur):
                     listeImagesAmeliorees[i]
                 )
             # On améliore à nouveau les images.
-            listeImagesAmeliorees = self.autoencodeur.predict(listeImagesAmeliorees)
+            listeImagesAmeliorees = self.autoencodeur.predict(
+                listeImagesAmeliorees
+            )
 
         # Enfin, on remet à jour tous les arbres en leur donnant des coefficients améliorés.
         for i in range(len(listeArbres)):

@@ -358,4 +358,6 @@ class Grille(object):
 
     def elaguer(self, largeur, hauteur):
         # Cette fonction sert à modifier un arbre de sorte à le forcer à tenir dans le format d'image demandé. Les enfants qui ne tiennent pas dans l'image seront supprimés de l'arbre
-        self.racine.elaguerSousArbre(coinHautGauche=(0, 0), coinBasDroite=(hauteur, largeur))
+        self.racine.elaguerSousArbre(
+            coinHautGauche=(0, 0), coinBasDroite=(hauteur, largeur)
+        )

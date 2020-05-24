@@ -4,6 +4,7 @@ import random
 
 from Grille import Grille, Feuille, Serie, Parallele, Noeud
 
+
 class GenerateurArbres(object):
     """docstring for GenerateurArbres."""
 
@@ -21,7 +22,7 @@ class GenerateurArbres(object):
         taillePopulation=100,
         imageLargeur=32,
         imageHauteur=32,
-        elaguageForce=True
+        elaguageForce=True,
     ):
         """Initialisation de la classe."""
         super(GenerateurArbres, self).__init__()
@@ -53,7 +54,6 @@ class GenerateurArbres(object):
                 proportionsAffiche.append(proportion)
                 print(f"{proportion}% de la population créé.")
             self.population.append(self.individuAleatoire())
-
 
     def individuAleatoire(self):
         """Génère un individu aléatoire.
@@ -93,7 +93,9 @@ class GenerateurArbres(object):
             # ajoute un fils a une feuille, cette dernière descend dans la
             # nouvelle profondeur. On se retrouve donc avec deux noeuds de plus
             # à la nouvelle profondeur au lieu d'un.
-            largeurAutorisee = min(GenerateurArbres.LARGEUR_MAX_ARBRE, 3 * (i+1))
+            largeurAutorisee = min(
+                GenerateurArbres.LARGEUR_MAX_ARBRE, 3 * (i + 1)
+            )
             # On détermine au hasard la largeur de la profondeur i+1.
             largeur = random.randint(1, largeurAutorisee)
 
@@ -129,6 +131,8 @@ class GenerateurArbres(object):
 
         # Si on a demandé un élaguage automatique, alors on tronque l'individu pour qu'il soit représentable sous forme d'image.
         if self.elaguageForce:
-            individu.elaguer(largeur=self.imageLargeur, hauteur=self.imageHauteur)
+            individu.elaguer(
+                largeur=self.imageLargeur, hauteur=self.imageHauteur
+            )
         # On renvoie la liste ainsi formée.
         return individu

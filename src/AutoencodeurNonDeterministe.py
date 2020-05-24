@@ -1,12 +1,26 @@
 import os  # Utile pour les manipulations de fichiers.
 import numpy as np  # Utile pour fournir des données à Keras.
 
-from keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D   # Les éléments constitutifs de notre modèle.
-from keras.models import Model, load_model  # Outils pouf manipuler des modèles Keras facilement
+from keras.layers import (
+    Input,
+    Dense,
+    Conv2D,
+    MaxPooling2D,
+    UpSampling2D,
+)  # Les éléments constitutifs de notre modèle.
+from keras.models import (
+    Model,
+    load_model,
+)  # Outils pouf manipuler des modèles Keras facilement
 from keras import backend as K
 
-from Entrainement import lectureBlob, unificationPopulation # Des fonctions utiles pour simplifier l'entrainement non supervisé
-from Autoencodeur import Autoencodeur   # La classe que l'on cherche à implémenter
+from Entrainement import (
+    lectureBlob,
+    unificationPopulation,
+)  # Des fonctions utiles pour simplifier l'entrainement non supervisé
+from Autoencodeur import (
+    Autoencodeur,
+)  # La classe que l'on cherche à implémenter
 
 
 class AutoencodeurNonDeterministe(Autoencodeur):
@@ -17,6 +31,7 @@ class AutoencodeurNonDeterministe(Autoencodeur):
 
     # La proportion de la population pour laquelle on autorise l'autoencodeur non déterministe à ne pas trouver d'améliorations. Plus cette proportion est grande, plus l'amélioration est rapide mais moins elle est efficace.
     ECHEC_PERMIS = 0.1
+
     def __init__(
         self,
         nomDuModele="ameliorateur",
@@ -25,9 +40,10 @@ class AutoencodeurNonDeterministe(Autoencodeur):
         *args,
         **kwargs
     ):
-        super(AutoencodeurNonDeterministe, self).__init__(nomDuModele, largeur, hauteur, *args, *kwargs)
+        super(AutoencodeurNonDeterministe, self).__init__(
+            nomDuModele, largeur, hauteur, *args, *kwargs
+        )
         # Le constructeur est partagé avec AutoencodeurDeterministe donc on n'a rien de plus à faire ici.
-
 
     def creation(
         self, facteurReduction=2, baseDimensions=9, baseNoyau=4, baseDense=50
@@ -41,19 +57,19 @@ class AutoencodeurNonDeterministe(Autoencodeur):
             dimensions = baseDimensions[:4]
         else:
             # On a fourni un unique coefficent en argument
-            dimensions = [i*baseDimensions for i in range(1,5)]
+            dimensions = [i * baseDimensions for i in range(1, 5)]
 
         # De même pour baseNoyau
         if type(baseNoyau) is list:
             noyau = baseNoyau[:4]
         else:
-            noyau =  [(5-i)*baseNoyau for i in range(1,5)]
+            noyau = [(5 - i) * baseNoyau for i in range(1, 5)]
 
         # Et enfin pour baseDense
         if type(baseDense) is list:
             dense = baseDense[:2]
         else:
-            dense = [2*baseDense, baseDense]
+            dense = [2 * baseDense, baseDense]
 
         # La fonction utilisée par la librairie Keras pour construire notre autoencodeur. Dans la notation Keras, la forme de entree est (None, hauteur, largeur, 3).
         entree = Input(shape=(self.hauteur, self.largeur, 3))
@@ -144,7 +160,6 @@ class AutoencodeurNonDeterministe(Autoencodeur):
         )
         # Utile pour avoir la forme de l'autoencodeur lorsque l'on fait du debuggage.
         self.autoencodeur.summary()
-
 
     def ameliorerArbres(self, listeArbres, iterations=1):
         # Cas non déterministe. Notez que dans le cas non deterministe on suppose que si un arbre relit l'image qu'il a lui même créé, il revient dans l'état où il était au moment de créer l'image (ce qui est vrai sauf problèmes d'arrondi).

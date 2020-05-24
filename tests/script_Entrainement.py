@@ -11,10 +11,7 @@ sys.path.append(f"{os.getcwd()}/src")
 
 import Coefficients
 from Genetique import Genetique
-from Entrainement import (
-    creationPopulationLectureDossier,
-    lectureBlob
-)
+from Entrainement import creationPopulationLectureDossier, lectureBlob
 from Autoencodeur import Autoencodeur
 from AutoencodeurDeterministe import AutoencodeurDeterministe
 
@@ -28,7 +25,11 @@ def test_entrainement():
 
     # On prend 5 arbres aléatoires pour faire nos tests
     populationTest = creationPopulationLectureDossier(
-        os.path.join("blob", "mesures", "mesure4"), Cint, taillePopulation=l, largeur=l, hauteur=h
+        os.path.join("blob", "mesures", "mesure4"),
+        Cint,
+        taillePopulation=l,
+        largeur=l,
+        hauteur=h,
     )[:5]
 
     # La liste des images sur lesquelles on va faire des tests à la fin
@@ -40,7 +41,7 @@ def test_entrainement():
     # Le réseau progresse en général beaucoup moins vite au dela de 50
     # itérations en général
     testeur = AutoencodeurDeterministe(largeur=l, hauteur=h, nomDuModele=None)
-    testeur.creation(baseNoyau=[9,7,5,3], baseDimensions=7, baseDense=50)
+    testeur.creation(baseNoyau=[9, 7, 5, 3], baseDimensions=7, baseDense=50)
     testeur.entrainementImitationBlob(
         Cint, taillePopulation=taille, iterations=50, tailleGroupeEntrainement=8
     )
@@ -51,7 +52,10 @@ def test_entrainement():
     # TEST
     # On améliore nos arbres par effet de bord
     testeur.ameliorerArbres([elt[1] for elt in test])
-    resultats = [arbre.ecritureImage(largeur=l, hauteur=h) for arbre in [elt[1] for elt in test]]
+    resultats = [
+        arbre.ecritureImage(largeur=l, hauteur=h)
+        for arbre in [elt[1] for elt in test]
+    ]
     for i in range(5):
         imageReference, arbre = test[i]
         print(arbre.forme)

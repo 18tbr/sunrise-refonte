@@ -3,9 +3,16 @@ from operator import itemgetter  # Pour trier des listes
 import random  # Pour introduire du hasard
 
 from Grille import Grille, Noeud, Feuille, Parallele, Serie
-from GenerateurArbres import GenerateurArbres   # Utilisé en interne pour créer une population d'arbres aléatoires.
-from Autoencodeur import Autoencodeur   # L'interface permettant de manipuler les autoencodeurs
-from AutoencodeurDeterministe import AutoencodeurDeterministe   # Pour pouvoir instancier des autoencodeurs déterministes à partir de leurs noms.
+from GenerateurArbres import (
+    GenerateurArbres,
+)  # Utilisé en interne pour créer une population d'arbres aléatoires.
+from Autoencodeur import (
+    Autoencodeur,
+)  # L'interface permettant de manipuler les autoencodeurs
+from AutoencodeurDeterministe import (
+    AutoencodeurDeterministe,
+)  # Pour pouvoir instancier des autoencodeurs déterministes à partir de leurs noms.
+
 
 class Genetique(object):
     """Classe pour l'algorithme génétique.
@@ -57,7 +64,7 @@ class Genetique(object):
     CHANCE_SURVIE_FAIBLE = 0.05
     # Si ELAGUAGE_FORCE vaut True, alors chaque individu créé sera élagué pour tenir dans les dimension d'image spécifiées en argument du constructeur.
     ELAGUAGE_FORCE = True
-    SILENCE = False     # Permet de lancer l'algorithme sans afficher d'information de debug dans la console.
+    SILENCE = False  # Permet de lancer l'algorithme sans afficher d'information de debug dans la console.
 
     def __init__(
         self,
@@ -71,7 +78,7 @@ class Genetique(object):
         objectif=10,
         imageLargeur=32,
         imageHauteur=32,
-        autoencodeur=None
+        autoencodeur=None,
     ):
         """Initialisation de la classe."""
         super(Genetique, self).__init__()
@@ -90,12 +97,26 @@ class Genetique(object):
             self.autoencodeur = None
         elif type(autoencodeur) is str:
             # On peut aussi donner le nom d'un autoencodeur pour qu'il soit récupéré depuis un fichier
-            self.autoencodeur = AutoencodeurDeterministe(nomDuModele=autoencodeur, largeur=imageLargeur, hauteur=imageHauteur)
+            self.autoencodeur = AutoencodeurDeterministe(
+                nomDuModele=autoencodeur,
+                largeur=imageLargeur,
+                hauteur=imageHauteur,
+            )
         else:
             # On récupère l'autoencodeur directement de l'instance qui a été fournie
             self.autoencodeur = autoencodeur
         # GénérateurArbres va automatiquement générer une population convenable lors de sa construction
-        generateur = GenerateurArbres(self.Cint, self.T, self.Text, self.Tint, self.Pint, self.taillePopulation, self.imageLargeur, self.imageHauteur, Genetique.ELAGUAGE_FORCE)
+        generateur = GenerateurArbres(
+            self.Cint,
+            self.T,
+            self.Text,
+            self.Tint,
+            self.Pint,
+            self.taillePopulation,
+            self.imageLargeur,
+            self.imageHauteur,
+            Genetique.ELAGUAGE_FORCE,
+        )
         # On récupère la population crée.
         self.population = generateur.population
 
@@ -122,7 +143,6 @@ class Genetique(object):
 
         # On trie la liste selon l'argument d'indice 1, d'où le itemgetter.
         return sorted(scoreIndividus, key=itemgetter(1))
-
 
     def selection(self):
         """Ne conserve que les meilleurs individus de la population.
@@ -212,7 +232,9 @@ class Genetique(object):
                 besoinElaguage = False
                 if Genetique.ELAGUAGE_FORCE:
                     # Si besoin, on élague l'individu obtenu
-                    individu.elaguer(largeur=self.imageLargeur, hauteur=self.imageHauteur)
+                    individu.elaguer(
+                        largeur=self.imageLargeur, hauteur=self.imageHauteur
+                    )
 
     def fusion(self):
         """Fusionne les individus.
@@ -302,7 +324,9 @@ class Genetique(object):
 
             if Genetique.ELAGUAGE_FORCE:
                 # Si besoin, on élague l'enfant obtenu pour qu'il soit représentable sous forme d'image.
-                enfant.elaguer(largeur=self.imageLargeur, hauteur=self.imageHauteur)
+                enfant.elaguer(
+                    largeur=self.imageLargeur, hauteur=self.imageHauteur
+                )
 
             # On ajoute la grille créée à la population de descendants.
             enfants.append(enfant)

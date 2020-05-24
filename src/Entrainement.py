@@ -18,7 +18,15 @@ def creationPopulationLectureDossier(
         elaguageForce = False
 
     return GenerateurArbres(
-        Cint, T, Tint, Text, Pint, taillePopulation, largeur, hauteur, elaguageForce
+        Cint,
+        T,
+        Tint,
+        Text,
+        Pint,
+        taillePopulation,
+        largeur,
+        hauteur,
+        elaguageForce,
     ).population
 
 
@@ -33,10 +41,10 @@ def lectureBlob(Cint, taillePopulation, largeur, hauteur):
         )
         # On ajoute la population crée à partir du dossier dans notre population totale. Notez que si largeur ou hauteur est None, la population ne sera pas élaguée.
         population += creationPopulationLectureDossier(
-                os.path.join("blob", "mesures", dossier),
-                Cint,
-                taillePopulation,
-                largeur,
-                hauteur
-            )
+            os.path.join("blob", "mesures", dossier),
+            Cint,
+            taillePopulation,
+            largeur,
+            hauteur,
+        )
     return population

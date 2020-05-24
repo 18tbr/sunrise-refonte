@@ -31,6 +31,7 @@ class SimulationException(Exception):
 class ModeleIntrouvable(Exception):
     pass
 
+
 # Une exception lancée lorsqu'un arbre est trop gros pour être représenté dans une image demandée.
 class ImageTropPetite(Exception):
     pass

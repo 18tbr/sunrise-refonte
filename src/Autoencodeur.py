@@ -9,7 +9,9 @@ from keras.models import Model, load_model
 from keras import backend as K
 
 from SunRiseException import ModeleIntrouvable
-from Entrainement import lectureBlob    # Utile pour entrainer une population très simplement.
+from Entrainement import (
+    lectureBlob,
+)  # Utile pour entrainer une population très simplement.
 
 
 # Cette implémentation est trop longue et incohérente, il faudrait utiliser une classe abstraite et de l'héritage pour séparer Autoencodeur déterministe et non déterministe.
@@ -22,7 +24,7 @@ class Autoencodeur(object):
         largeur=32,
         hauteur=32,
         *args,
-        **kwargs
+        **kwargs,
     ):
         super(Autoencodeur, self).__init__(*args, **kwargs)
         # Pour signifier que l'on souhaite créer un nouveau modèle et non en utiliser un préexistant, utiliser la valeur None comme nomDuModele
@@ -46,7 +48,9 @@ class Autoencodeur(object):
     def creation(
         self, facteurReduction=2, baseDimensions=9, baseNoyau=4, baseDense=50
     ):
-        raise NotImplementedError("La création d'un nouvel autoencodeur pour son entrainement n'a pas été réimplémentée.")
+        raise NotImplementedError(
+            "La création d'un nouvel autoencodeur pour son entrainement n'a pas été réimplémentée."
+        )
 
     # La fonction d'entrainement est partagée entre les différents types d'autoencodeurs et est donc implémentée ici.
     def entrainement(
@@ -83,19 +87,22 @@ class Autoencodeur(object):
         )
 
         # On récupère toutes les images de tous ces arbres
-        sourceImages = np.array([
-            arbre.ecritureImage(largeur=self.largeur, hauteur=self.hauteur)
-            for arbre in sourceArbresEntrainement
-        ])
+        sourceImages = np.array(
+            [
+                arbre.ecritureImage(largeur=self.largeur, hauteur=self.hauteur)
+                for arbre in sourceArbresEntrainement
+            ]
+        )
         # On entraine le réseau sur les images obtenues
         self.entrainement(
             sourceImages, sourceImages, iterations, tailleGroupeEntrainement
         )
 
-
     def ameliorerArbres(self, listeArbres, iterations=1):
         # ameliorerArbres est une version plus haut niveau de predire qui travaille directement sur des arbres pour plus de simplicité dans l'algorithme génétique.
-        raise NotImplementedError("La méthode d'amélioration d'une population d'arbres n'a pas été réimplémentée.")
+        raise NotImplementedError(
+            "La méthode d'amélioration d'une population d'arbres n'a pas été réimplémentée."
+        )
 
     # Cette méthode est identique pour tous les types d'autoencodeurs, on peut donc l'implémenter ici.
     def sauver(self, nomDuModele):

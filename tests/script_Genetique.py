@@ -9,13 +9,17 @@ sys.path.append(f"{os.getcwd()}/src")
 
 import Coefficients
 from Genetique import Genetique
-from Outils import lireDossier  # Pour récupérer des valeurs crédibles sur lesquelles lancer l'algorithme.
+from Outils import (
+    lireDossier,
+)  # Pour récupérer des valeurs crédibles sur lesquelles lancer l'algorithme.
 
 
 def test_population_aleatoire():
     taille = 20
     Cint = Coefficients.muC
-    T, Tint, Text, Pint = lireDossier(os.path.join("blob","mesures","mesure4"))
+    T, Tint, Text, Pint = lireDossier(
+        os.path.join("blob", "mesures", "mesure4")
+    )
     # T = list(range(taille))
     # Text = list(range(taille))
     # Tint = [10 * i for i in range(taille)]
@@ -27,7 +31,17 @@ def test_population_aleatoire():
     # choixAutoencodeur = None
     choixAutoencodeur = "base"
     print("Création de la population initiale")
-    evolution = Genetique(Cint, T, Text, Tint, Pint, generationMax=30, imageLargeur=32, imageHauteur=32, autoencodeur=choixAutoencodeur)
+    evolution = Genetique(
+        Cint,
+        T,
+        Text,
+        Tint,
+        Pint,
+        generationMax=30,
+        imageLargeur=32,
+        imageHauteur=32,
+        autoencodeur=choixAutoencodeur,
+    )
     # print("\nCalcul du score de tous les individus de la population")
     # listeScores = evolution.scorePopulation()
     # plt.plot(range(evolution.taillePopulation), [elt[1] for elt in listeScores])
@@ -76,7 +90,9 @@ def test_population_aleatoire():
             "Convergence de l'algorithme génétique seul (sans auto-encodeurs)"
         )
     else:
-        plt.title(f"Convergence de l'algorithme génétique avec l'auto-encodeur {choixAutoencodeur}")
+        plt.title(
+            f"Convergence de l'algorithme génétique avec l'auto-encodeur {choixAutoencodeur}"
+        )
     plt.show()
 
 
