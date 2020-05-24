@@ -83,6 +83,10 @@ class Autoencodeur(object):
         )
         # On crée une seule grosse liste contenant tous les arbres obtenus
         sourceArbresEntrainement = unificationPopulation(listeGenetiques)
+        # Avant de créer les images, on élague tous les arbres.
+        for arbre in sourceArbresEntrainement:
+            arbre.elaguer(largeur=self.largeur, hauteur=self.hauteur)
+        
         # On récupère toutes les images de tous ces arbres
         sourceImages = np.array([
             arbre.ecritureImage(largeur=self.largeur, hauteur=self.hauteur)

@@ -116,6 +116,11 @@ class Noeud(object):
             "La normalisation d'une image à partir d'un arbre n'a pas été réimplémenté."
         )
 
+    # Cette méthode est appellée récursivement sur un arbre pour l'élaguer.
+    def elaguerSousArbre(self, coinHautGauche, coinBasDroite):
+        raise NotImplementedError("L'élaguage d'un sous arbre n'a pas été réimplémenté.")
+
+
 
 # Une fonction pour convertir l'indice utile pour A, B et C en un indice utile pour D, important car Text ne se trouve pas dans A alors qu'il est dans D. Utile dans Serie.creationMarquageRecursif et Feuille.injectionMarquage
 def conversionIndice(indice):

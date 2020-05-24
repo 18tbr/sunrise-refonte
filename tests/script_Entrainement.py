@@ -22,9 +22,9 @@ from AutoencodeurDeterministe import AutoencodeurDeterministe
 
 def test_entrainement():
     Genetique.PROFONDEUR_MAX_ARBRE = 6
-    Genetique.LARGEUR_MAX_ARBRE = 6
-    taille = 1
-    l, h = 32, 32
+    Genetique.LARGEUR_MAX_ARBRE = 4
+    taille = 10
+    l, h = 64, 64
     Cint = Coefficients.muC
 
     # On prend 5 arbres aléatoires pour faire nos tests
@@ -38,16 +38,18 @@ def test_entrainement():
         test.append((arbre.ecritureImage(largeur=l, hauteur=h), arbre))
 
     # ENTRAINEMENT
-    # # Le réseau progresse en général beaucoup moins vite au dela de 50
-    # # itérations en général
-    # testeur = AutoencodeurDeterministe(largeur=l, hauteur=h, nomDuModele=None)
-    # testeur.creation(baseNoyau=[9,7,5,3], baseDimensions=7, baseDense=50)
-    # testeur.entrainementImitationBlob(
-    #     Cint, taillePopulation=taille, iterations=50, tailleGroupeEntrainement=8
-    # )
+    # Le réseau progresse en général beaucoup moins vite au dela de 50
+    # itérations en général
+    testeur = AutoencodeurDeterministe(largeur=l, hauteur=h, nomDuModele=None)
+    testeur.creation(baseNoyau=[9,7,5,3], baseDimensions=7, baseDense=50)
+    testeur.entrainementImitationBlob(
+        Cint, taillePopulation=taille, iterations=50, tailleGroupeEntrainement=8
+    )
 
-    # UTILISATION
-    testeur = AutoencodeurDeterministe(largeur=l, hauteur=h, nomDuModele="base")
+    # # UTILISATION
+    # testeur = AutoencodeurDeterministe(largeur=l, hauteur=h, nomDuModele="base")
+
+    # TEST
     # On améliore nos arbres par effet de bord
     testeur.ameliorerArbres([elt[1] for elt in test])
     resultats = [arbre.ecritureImage(largeur=l, hauteur=h) for arbre in [elt[1] for elt in test]]

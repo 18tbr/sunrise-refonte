@@ -1,8 +1,9 @@
 """Implémentation de l'algorithme génétique."""
 from operator import itemgetter  # Pour trier des listes
 import random  # Pour introduire du hasard
-from Grille import Grille, Noeud, Feuille, Parallele, Serie
 
+from Grille import Grille, Noeud, Feuille, Parallele, Serie
+from Autoencodeur import Autoencodeur   # L'interface permettant de manipuler les autoencodeurs
 
 class Genetique(object):
     """Classe pour l'algorithme génétique.
@@ -55,6 +56,8 @@ class Genetique(object):
     POURCENTAGE_CONSERVATION_FORT = 0.5
     CHANCE_SURVIE_FAIBLE = 0.05
     BIAIS_ALTERNANCE = 0.2
+    # Si ELAGUAGE_FORCE vaut True, alors chaque individu créé sera élagué pour tenir dans les dimension d'image spécifiées en argument du constructeur.
+    ELAGUAGE_FORCE = True
 
     def __init__(
         self,
@@ -66,6 +69,9 @@ class Genetique(object):
         taillePopulation=100,
         generationMax=1000,
         objectif=10,
+        imageLargeur=32,
+        imageHauteur=32,
+        autoencodeur=None
     ):
         """Initialisation de la classe."""
         super(Genetique, self).__init__()
@@ -78,6 +84,10 @@ class Genetique(object):
         self.objectif = objectif
         self.taillePopulation = taillePopulation
         self.generationMax = generationMax
+        self.imageLargeur = imageLargeur
+        self.imageHauteur = imageHauteur
+        # Si autoencodeur est None pendant l'algorithme génétique, alors la phase d'amélioration des coefficients sera ignorée.
+        self.autoencodeur = autoencodeur
         # On initialise directement la population à partir du constructeur.
         self.populationAleatoire()
 
@@ -151,6 +161,11 @@ class Genetique(object):
         # On crée itérativement tous les niveaux de notre arbre.
         for i in range(profondeur - 1):
             # cf. docstring pour `largeurAutorisee`.
+            # Notez que la largeur réelle d'une couche de l'arbre dépasse
+            # souvent la largeur maximale autorisée. En effet, lorsque l'on
+            # ajoute un fils a une feuille, cette dernière descend dans la
+            # nouvelle profondeur. On se retrouve donc avec deux noeuds de plus
+            # à la nouvelle profondeur au lieu d'un.
             largeurAutorisee = min(Genetique.LARGEUR_MAX_ARBRE, 3 * (i+1))
             # On détermine au hasard la largeur de la profondeur i+1.
             largeur = random.randint(1, largeurAutorisee)
@@ -185,6 +200,9 @@ class Genetique(object):
             # On alterne le biais entre liaisons séries et parallèle.
             graineAlternance *= -1
 
+        # Si on a demandé un élaguage automatique, alors on tronque l'individu pour qu'il soit représentable sous forme d'image.
+        if Genetique.ELAGUAGE_FORCE:
+            individu.elaguer(largeur=self.imageLargeur, hauteur=self.imageHauteur)
         # On renvoie la liste ainsi formée.
         return individu
 
@@ -225,8 +243,11 @@ class Genetique(object):
         Pour l'instant, on utilise un taux de mutation constant.
         """
         for individu in self.population:
+            # On note si l'individu a été muté, auquel cas il faudra l'élaguer si cela est demandé pour qu'il reste représentable sous forme d'image.
+            besoinElaguage = False
             # On peut muter un même individu plusieurs fois si le hasard le veut
             while random.random() < Genetique.CHANCE_DE_MUTATION:
+                besoinElaguage = True
                 profondeur = len(individu.forme)
                 # On tire une profondeur à laquelle faire la mutation.
                 choixProfondeur = random.randrange(profondeur)
@@ -267,6 +288,13 @@ class Genetique(object):
                         # dans 0, `nombreFils` exclu.
                         choixIndex = random.randrange(nombreFils)
                         noeud.suppressionFils(index=choixIndex)
+
+            if besoinElaguage:
+                # On remet l'indicateur à 0 pour le prochain individu.
+                besoinElaguage = False
+                if Genetique.ELAGUAGE_FORCE:
+                    # Si besoin, on élague l'individu obtenu
+                    individu.elaguer(largeur=self.imageLargeur, hauteur=self.imageHauteur)
 
     def fusion(self):
         """Fusionne les individus.
@@ -353,6 +381,11 @@ class Genetique(object):
                 # Enfin, on ajoute les nouveaux sous arbres créés sous le noeud
                 # choisi de enfant.
                 noeudEnfant.substituerEnfants(sousArbresChoisis)
+
+            if Genetique.ELAGUAGE_FORCE:
+                # Si besoin, on élague l'enfant obtenu pour qu'il soit représentable sous forme d'image.
+                enfant.elaguer(largeur=self.imageLargeur, hauteur=self.imageHauteur)
+
             # On ajoute la grille créée à la population de descendants.
             enfants.append(enfant)
         # On renvoie la liste des enfants créés pour qu'ils soient ajoutés à la
@@ -379,6 +412,10 @@ class Genetique(object):
             self.Pint,
             racine=meilleurArbre,
         )
+
+        # AMELIORATION
+        print("Amelioration")
+        self.autoencodeur.ameliorerArbres(self.population)
 
         # MUTATION
         print("Mutation")

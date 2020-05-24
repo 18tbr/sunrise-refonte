@@ -160,7 +160,7 @@ class Feuille(Noeud):
         coinHautGaucheY, coinHautGaucheX = coinHautGauche
         coinBasDroiteY, coinBasDroiteX = coinBasDroite
         if coinBasDroiteX <= coinHautGaucheX or coinBasDroiteY <= coinHautGaucheY:
-            raise ImageTropPetite(f"Il n'y a pas assez de place pour écrire une feuille à la profondeur {self.profondeur}")
+            raise ImageTropPetite(f"Il n'y a pas assez de place pour écrire une feuille à la profondeur {self.profondeur}, la forme de la grille est {self.grille.forme}")
         # On colore d'abord les résistances
         image[
             coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 0
@@ -180,7 +180,7 @@ class Feuille(Noeud):
         coinHautGaucheY, coinHautGaucheX = coinHautGauche
         coinBasDroiteY, coinBasDroiteX = coinBasDroite
         if coinBasDroiteX <= coinHautGaucheX or coinBasDroiteY <= coinHautGaucheY:
-            raise ImageTropPetite(f"Il n'y a pas assez de place pour lire une feuille à la profondeur {self.profondeur}")
+            raise ImageTropPetite(f"Il n'y a pas assez de place pour lire une feuille à la profondeur {self.profondeur}, la forme de la grille est {self.grille.forme}")
         # On calcule la moyenne des valeurs de coefficients de transmissions sur
         # la zone dédiée et on l'affecte à cette feuille.
         self.H = max(
@@ -216,7 +216,7 @@ class Feuille(Noeud):
         coinHautGaucheY, coinHautGaucheX = coinHautGauche
         coinBasDroiteY, coinBasDroiteX = coinBasDroite
         if coinBasDroiteX <= coinHautGaucheX or coinBasDroiteY <= coinHautGaucheY:
-            raise ImageTropPetite(f"Il n'y a pas assez de place pour normaliser une feuille à la profondeur {self.profondeur}")
+            raise ImageTropPetite(f"Il n'y a pas assez de place pour normaliser une feuille à la profondeur {self.profondeur}, la forme de la grille est {self.grille.forme}")
         # On calcule la moyenne des valeurs de coefficients de transmissions sur
         # la zone dédiée on l'affecte à toute la zone.
         image[
@@ -248,3 +248,10 @@ class Feuille(Noeud):
                 2,
             ]
         )
+
+    def elaguerSousArbre(self, coinHautGauche, coinBasDroite):
+        # Il n'y a rien à faire ici, par hypothès (et par le travail fait sur les liaisons Serie et Parallele) on aura toujours de la place pour une Feuille sur laquelle on appelle la méthode elaguerSousArbre.
+        coinHautGaucheY, coinHautGaucheX = coinHautGauche
+        coinBasDroiteY, coinBasDroiteX = coinBasDroite
+        if coinBasDroiteX <= coinHautGaucheX or coinBasDroiteY <= coinHautGaucheY:
+            raise ImageTropPetite(f"Un problème est apparu dans l'implémentation de elaguerSousArbre, il n'y a pas assez de place pour mettre une feuille à la profondeur {self.profondeur}. La forme de la grille est {self.grille.forme}")
