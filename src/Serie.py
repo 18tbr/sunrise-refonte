@@ -1,9 +1,12 @@
 # Ce fichier contient l'implémentation des noeuds de type série. La documentation de toutes les méthodes des noeuds est disponible dans la classe parente.
 
+from random import randrange  # Utile pour un élaguage aléatoire
+
 from Noeud import Noeud, conversionIndice
 from Coefficients import (
     capacite,
 )  # Détermination aléatoire des valeurs de capacités
+from SunRiseException import NonFeuilleException, ImageTropPetite
 
 
 class Serie(Noeud):
@@ -275,6 +278,10 @@ class Serie(Noeud):
         nombreDivisions = len(self.fils)
         # On calcule la largeur de chaque subdivision horizontale que l'on s'apprète à créer. On rappelle que le 0,0 est tout en haut à gauche de l'image.
         largeur = int((coinBasDroiteX - coinHautGaucheX) / nombreDivisions)
+        if largeur == 0:
+            raise ImageTropPetite(
+                f"La largeur d'une liaison série écrite à la profondeur {self.profondeur} serait 0, la forme de la grille est {self.grille.forme}"
+            )
         # On appelle récursivement la méthode dessiner sur les enfants
         for i in range(nombreDivisions - 1):
             fils = self.fils[i]
@@ -304,6 +311,10 @@ class Serie(Noeud):
         nombreDivisions = len(self.fils)
         # On calcule la largeur de chaque subdivision horizontale que l'on s'apprète à créer. On rappelle que le 0,0 est tout en haut à gauche de l'image.
         largeur = int((coinBasDroiteX - coinHautGaucheX) / nombreDivisions)
+        if largeur == 0:
+            raise ImageTropPetite(
+                f"La largeur d'une liaison série écrite à la profondeur {self.profondeur} serait 0, la forme de la grille est {self.grille.forme}"
+            )
         # On appelle récursivement la méthode dessiner sur les enfants
         for i in range(nombreDivisions - 1):
             fils = self.fils[i]
@@ -341,6 +352,10 @@ class Serie(Noeud):
         nombreDivisions = len(self.fils)
         # On calcule la largeur de chaque subdivision horizontale que l'on s'apprète à créer. On rappelle que le 0,0 est tout en haut à gauche de l'image.
         largeur = int((coinBasDroiteX - coinHautGaucheX) / nombreDivisions)
+        if largeur == 0:
+            raise ImageTropPetite(
+                f"La largeur d'une liaison série écrite à la profondeur {self.profondeur} serait 0, la forme de la grille est {self.grille.forme}"
+            )
         # On appelle récursivement la méthode dessiner sur les enfants
         for i in range(nombreDivisions - 1):
             fils = self.fils[i]
@@ -362,3 +377,48 @@ class Serie(Noeud):
         )
         coinBasDroiteFils = (coinBasDroiteY, coinBasDroiteX)
         fils.normaliser(image, coinHautGaucheFils, coinBasDroiteFils)
+
+    def elaguerSousArbre(self, coinHautGauche, coinBasDroite):
+        # On récupère les coordonnées dont on a besoin pour colorer l'image
+        coinHautGaucheY, coinHautGaucheX = coinHautGauche
+        coinBasDroiteY, coinBasDroiteX = coinBasDroite
+        # On compte le nombre de divisions qu'il faut faire sur l'image
+        nombreDivisions = len(self.fils)
+        # On suppose que la largeur allouée est supérieure à 0
+        largeurAllouee = coinBasDroiteX - coinHautGaucheX
+        largeur = int(largeurAllouee / nombreDivisions)
+        while largeur == 0 and len(self.fils) > 2:
+            index = randrange(len(self.fils))
+            self.suppressionFils(index)
+            largeur = int(largeurAllouee / nombreDivisions)
+
+        if largeur == 0:
+            # Si on sort de la boucle et que la largeur allouée n'est toujours pas suffisante, alors on se fait remplacer par son dernier fils. Comme on a supposé que la largeur allouée est plus grande que 0, le problème va se poser récursivement sur le dernier fils.
+            index = randrange(len(self.fils))
+            # On remarque que les deux seules valeurs possibles sont 0 et 1. Or si on tire 1, 1-1 = 0 désigne le dernier enfant et de même pour 0, 0-1 = -1 désigne bien l'autre enfant.
+            dernierFils = self.fils[index - 1]
+            self.suppressionFils(index)
+            # On appelle récursivement l'élaguage sur le dernier fils (qui a pris notre place).
+            dernierFils.elaguerSousArbre(coinHautGauche, coinBasDroite)
+        else:
+            # On a trouvé de la place pour tous les enfants, il faut de même qu'eux fassent tenir leurs sous arbres.
+            for i in range(len(self.fils) - 1):
+                fils = self.fils[i]
+                coinHautGaucheFils = (
+                    coinHautGaucheY,
+                    coinHautGaucheX + i * largeur,
+                )
+                coinBasDroiteFils = (
+                    coinBasDroiteY,
+                    coinHautGaucheX + (i + 1) * largeur,
+                )
+                # On met à jour la capacité à droite du fils avec la valeur renvoyée par lire
+                fils.elaguerSousArbre(coinHautGaucheFils, coinBasDroiteFils)
+            # Pour être certain de bien colorer toute l'image et de ne pas laisser des bords noirs à cause de problèmes d'arrondis, on effectue la dernière coloration séparément.
+            fils = self.fils[-1]
+            coinHautGaucheFils = (
+                coinHautGaucheY,
+                coinHautGaucheX + (nombreDivisions - 1) * largeur,
+            )
+            coinBasDroiteFils = (coinBasDroiteY, coinBasDroiteX)
+            fils.elaguerSousArbre(coinHautGaucheFils, coinBasDroiteFils)

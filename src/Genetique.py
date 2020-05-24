@@ -1,7 +1,17 @@
 """Implémentation de l'algorithme génétique."""
 from operator import itemgetter  # Pour trier des listes
 import random  # Pour introduire du hasard
+
 from Grille import Grille, Noeud, Feuille, Parallele, Serie
+from GenerateurArbres import (
+    GenerateurArbres,
+)  # Utilisé en interne pour créer une population d'arbres aléatoires.
+from Autoencodeur import (
+    Autoencodeur,
+)  # L'interface permettant de manipuler les autoencodeurs
+from AutoencodeurDeterministe import (
+    AutoencodeurDeterministe,
+)  # Pour pouvoir instancier des autoencodeurs déterministes à partir de leurs noms.
 
 
 class Genetique(object):
@@ -49,12 +59,12 @@ class Genetique(object):
     """
 
     # Variables globales
-    PROFONDEUR_MAX_ARBRE = 100
-    LARGEUR_MAX_ARBRE = 50
     CHANCE_DE_MUTATION = 0.1
     POURCENTAGE_CONSERVATION_FORT = 0.5
     CHANCE_SURVIE_FAIBLE = 0.05
-    BIAIS_ALTERNANCE = 0.2
+    # Si ELAGUAGE_FORCE vaut True, alors chaque individu créé sera élagué pour tenir dans les dimension d'image spécifiées en argument du constructeur.
+    ELAGUAGE_FORCE = True
+    SILENCE = False  # Permet de lancer l'algorithme sans afficher d'information de debug dans la console.
 
     def __init__(
         self,
@@ -66,10 +76,12 @@ class Genetique(object):
         taillePopulation=100,
         generationMax=1000,
         objectif=10,
+        imageLargeur=32,
+        imageHauteur=32,
+        autoencodeur=None,
     ):
         """Initialisation de la classe."""
         super(Genetique, self).__init__()
-        self.population = []
         self.Cint = Cint
         self.T = T
         self.Text = Text
@@ -78,8 +90,35 @@ class Genetique(object):
         self.objectif = objectif
         self.taillePopulation = taillePopulation
         self.generationMax = generationMax
-        # On initialise directement la population à partir du constructeur.
-        self.populationAleatoire()
+        self.imageLargeur = imageLargeur
+        self.imageHauteur = imageHauteur
+        # Si autoencodeur est None pendant l'algorithme génétique, alors la phase d'amélioration des coefficients sera ignorée.
+        if autoencodeur is None:
+            self.autoencodeur = None
+        elif type(autoencodeur) is str:
+            # On peut aussi donner le nom d'un autoencodeur pour qu'il soit récupéré depuis un fichier
+            self.autoencodeur = AutoencodeurDeterministe(
+                nomDuModele=autoencodeur,
+                largeur=imageLargeur,
+                hauteur=imageHauteur,
+            )
+        else:
+            # On récupère l'autoencodeur directement de l'instance qui a été fournie
+            self.autoencodeur = autoencodeur
+        # GénérateurArbres va automatiquement générer une population convenable lors de sa construction
+        generateur = GenerateurArbres(
+            self.Cint,
+            self.T,
+            self.Text,
+            self.Tint,
+            self.Pint,
+            self.taillePopulation,
+            self.imageLargeur,
+            self.imageHauteur,
+            Genetique.ELAGUAGE_FORCE,
+        )
+        # On récupère la population crée.
+        self.population = generateur.population
 
     def scorePopulation(self):
         """Calcule le score de la population.
@@ -88,105 +127,22 @@ class Genetique(object):
         la population. Les individus avec le meilleur score sont à la fin.
         """
         scoreIndividus = []
-        compteur = 0
-        # Pour ne pas afficher le même message en boucle
-        proportionsAffiche = []
+        if not Genetique.SILENCE:
+            compteur = 0
+            # Pour ne pas afficher le même message en boucle
+            proportionsAffiche = []
 
         for individu in self.population:
-            proportion = 100 * compteur // self.taillePopulation
-            if proportion % 5 == 0 and not proportion in proportionsAffiche:
-                proportionsAffiche.append(proportion)
-                print(f"{proportion}% de la population évalué.")
-            compteur += 1
+            if not Genetique.SILENCE:
+                proportion = 100 * compteur // self.taillePopulation
+                if proportion % 5 == 0 and not proportion in proportionsAffiche:
+                    proportionsAffiche.append(proportion)
+                    print(f"{proportion}% de la population évalué.")
+                compteur += 1
             scoreIndividus.append((individu, individu.score()))
 
         # On trie la liste selon l'argument d'indice 1, d'où le itemgetter.
         return sorted(scoreIndividus, key=itemgetter(1))
-
-    def populationAleatoire(self):
-        """Génère une population aléatoire."""
-        # On remet la population à zéro au cas où.
-        self.population = []
-        proportionsAffiche = []
-
-        for i in range(self.taillePopulation):
-            # La génération de population est assez longue, on affiche des
-            # messages pour maintenir l'utilisateur éveillé.
-            proportion = 100 * i // self.taillePopulation
-            if proportion % 5 == 0 and proportion not in proportionsAffiche:
-                proportionsAffiche.append(proportion)
-                print(f"{proportion}% de la population créé.")
-            self.population.append(self.individuAleatoire())
-
-    def individuAleatoire(self):
-        """Génère un individu aléatoire.
-
-        Notes
-        -----
-        graineAlternance : float
-            `graineAlternance` est une graine qui détermine si l'alternance
-            devrait commencer par des liaisons séries ou parallèles.
-            `graineAlternance` peut prendre les valeurs
-            -Genetique.BIAIS_ALTERNANCE ou Genetique.BIAIS_ALTERNANCE.
-        hasard : bool
-            `hasard` a 50% de chances d'être vrai et 50% d'être faux et nous
-            permet de choisir entre ajouter un fils en série et en parallèle.
-            `graineAlternance` permet de favoriser tantôt les liaisons séries,
-            tantôt les liaisons parallèles.
-        largeurAutorisee : int
-            Pour éviter des configurations absurdes, on force l'arbre à avoir
-            une forme un peu conique (c'est-à-dire à n'avoir pas trop de fils
-            sur les premières générations).
-        """
-        graineAlternance = (
-            Genetique.BIAIS_ALTERNANCE
-            + 2 * (random.random() > 0.5) * Genetique.BIAIS_ALTERNANCE
-        )
-
-        # On initialise l'individu que l'on va créer.
-        individu = Grille(self.Cint, self.T, self.Text, self.Tint, self.Pint)
-        # On tire aléatoirement la profondeur qu'aura notre individu.
-        profondeur = random.randint(1, Genetique.PROFONDEUR_MAX_ARBRE)
-
-        # On crée itérativement tous les niveaux de notre arbre.
-        for i in range(profondeur - 1):
-            # cf. docstring pour `largeurAutorisee`.
-            largeurAutorisee = min(Genetique.LARGEUR_MAX_ARBRE, 3 * profondeur)
-            # On détermine au hasard la largeur de la profondeur i+1.
-            largeur = random.randint(1, largeurAutorisee)
-
-            # On choisit (avec remise) les noeuds de la génération i qui
-            # accueilleront des enfants à la génération i+1.
-            indicesChoisis = random.choices(
-                population=range(individu.forme[i]), k=largeur
-            )
-
-            # On ajoute les enfants aux parents désignés.
-            for k in indicesChoisis:
-                # Le noeud auquel on doit ajouter un enfant. Un même indice peut
-                # être tiré plusieurs fois.
-                parent = individu.inspecter(i, k)
-                enfant = Feuille()
-                if type(parent) is Feuille:
-                    # cf. docstring pour `hasard`.
-                    hasard = random.random() > (0.5 + graineAlternance)
-                    if hasard:
-                        parent.ajoutFils(enfant, forme="serie")
-                    else:
-                        parent.ajoutFils(enfant, forme="parallele")
-                else:
-                    # On tire aléatoirement l'index où l'on va insérer le nouvel
-                    # enfant parmi les enfants préexistants du parent. Le +1
-                    # correspond au fait que l'on peut insérer un enfant tout à
-                    # la fin de la liste des descendants du parent.
-                    indexAleatoire = random.randrange(len(parent.fils) + 1)
-                    # On insère le nouvel enfant.
-                    parent.ajoutFils(enfant, index=indexAleatoire)
-            # On alterne le biais entre liaisons séries et parallèle.
-            graineAlternance *= -1
-
-        # On renvoie la liste ainsi formée.
-        return individu
 
     def selection(self):
         """Ne conserve que les meilleurs individus de la population.
@@ -225,8 +181,11 @@ class Genetique(object):
         Pour l'instant, on utilise un taux de mutation constant.
         """
         for individu in self.population:
+            # On note si l'individu a été muté, auquel cas il faudra l'élaguer si cela est demandé pour qu'il reste représentable sous forme d'image.
+            besoinElaguage = False
             # On peut muter un même individu plusieurs fois si le hasard le veut
             while random.random() < Genetique.CHANCE_DE_MUTATION:
+                besoinElaguage = True
                 profondeur = len(individu.forme)
                 # On tire une profondeur à laquelle faire la mutation.
                 choixProfondeur = random.randrange(profondeur)
@@ -267,6 +226,15 @@ class Genetique(object):
                         # dans 0, `nombreFils` exclu.
                         choixIndex = random.randrange(nombreFils)
                         noeud.suppressionFils(index=choixIndex)
+
+            if besoinElaguage:
+                # On remet l'indicateur à 0 pour le prochain individu.
+                besoinElaguage = False
+                if Genetique.ELAGUAGE_FORCE:
+                    # Si besoin, on élague l'individu obtenu
+                    individu.elaguer(
+                        largeur=self.imageLargeur, hauteur=self.imageHauteur
+                    )
 
     def fusion(self):
         """Fusionne les individus.
@@ -353,6 +321,13 @@ class Genetique(object):
                 # Enfin, on ajoute les nouveaux sous arbres créés sous le noeud
                 # choisi de enfant.
                 noeudEnfant.substituerEnfants(sousArbresChoisis)
+
+            if Genetique.ELAGUAGE_FORCE:
+                # Si besoin, on élague l'enfant obtenu pour qu'il soit représentable sous forme d'image.
+                enfant.elaguer(
+                    largeur=self.imageLargeur, hauteur=self.imageHauteur
+                )
+
             # On ajoute la grille créée à la population de descendants.
             enfants.append(enfant)
         # On renvoie la liste des enfants créés pour qu'ils soient ajoutés à la
@@ -379,6 +354,11 @@ class Genetique(object):
             self.Pint,
             racine=meilleurArbre,
         )
+
+        # AMELIORATION
+        if self.autoencodeur is not None:
+            print("Amelioration")
+            self.autoencodeur.ameliorerArbres(self.population)
 
         # MUTATION
         print("Mutation")

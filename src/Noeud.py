@@ -70,7 +70,9 @@ class Noeud(object):
             # Autre cas important à traiter : on est en train de changer la racine de l'arbre
             self.grille.racine = nouveau
         else:
-            raise IndexError("L'indivdu selectionné n'a pas de parent et n'est pas la racine d'un arbre, il n'y a donc nulle part où le remplacer.")
+            raise IndexError(
+                "L'indivdu selectionné n'a pas de parent et n'est pas la racine d'un arbre, il n'y a donc nulle part où le remplacer."
+            )
         nouveau.parent = self.parent
         # On attache le nouvel élément à la grille
         nouveau.attacher(self.grille)
@@ -112,6 +114,12 @@ class Noeud(object):
     def normaliser(self, image, coinHautGauche, coinBasDroite):
         raise NotImplementedError(
             "La normalisation d'une image à partir d'un arbre n'a pas été réimplémenté."
+        )
+
+    # Cette méthode est appellée récursivement sur un arbre pour l'élaguer.
+    def elaguerSousArbre(self, coinHautGauche, coinBasDroite):
+        raise NotImplementedError(
+            "L'élaguage d'un sous arbre n'a pas été réimplémenté."
         )
 
 

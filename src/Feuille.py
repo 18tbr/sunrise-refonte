@@ -4,14 +4,22 @@ La documentation de toutes les méthodes des noeuds est disponible dans la class
 parente.
 """
 from Noeud import Noeud, conversionIndice
+
 # Les deux imports qui suivent sont utiles pour ajoutFils
 from Serie import Serie
 from Parallele import Parallele
 import numpy as np  # Utile pour np.mean dans la lecture d'image
 import Coefficients  # Utile pour s'assurer que les valeurs lues sont bien plus
+
 # grandes que les valeurs minimales
 from Coefficients import conductance  # Initialisation de coefficients H
+
 # aléatoires
+from SunRiseException import (
+    FeuilleException,
+    NonMarqueException,
+    ImageTropPetite,
+)
 
 
 class Feuille(Noeud):
@@ -155,6 +163,13 @@ class Feuille(Noeud):
         # On récupère les coordonnées dont on a besoin pour colorer l'image
         coinHautGaucheY, coinHautGaucheX = coinHautGauche
         coinBasDroiteY, coinBasDroiteX = coinBasDroite
+        if (
+            coinBasDroiteX <= coinHautGaucheX
+            or coinBasDroiteY <= coinHautGaucheY
+        ):
+            raise ImageTropPetite(
+                f"Il n'y a pas assez de place pour écrire une feuille à la profondeur {self.profondeur}, la forme de la grille est {self.grille.forme}"
+            )
         # On colore d'abord les résistances
         image[
             coinHautGaucheY:coinBasDroiteY, coinHautGaucheX:coinBasDroiteX, 0
@@ -173,6 +188,13 @@ class Feuille(Noeud):
         # On récupère les coordonnées dont on a besoin pour lire l'image
         coinHautGaucheY, coinHautGaucheX = coinHautGauche
         coinBasDroiteY, coinBasDroiteX = coinBasDroite
+        if (
+            coinBasDroiteX <= coinHautGaucheX
+            or coinBasDroiteY <= coinHautGaucheY
+        ):
+            raise ImageTropPetite(
+                f"Il n'y a pas assez de place pour lire une feuille à la profondeur {self.profondeur}, la forme de la grille est {self.grille.forme}"
+            )
         # On calcule la moyenne des valeurs de coefficients de transmissions sur
         # la zone dédiée et on l'affecte à cette feuille.
         self.H = max(
@@ -207,6 +229,13 @@ class Feuille(Noeud):
         # On récupère les coordonnées dont on a besoin pour normaliser l'image.
         coinHautGaucheY, coinHautGaucheX = coinHautGauche
         coinBasDroiteY, coinBasDroiteX = coinBasDroite
+        if (
+            coinBasDroiteX <= coinHautGaucheX
+            or coinBasDroiteY <= coinHautGaucheY
+        ):
+            raise ImageTropPetite(
+                f"Il n'y a pas assez de place pour normaliser une feuille à la profondeur {self.profondeur}, la forme de la grille est {self.grille.forme}"
+            )
         # On calcule la moyenne des valeurs de coefficients de transmissions sur
         # la zone dédiée on l'affecte à toute la zone.
         image[
@@ -239,20 +268,14 @@ class Feuille(Noeud):
             ]
         )
 
-
-class FeuilleException(Exception):
-    """Une erreur est apparue car vous utilisé une syntaxe invalide sur une
-    feuille."""
-    pass
-
-
-class NonFeuilleException(Exception):
-    """Une erreur est apparue car vous avez utilisé une syntaxe spécifique aux
-    feuilles pour un noeud."""
-    pass
-
-
-class NonMarqueException(Exception):
-    """Une erreur qui signale que l'on tente de récupérer le marquage (i.e. la
-    couleur) d'un noeud qui n'a pas encore été marqué."""
-    pass
+    def elaguerSousArbre(self, coinHautGauche, coinBasDroite):
+        # Il n'y a rien à faire ici, par hypothès (et par le travail fait sur les liaisons Serie et Parallele) on aura toujours de la place pour une Feuille sur laquelle on appelle la méthode elaguerSousArbre.
+        coinHautGaucheY, coinHautGaucheX = coinHautGauche
+        coinBasDroiteY, coinBasDroiteX = coinBasDroite
+        if (
+            coinBasDroiteX <= coinHautGaucheX
+            or coinBasDroiteY <= coinHautGaucheY
+        ):
+            raise ImageTropPetite(
+                f"Un problème est apparu dans l'implémentation de elaguerSousArbre, il n'y a pas assez de place pour mettre une feuille à la profondeur {self.profondeur}. La forme de la grille est {self.grille.forme}"
+            )

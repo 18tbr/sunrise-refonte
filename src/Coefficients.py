@@ -10,7 +10,7 @@ from random import (
 
 # Ces valeurs donnent la loi des coefficients de transmission H
 muH = 5e-2  # Valeur moyenne
-sigH = 10e-2  # Ecart type
+sigH = 10 * muH  # Ecart type
 minH = 1e-2  # Valeur minimale (> 0)
 
 # Fonction de génération de conductances aléatoires
@@ -20,7 +20,7 @@ def conductance():
 
 # Ces valeurs donnent la loi des coefficients de capacités C
 muC = 5e6  # Valeur moyenne
-sigC = 10e6  # Ecart type
+sigC = 10 * muC  # Ecart type
 minC = 1e6  # Valeur minimale (> 0)
 
 # Bien régler les valeurs minimales pour même dans le pire des cas on conserve deux ordres de grandeur de différence entre C et H accélère sensiblement l'algorithme.
@@ -30,6 +30,9 @@ def capacite():
     return max(gauss(muC, sigC), minC)
 
 
-referenceH = muH + 5 * sigH
-referenceC = muC + 5 * sigC
-referenceE = 100
+# Le "/10" dans ce qui suit vient du fait que sigmoid(1) ~= 0.7, donc pour avoir
+# des couleurs bien étalées afin de rendre l'image plus imitable pour le réseau
+# de neurones, il faut prendre une référence 10x plus petite (sigmoid(10) ~= 1).
+referenceH = (muH + 5 * sigH) / 10
+referenceC = (muC + 5 * sigC) / 10
+referenceE = 100 / 10
