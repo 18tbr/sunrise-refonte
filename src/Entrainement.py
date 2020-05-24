@@ -3,45 +3,40 @@
 import numpy as np
 
 import os  # Utile pour les manipulations de fichiers
-from Genetique import Genetique
+from GenerateurArbres import GenerateurArbres
 from Outils import lireTableau, lireDossier  # Utile pour récupérer les mesures
 
 
-def creationGenetiqueLectureDossier(
-    dossier, Cint, taillePopulation, generationMax, objectif
+def creationPopulationLectureDossier(
+    dossier, Cint, taillePopulation, largeur, hauteur
 ):
-    # Renvoie un objet génétique crée à partir des mesures trouvées dans le dossier en argument.
+    # Renvoie une population créée à partir des mesures trouvées dans le dossier en argument. Notez que l'on n'élague pas la population créée si largeur ou hauteur est None.
     T, Tint, Text, Pint = lireDossier(dossier)
-    return Genetique(
-        Cint, T, Tint, Text, Pint, taillePopulation, generationMax, objectif
-    )
+    if largeur is not None and hauteur is not None:
+        elaguageForce = True
+    else:
+        elaguageForce = False
+
+    return GenerateurArbres(
+        Cint, T, Tint, Text, Pint, taillePopulation, largeur, hauteur, elaguageForce
+    ).population
 
 
-def lectureBlob(Cint, taillePopulation, generationMax=None, objectif=None):
-    # Renvoie la liste des population crées à partir des données dans les dossiers de blob. Cette fonction doit être lancée lorsque le repértoire courant est la racine de ce dépôt git.
+def lectureBlob(Cint, taillePopulation, largeur, hauteur):
+    # Renvoie la concaténation des populations créées à partir des données dans les dossiers de blob. Cette fonction doit être lancée lorsque le répertoire courant est la racine de ce dépôt git.
     listeDossiers = os.listdir(os.path.join("blob", "mesures"))
-    populations = []
+    population = []
     for dossier in listeDossiers:
         print(
             "Récupération des mesures dans le dossier",
             os.path.join("blob", "mesures", dossier),
         )
-        # Dans la mesure où les Genetique produits ne sont utilisés que pour produire des arbres aléatoires, on peut ne pas leur fournir certains paramètres
-        populations.append(
-            creationGenetiqueLectureDossier(
+        # On ajoute la population crée à partir du dossier dans notre population totale. Notez que si largeur ou hauteur est None, la population ne sera pas élaguée.
+        population += creationPopulationLectureDossier(
                 os.path.join("blob", "mesures", dossier),
                 Cint,
                 taillePopulation,
-                generationMax,
-                objectif,
+                largeur,
+                hauteur
             )
-        )
-    return populations
-
-
-def unificationPopulation(listeGenetiques):
-    # Prend en argument une liste d'objets Génétique et renvoie le liste de toutes leurs populations concaténées. Utile pour avoir une seule liste pour l'entrainement d'un autoencodeurs.
-    populationUnifie = []
-    for objetGenetique in listeGenetiques:
-        populationUnifie += objetGenetique.population
-    return populationUnifie
+    return population

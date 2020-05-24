@@ -9,7 +9,7 @@ from keras.models import Model, load_model
 from keras import backend as K
 
 from SunRiseException import ModeleIntrouvable
-from Entrainement import lectureBlob, unificationPopulation
+from Entrainement import lectureBlob    # Utile pour entrainer une population très simplement.
 
 
 # Cette implémentation est trop longue et incohérente, il faudrait utiliser une classe abstraite et de l'héritage pour séparer Autoencodeur déterministe et non déterministe.
@@ -77,16 +77,11 @@ class Autoencodeur(object):
     ):
         # Une méthode raccourcie pour entrainer le réseau à faire des imitations directement à partir des données présentes dans le dossier blob/mesures.
 
-        # On commence par récupérer les données dans blob
-        listeGenetiques = lectureBlob(
-            Cint, taillePopulation, generationMax=None, objectif=None
+        # On commence par récupérer les données dans blob. Les arbres seront élagués si possible.
+        sourceArbresEntrainement = lectureBlob(
+            Cint, taillePopulation, self.largeur, self.hauteur
         )
-        # On crée une seule grosse liste contenant tous les arbres obtenus
-        sourceArbresEntrainement = unificationPopulation(listeGenetiques)
-        # Avant de créer les images, on élague tous les arbres.
-        for arbre in sourceArbresEntrainement:
-            arbre.elaguer(largeur=self.largeur, hauteur=self.hauteur)
-        
+
         # On récupère toutes les images de tous ces arbres
         sourceImages = np.array([
             arbre.ecritureImage(largeur=self.largeur, hauteur=self.hauteur)

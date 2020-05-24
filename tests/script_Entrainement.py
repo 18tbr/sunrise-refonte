@@ -12,9 +12,8 @@ sys.path.append(f"{os.getcwd()}/src")
 import Coefficients
 from Genetique import Genetique
 from Entrainement import (
-    creationGenetiqueLectureDossier,
-    lectureBlob,
-    unificationPopulation,
+    creationPopulationLectureDossier,
+    lectureBlob
 )
 from Autoencodeur import Autoencodeur
 from AutoencodeurDeterministe import AutoencodeurDeterministe
@@ -28,9 +27,9 @@ def test_entrainement():
     Cint = Coefficients.muC
 
     # On prend 5 arbres aléatoires pour faire nos tests
-    populationTest = creationGenetiqueLectureDossier(
-        os.path.join("blob", "mesures", "mesure4"), Cint, taillePopulation=l, generationMax=None, objectif=None
-    ).population[:5]
+    populationTest = creationPopulationLectureDossier(
+        os.path.join("blob", "mesures", "mesure4"), Cint, taillePopulation=l, largeur=l, hauteur=h
+    )[:5]
 
     # La liste des images sur lesquelles on va faire des tests à la fin
     test = []
