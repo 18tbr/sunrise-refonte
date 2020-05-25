@@ -1,12 +1,57 @@
-# Ce fichier contient une classe permettant d'initialiser une population d'arbres aléatoire. Cette fonctionnalité a été séparée de la classe Génétique pour éviter des problèmes de dépendances circulaires
+"""Ce fichier contient une classe permettant d'initialiser une population
+d'arbres aléatoire.
+
+Cette fonctionnalité a été séparée de la classe Génétique pour éviter des
+problèmes de dépendances circulaires.
+"""
 
 import random
-
 from Grille import Grille, Feuille, Serie, Parallele, Noeud
 
 
 class GenerateurArbres(object):
-    """docstring for GenerateurArbres."""
+    """Classe pour la génération d'arbres.
+
+    Variables globales
+    ------------------
+    PROFONDEUR_MAX_ARBRE : int
+    LARGEUR_MAX_ARBRE : int
+    BIAIS_ALTERNANCE : float
+        Le biais d'alternance est un biais qui pousse l'algorithme de création
+        à créer des arbres avec une alternance de Serie/Parallele pour avoir des
+        solutions plus intéressantes. Il doit être entre 0 (pas de biais
+        d'alternance) et 0.5 (alternance forcée).
+
+    Attributs
+    ---------
+    population : list
+        Liste des individus de la population. Chaque élément est un individu de
+        type `Grille`.
+    Cint : float
+        Capacité thermique associée à l'air intérieur.
+    T : list
+        La liste des temps (pour `Text`, `Tint`, `Pint`).
+    Text : list
+        La série des températures extérieures.
+    Tint : list
+        La série des températures intérieures.
+    Pint : list
+        La série des puissances intérieures.
+    taillePopulation : int
+        La taille de la population à créer et à faire évoluer.
+    generationMax : int
+        Le nombre maximal d'itérations de l'algorithme.
+    imageLargeur : int
+        Dimensions des images.
+    imageHauteur : int
+        Dimensions des images.
+    elaguageForce : bool
+        Si elaguageForce vaut True, alors chaque individu créé sera élagué pour
+        tenir dans les dimension d'image spécifiées en argument du constructeur.
+        Notez que contrairement à Genetique, l'élaguage forcé est ici un
+        paramètre, ce qui évite d'avoir deux valeurs incohérentes dans les deux
+        classes.
+    """
 
     PROFONDEUR_MAX_ARBRE = 100
     LARGEUR_MAX_ARBRE = 50
@@ -35,7 +80,6 @@ class GenerateurArbres(object):
         self.taillePopulation = taillePopulation
         self.imageLargeur = imageLargeur
         self.imageHauteur = imageHauteur
-        # Notez que contrairement à Genetique, l'élaguage forcé est ici un paramètre, ce qui évite d'avoir deux valeurs incohérentes dans les deux classes.
         self.elaguageForce = elaguageForce
         # On initialise directement la population à partir du constructeur.
         self.populationAleatoire()
@@ -129,7 +173,8 @@ class GenerateurArbres(object):
             # On alterne le biais entre liaisons séries et parallèle.
             graineAlternance *= -1
 
-        # Si on a demandé un élaguage automatique, alors on tronque l'individu pour qu'il soit représentable sous forme d'image.
+        # Si on a demandé un élaguage automatique, alors on tronque l'individu
+        # pour qu'il soit représentable sous forme d'image.
         if self.elaguageForce:
             individu.elaguer(
                 largeur=self.imageLargeur, hauteur=self.imageHauteur
