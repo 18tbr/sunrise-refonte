@@ -26,7 +26,7 @@ class Feuille(Noeud):
     """Classe pour les feuilles des arbres.
 
     Attributs
-    ----------
+    ---------
     H : float
         Initialisation de coefficients `H` aléatoires.
     _marquage : (float, float, float)

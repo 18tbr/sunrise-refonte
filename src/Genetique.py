@@ -33,9 +33,15 @@ class Genetique(object):
         à créer des arbres avec une alternance de Serie/Parallele pour avoir des
         solutions plus intéressantes. Il doit être entre 0 (pas de biais
         d'alternance) et 0.5 (alternance forcée).
+    ELAGUAGE_FORCE : bool
+        Si ELAGUAGE_FORCE vaut True, alors chaque individu créé sera élagué pour
+        tenir dans les dimension d'image spécifiées en argument du constructeur.
+    SILENCE : bool
+        Permet de lancer l'algorithme sans afficher d'information de debug dans
+        la console.
 
     Attributs
-    ----------
+    ---------
     population : list
         Liste des individus de la population. Chaque élément est un individu de
         type `Grille`.
@@ -56,15 +62,20 @@ class Genetique(object):
         La taille de la population à créer et à faire évoluer.
     generationMax : int
         Le nombre maximal d'itérations de l'algorithme.
+    imageLargeur : int
+        Dimensions des images.
+    imageHauteur : int
+        Dimensions des images.
+    autoencodeur : AutoencodeurDeterministe
+        Autoencodeur déterministe utilisé pour l'amélioration des arbres.
     """
 
     # Variables globales
     CHANCE_DE_MUTATION = 0.1
     POURCENTAGE_CONSERVATION_FORT = 0.5
     CHANCE_SURVIE_FAIBLE = 0.05
-    # Si ELAGUAGE_FORCE vaut True, alors chaque individu créé sera élagué pour tenir dans les dimension d'image spécifiées en argument du constructeur.
     ELAGUAGE_FORCE = True
-    SILENCE = False  # Permet de lancer l'algorithme sans afficher d'information de debug dans la console.
+    SILENCE = False
 
     def __init__(
         self,
@@ -92,20 +103,24 @@ class Genetique(object):
         self.generationMax = generationMax
         self.imageLargeur = imageLargeur
         self.imageHauteur = imageHauteur
-        # Si autoencodeur est None pendant l'algorithme génétique, alors la phase d'amélioration des coefficients sera ignorée.
+        # Si autoencodeur est None pendant l'algorithme génétique, alors la
+        # phase d'amélioration des coefficients sera ignorée.
         if autoencodeur is None:
             self.autoencodeur = None
         elif type(autoencodeur) is str:
-            # On peut aussi donner le nom d'un autoencodeur pour qu'il soit récupéré depuis un fichier
+            # On peut aussi donner le nom d'un autoencodeur pour qu'il soit
+            # récupéré depuis un fichier
             self.autoencodeur = AutoencodeurDeterministe(
                 nomDuModele=autoencodeur,
                 largeur=imageLargeur,
                 hauteur=imageHauteur,
             )
         else:
-            # On récupère l'autoencodeur directement de l'instance qui a été fournie
+            # On récupère l'autoencodeur directement de l'instance qui a été
+            # fournie
             self.autoencodeur = autoencodeur
-        # GénérateurArbres va automatiquement générer une population convenable lors de sa construction
+        # GénérateurArbres va automatiquement générer une population convenable
+        # lors de sa construction
         generateur = GenerateurArbres(
             self.Cint,
             self.T,
@@ -181,7 +196,9 @@ class Genetique(object):
         Pour l'instant, on utilise un taux de mutation constant.
         """
         for individu in self.population:
-            # On note si l'individu a été muté, auquel cas il faudra l'élaguer si cela est demandé pour qu'il reste représentable sous forme d'image.
+            # On note si l'individu a été muté, auquel cas il faudra l'élaguer
+            # si cela est demandé pour qu'il reste représentable sous forme
+            # d'image.
             besoinElaguage = False
             # On peut muter un même individu plusieurs fois si le hasard le veut
             while random.random() < Genetique.CHANCE_DE_MUTATION:
@@ -304,7 +321,8 @@ class Genetique(object):
                 # en créer qui ne seront pas utilisés est une perte de temps.
                 # Au lieu de cela, on va faire notre choix sur les enfants
                 # directs de pere et mere, puis calculer le `sousArbre` des
-                # enfants élus, ce qui est plus efficace mais amène au même résultat.
+                # enfants élus, ce qui est plus efficace mais amène au même
+                # résultat.
                 if type(noeudEnfant) is Feuille:
                     # Si on tombe sur une feuille, on ne peut évidemment pas y
                     # ajouter de fils.
@@ -323,7 +341,8 @@ class Genetique(object):
                 noeudEnfant.substituerEnfants(sousArbresChoisis)
 
             if Genetique.ELAGUAGE_FORCE:
-                # Si besoin, on élague l'enfant obtenu pour qu'il soit représentable sous forme d'image.
+                # Si besoin, on élague l'enfant obtenu pour qu'il soit
+                # représentable sous forme d'image.
                 enfant.elaguer(
                     largeur=self.imageLargeur, hauteur=self.imageHauteur
                 )
