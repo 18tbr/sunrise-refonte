@@ -17,8 +17,8 @@ from AutoencodeurDeterministe import (
 class Genetique(object):
     """Classe pour l'algorithme génétique.
 
-    Global variables
-    ----------------
+    Variables globales
+    ------------------
     PROFONDEUR_MAX_ARBRE : int
     LARGEUR_MAX_ARBRE : int
     CHANCE_DE_MUTATION : float
@@ -34,7 +34,7 @@ class Genetique(object):
         solutions plus intéressantes. Il doit être entre 0 (pas de biais
         d'alternance) et 0.5 (alternance forcée).
 
-    Attributes
+    Attributs
     ----------
     population : list
         Liste des individus de la population. Chaque élément est un individu de

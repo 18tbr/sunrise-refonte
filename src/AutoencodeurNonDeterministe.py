@@ -14,7 +14,7 @@ from keras.layers import (
 from keras.models import (
     Model,
     load_model,
-)  # Outils pouf manipuler des modèles Keras facilement
+)  # Outils pour manipuler des modèles Keras facilement
 from keras import backend as K
 
 from Entrainement import (

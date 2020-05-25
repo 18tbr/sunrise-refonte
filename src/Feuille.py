@@ -25,7 +25,7 @@ from SunRiseException import (
 class Feuille(Noeud):
     """Classe pour les feuilles des arbres.
 
-    Attributes
+    Attributs
     ----------
     H : float
         Initialisation de coefficients `H` aléatoires.
@@ -65,8 +65,8 @@ class Feuille(Noeud):
         On en fait une propriété pour éviter qu'il ne soit lu plusieurs fois
         entre des générations par erreur.
 
-        Raises
-        ------
+        Exception levées
+        ----------------
         NonMarqueException
             Lorsque la feuille désignée n'a pas encore été marquée.
         """
