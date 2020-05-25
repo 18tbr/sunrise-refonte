@@ -1,4 +1,3 @@
-# (TBR) Explique à côté de chaque import à quoi il sert dans le code (en un mot). Par exemple pour numpy tu pourrais dire "utile pour lire les fichier .npy"
 import tkinter as tk
 import numpy as np
 from tkinter import filedialog, Text
