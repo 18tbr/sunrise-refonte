@@ -5,10 +5,12 @@ Il est utilisé pour générer des coefficients aléatoires de façon cohérente
 Note : les valeurs définies ci dessous sont accessibles de l'extérieur comme
 Coefficients.<nom> dans les autres modules où Coefficients est importé.
 
-IMPORTANT : En pratique, les équations différentielles ne sont solubles que si
-C >> H, (il faut 1 à 2 ordres de grandeur de différence) pour un pas de temps de
-1. La raison est, il me semble, que le temps caractéristique de l'équation ne
-doit pas être plus petit que le temps de discrétisation par le solveur. Notez
+IMPORTANT
+---------
+En pratique, les équations différentielles ne sont solubles que si C >> H, (il
+faut 1 à 2 ordres de grandeur de différence) pour un pas de temps de 1.
+La raison est, il me semble, que le temps caractéristique de l'équation ne doit
+pas être plus petit que le temps de discrétisation par le solveur. Notez
 également que le solveur met significativement plus de temps à traiter les
 équations en cas de problèmes que s'il n'y en a pas.
 """

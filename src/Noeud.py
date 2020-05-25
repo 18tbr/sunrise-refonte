@@ -1,4 +1,4 @@
-"""Ce fichier contient la classe parente abstraite des neouds qui composent nos
+"""Ce fichier contient la classe parente abstraite des noeuds qui composent nos
 arbres. Presque tous les autres fichiers doivent importer celui ci.
 
 La classe parente contient également de la documentation sur les différentes

@@ -8,7 +8,7 @@ import numpy as np  # Utile pour les manipulations de tableaux
 def lireTableau(nomDuFichier):
     """Lit un tableau et le renvoie sous la forme d'un np.array.
 
-    Parameters
+    Paramètres
     ----------
     nomDuFichier : string
         Tableau à lire.
