@@ -8,9 +8,7 @@ from InterfaceGraphique import InterfaceGraphique
 
 
 def main():
-    interface = InterfaceGraphique(
-        "/home/roadelou/repos/mecatro/sunrise-refonte/blob/mesures/mesure0"
-    )
+    interface = InterfaceGraphique()
     interface.afficher()
 
 
