@@ -35,3 +35,7 @@ class ModeleIntrouvable(Exception):
 # Une exception lancée lorsqu'un arbre est trop gros pour être représenté dans une image demandée.
 class ImageTropPetite(Exception):
     pass
+
+# Une exception levée par l'interface graphique lorsque les différents fichiers de mesure n'ont pas la même base de temps.
+class FichierIncoherent(Exception):
+    pass
