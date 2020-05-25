@@ -1,5 +1,6 @@
-# Ce fichier contient une implémentation déterministe de la classe abstraite Autoencodeur (c'est à dire des autoencodeurs classiques).
-
+"""Ce fichier contient une implémentation déterministe de la classe abstraite
+Autoencodeur (c'est à dire des autoencodeurs classiques).
+"""
 import os  # Utile pour les manipulations de fichiers.
 import numpy as np  # Utile pour fournir des données à Keras.
 
@@ -22,7 +23,17 @@ from Autoencodeur import (
 
 
 class AutoencodeurDeterministe(Autoencodeur):
-    """docstring for AutoencodeurDeterministe."""
+    """Classe pour les autoencodeurs déterministes.
+
+    Attributs
+    ---------
+    largeur : int
+        Dimension des images. Utile dans plusieurs méthodes distinctes.
+    hauteur : int
+        Dimension des images. Utile dans plusieurs méthodes distinctes.
+    autoencodeur : modèle Keras
+        Modèle choisi.
+    """
 
     def __init__(
         self,
@@ -32,19 +43,56 @@ class AutoencodeurDeterministe(Autoencodeur):
         *args,
         **kwargs
     ):
+        """Initialisation de la classe.
+
+        Paramètres
+        ----------
+        nomDuModele : str
+            Nom du moèle à charger. None si l'on ne souhaite pas charger de
+            modèle. On ira charger le fichier "src/modeles/nomDuModele.h5".
+        largeur : int
+        hauteur : int
+
+        Exceptions levées
+        -----------------
+        ModeleIntrouvable
+            Lorsque nomDuModèle.h5 n'a pas pu être trouvé.
+        """
         super(AutoencodeurDeterministe, self).__init__(
             nomDuModele, largeur, hauteur, *args, *kwargs
         )
-        # Le constructeur est partagé avec AutoencodeurNonDeterministe donc on n'a rien de plus à faire ici.
+        # Le constructeur est hérité de Autoencodeur, rien de plus à faire ici
 
     def creation(
         self, facteurReduction=2, baseDimensions=9, baseNoyau=4, baseDense=50
     ):
-        # Méthode à utiliser pour créer un nouveau modèle dans le contexte d'un entrainement.
+        """Méthode à utiliser pour créer un nouveau modèle dans le contexte d'un
+        entrainement.
 
-        # La meilleure configuration d'autoencodeur que j'ai trouvée pour notre problème. Il est concu pour des images de taille 32 x 32 mais d'autres configurations sont possibles.
+        La meilleure configuration d'autoencodeur que j'ai trouvée pour notre
+        problème. Il est concu pour des images de taille 32 x 32 mais d'autres
+        configurations sont possibles.
 
-        # On peut donner soit une liste, soit un unique coefficient dans baseDimensions, baseDense et baseNoyau. Si on donne une liste, ce sont les coefficients dans cette liste qui sont utilisés.
+        Paramètres
+        ----------
+        facteurReduction : int
+            ou "pool_size". Facteur de réduction pour les convolutions du
+            réseau.
+        baseDimensions : int | list
+            Dimensions des filtres de convolution du réseau.
+        baseDense : int | list
+            Dimensions pour les filtres "Dense" du réseau.
+        baseNoyau : int | list
+            ou "kernel_size". Dimensions des noyaux de convolution du réseau.
+
+        Notes
+        -----
+        On peut donner soit une liste, soit un unique coefficient dans
+        `baseDimensions`, `baseDense` et `baseNoyau`. Si on donne une liste, ce
+        sont les coefficients dans cette liste qui sont utilisés.
+        """
+
+        # Pour baseDimensions
         if type(baseDimensions) is list:
             dimensions = baseDimensions[:4]
         else:
@@ -63,7 +111,9 @@ class AutoencodeurDeterministe(Autoencodeur):
         else:
             dense = [2 * baseDense, baseDense]
 
-        # La fonction utilisée par la librairie Keras pour construire notre autoencodeur. Dans la notation Keras, la forme de entree est (None, hauteur, largeur, 3).
+        # La fonction utilisée par la librairie Keras pour construire notre
+        # autoencodeur. Dans la notation Keras, la forme de entree est
+        # (None, hauteur, largeur, 3).
         entree = Input(shape=(self.hauteur, self.largeur, 3))
 
         # x sera de taille (None, hauteur, largeur, 6)
@@ -150,11 +200,18 @@ class AutoencodeurDeterministe(Autoencodeur):
         self.autoencodeur.compile(
             optimizer="adadelta", loss="binary_crossentropy"
         )
-        # Utile pour avoir la forme de l'autoencodeur lorsque l'on fait du debuggage.
+        # Utile pour avoir la forme de l'autoencodeur lorsque l'on debug.
         self.autoencodeur.summary()
 
     def ameliorerArbres(self, listeArbres, iterations=1):
-        # ameliorerArbres est une version plus haut niveau de predire qui travaille directement sur des arbres pour plus de simplicité dans l'algorithme génétique.
+        """Version plus haut niveau de `predire` qui travaille directement sur
+        des arbres pour plus de simplicité dans l'algorithme génétique.
+
+        Paramètres
+        ----------
+        listeArbres : list
+        iterations : int
+        """
 
         # On crée les images de tous nos arbres
         listeImages = np.array(
@@ -166,7 +223,10 @@ class AutoencodeurDeterministe(Autoencodeur):
         # On propose des version améliorées de toutes ces images
         listeImagesAmeliorees = self.autoencodeur.predict(listeImages)
 
-        # On répète la boucle d'amélioration autant de fois que demandé. Attention cependant, si on n'a demandé qu'une seule passe d'amélioration on n'a pas besoin de rentrer dans cette boucle (d'où le -1)
+        # On répète la boucle d'amélioration autant de fois que demandé.
+        # Attention cependant, si on n'a demandé qu'une seule passe
+        # d'amélioration on n'a pas besoin de rentrer dans cette boucle
+        # (d'où le -1)
         for passe in range(iterations - 1):
             # On normalise toutes les images avec l'arbre correspondant.
             for i in range(len(listeArbres)):
@@ -179,9 +239,11 @@ class AutoencodeurDeterministe(Autoencodeur):
                 listeImagesAmeliorees
             )
 
-        # Enfin, on remet à jour tous les arbres en leur donnant des coefficients améliorés.
+        # Enfin, on remet à jour tous les arbres en leur donnant des
+        # coefficients améliorés.
         for i in range(len(listeArbres)):
             arbre = listeArbres[i]
             imageAmelioree = listeImagesAmeliorees[i]
-            # ATTENTION, la méthode lectureImage détruit l'image passée en argument.
+            # ATTENTION, la méthode `lectureImage` détruit l'image passée en
+            # argument.
             arbre.lectureImage(imageAmelioree)

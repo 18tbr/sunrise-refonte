@@ -1,9 +1,15 @@
-# Ce fichier contient une classe implémentant un autoencodeur classique. Il s'agit en réalité d'un simple enrobage de la librairie Keras. Par défaut, l'autoencodeur chargé sera celui situé dans le dossier modeles avec le nom "ameliorateur.md5". Pour utiliser un autre modèle, il faut le placer dans le dossier "modele" et passer son nom au constructeur
+"""Ce fichier contient une classe implémentant un autoencodeur classique.
+
+Il s'agit en réalité d'un simple enrobage de la librairie Keras. Par défaut,
+l'autoencodeur chargé sera celui situé dans le dossier modeles avec le nom
+"ameliorateur.md5". Pour utiliser un autre modèle, il faut le placer dans le
+dossier "modele" et passer son nom au constructeur.
+"""
 
 import os  # Utile pour les manipulations de fichiers.
 import numpy as np  # Utile pour fournir des données à Keras.
 
-# On importe keras pour pouvoir utiliser notre autoencodeur
+# On importe keras pour pouvoir utiliser notre autoencodeur.
 from keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D
 from keras.models import Model, load_model
 from keras import backend as K
@@ -14,9 +20,21 @@ from Entrainement import (
 )  # Utile pour entrainer une population très simplement.
 
 
-# Cette implémentation est trop longue et incohérente, il faudrait utiliser une classe abstraite et de l'héritage pour séparer Autoencodeur déterministe et non déterministe.
 class Autoencodeur(object):
-    """docstring for Autoencodeur."""
+    """Classe abstraite pour les autoencodeurs.
+
+    On utilise une classe abstraite et de l'héritage pour séparer Autoencodeur
+    déterministe et non déterministe.
+
+    Attributs
+    ---------
+    largeur : int
+        Dimension des images. Utile dans plusieurs méthodes distinctes.
+    hauteur : int
+        Dimension des images. Utile dans plusieurs méthodes distinctes.
+    autoencodeur : modèle Keras
+        Modèle choisi.
+    """
 
     def __init__(
         self,
@@ -26,17 +44,33 @@ class Autoencodeur(object):
         *args,
         **kwargs,
     ):
-        super(Autoencodeur, self).__init__(*args, **kwargs)
-        # Pour signifier que l'on souhaite créer un nouveau modèle et non en utiliser un préexistant, utiliser la valeur None comme nomDuModele
+        """Initialisation de la classe.
 
-        # Ces deux parmaètres dimensionnent les images et sont utiles dans plusieurs méthodes distinctes.
+        Paramètres
+        ----------
+        nomDuModele : str
+            Nom du moèle à charger. None si l'on ne souhaite pas charger de
+            modèle. On ira charger le fichier "src/modeles/nomDuModele.h5".
+        largeur : int
+        hauteur : int
+
+        Exceptions levées
+        -----------------
+        ModeleIntrouvable
+            Lorsque nomDuModèle.h5 n'a pas pu être trouvé.
+        """
+        super(Autoencodeur, self).__init__(*args, **kwargs)
+
         self.largeur = largeur
         self.hauteur = hauteur
 
         if nomDuModele is None:
+            # Pour signifier que l'on souhaite créer un nouveau modèle et non en
+            # utiliser un préexistant, utiliser la valeur None comme nomDuModele
             self.autoencodeur = None
         else:
-            # sinon on charge le modèle demandé. On suppose que l'on se trouve dans la racine du dépôt git
+            # sinon on charge le modèle demandé.
+            # On suppose que l'on se trouve dans la racine du dépôt git.
             cheminModele = os.path.join("src", "modeles", f"{nomDuModele}.md5")
             if os.path.exists(cheminModele):
                 self.autoencodeur = load_model(cheminModele)
@@ -48,11 +82,13 @@ class Autoencodeur(object):
     def creation(
         self, facteurReduction=2, baseDimensions=9, baseNoyau=4, baseDense=50
     ):
+        """Méthode abstraite."""
         raise NotImplementedError(
             "La création d'un nouvel autoencodeur pour son entrainement n'a pas été réimplémentée."
         )
 
-    # La fonction d'entrainement est partagée entre les différents types d'autoencodeurs et est donc implémentée ici.
+    # Cette méthode est identique pour les différents types d'autoencodeurs,
+    # on peut donc l'implémenter ici.
     def entrainement(
         self,
         listeImagesEntree,
@@ -60,7 +96,21 @@ class Autoencodeur(object):
         iterations,
         tailleGroupeEntrainement,
     ):
-        # Méthode pour entrainer le réseau de neurones. Vous pouvez parfaitemement passer la même valeur en entrée et en sortie pour un entrainement à l'imitation
+        """Méthode pour entrainer le réseau de neurones.
+
+        Vous pouvez parfaitemement passer la même valeur en entrée et en sortie
+        pour un entrainement à l'imitation.
+
+        Paramètres
+        ----------
+        listeImagesEntree : list
+        listeImagesSortie : list
+        iterations : int
+            ou "epochs". Nombre d'itérations sur la base d'entraînement.
+        tailleGroupeEntrainement : int
+            ou "batchSize".
+        """
+
         if type(listeImagesEntree) is list:
             listeImagesEntree = np.array(listeImagesEntree)
         if type(listeImagesSortie) is list:
@@ -75,37 +125,58 @@ class Autoencodeur(object):
             shuffle=True,
         )
 
-    # Cette méthode est partagée pour les autoencodeurs déterministes et non déterministe et est donc implémentée ici.
+    # Cette méthode est identique pour les différents types d'autoencodeurs,
+    # on peut donc l'implémenter ici.
     def entrainementImitationBlob(
         self, Cint, taillePopulation, iterations, tailleGroupeEntrainement
     ):
-        # Une méthode raccourcie pour entrainer le réseau à faire des imitations directement à partir des données présentes dans le dossier blob/mesures.
+        """Une méthode raccourcie pour entrainer le réseau à faire des
+        imitations directement à partir des données présentes dans le dossier
+        "blob/mesures".
 
-        # On commence par récupérer les données dans blob. Les arbres seront élagués si possible.
+        Paramètres
+        ----------
+        Cint
+        taillePopulation
+        iterations
+        tailleGroupeEntrainement
+        """
+
+        # On commence par récupérer les données dans blob.
+        # Les arbres seront élagués si possible.
         sourceArbresEntrainement = lectureBlob(
             Cint, taillePopulation, self.largeur, self.hauteur
         )
 
-        # On récupère toutes les images de tous ces arbres
+        # On récupère toutes les images de tous ces arbres.
         sourceImages = np.array(
             [
                 arbre.ecritureImage(largeur=self.largeur, hauteur=self.hauteur)
                 for arbre in sourceArbresEntrainement
             ]
         )
-        # On entraine le réseau sur les images obtenues
+        # On entraine le réseau sur les images obtenues.
         self.entrainement(
             sourceImages, sourceImages, iterations, tailleGroupeEntrainement
         )
 
     def ameliorerArbres(self, listeArbres, iterations=1):
-        # ameliorerArbres est une version plus haut niveau de predire qui travaille directement sur des arbres pour plus de simplicité dans l'algorithme génétique.
+        """Méthode abstraite."""
         raise NotImplementedError(
             "La méthode d'amélioration d'une population d'arbres n'a pas été réimplémentée."
         )
 
-    # Cette méthode est identique pour tous les types d'autoencodeurs, on peut donc l'implémenter ici.
+    # Cette méthode est identique pour les différents types d'autoencodeurs,
+    # on peut donc l'implémenter ici.
     def sauver(self, nomDuModele):
-        # On sauvegarde le modèle actuel dans modèles sous le nom proposé. On suppose que le programme est lancé depuis la racine du dépôt git.
+        """Sauvegarde le modèle actuel dans modèles sous le nom proposé.
+
+        Paramètres
+        ----------
+        nomDuModele : str
+            Nom souhaité pour la sauvegarde du modèle.
+        """
+
+        # On suppose que le programme est lancé depuis la racine du dépôt git.
         cheminModele = os.path.join("src", "modeles", f"{nomDuModele}.md5")
         self.autoencodeur.save(cheminModele)
