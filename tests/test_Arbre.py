@@ -6,11 +6,7 @@ import sys
 # Il faut ajouter src au PYTHONPATH avant tout, sinon les modules n'auront pas accès à leurs propres imports.
 sys.path.append(f"{os.getcwd()}/src")
 
-from Arbre import Arbre
-from Noeud import Noeud
-from Feuille import Feuille
-from Parallele import Parallele
-from Serie import Serie
+from Arbre import Arbre, Noeud, Feuille, Parallele, Serie
 
 # Test des fonctions sur les noeuds en parallèles
 
