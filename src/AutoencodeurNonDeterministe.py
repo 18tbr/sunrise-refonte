@@ -19,7 +19,6 @@ from keras import backend as K
 
 from Entrainement import (
     lectureBlob,
-    unificationPopulation,
 )  # Des fonctions utiles pour simplifier l'entrainement non supervisé
 from Autoencodeur import (
     Autoencodeur,
