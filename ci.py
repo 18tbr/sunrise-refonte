@@ -46,7 +46,7 @@ class ContinuousIntegration:
         self.groupes = [
             "AI",
             "Animation",
-            "Grille",
+            "Arbre",
             "Simulation",
             "SunRise",
             "UI",

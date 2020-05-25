@@ -7,7 +7,11 @@ import matplotlib.pyplot as plt
 # Il faut ajouter src au PYTHONPATH avant tout, sinon les modules n'auront pas accès à leurs propres imports.
 sys.path.append(f"{os.getcwd()}/src")
 # Import from package
-from Grille import Grille, Noeud, Feuille, Parallele, Serie
+from Arbre import Arbre
+from Noeud import Noeud
+from Feuille import Feuille
+from Parallele import Parallele
+from Serie import Serie
 
 
 # ===== Test functions for Simulation ===== #
@@ -19,7 +23,7 @@ def test_creationSimulation_minimal():
     Text = [1 for i in range(10)]
     Tint = list(range(10))
     Pint = [0 for i in range(10)]
-    g = Grille(0.5, T, Text, Tint, Pint)
+    g = Arbre(0.5, T, Text, Tint, Pint)
     f = g.racine
     A, B, C = g.creationSimulation()
     assert np.shape(A) == (1, 1)
@@ -38,7 +42,7 @@ def test_creationSimulation_parallele_simple():
     Text = [1 for i in range(10)]
     Tint = list(range(10))
     Pint = [0 for i in range(10)]
-    g = Grille(0.5, T, Text, Tint, Pint)
+    g = Arbre(0.5, T, Text, Tint, Pint)
     f1 = g.racine
     f2 = Feuille()
     p = f1.ajoutFils(f2, forme="parallele")
@@ -61,7 +65,7 @@ def test_creationSimulation_serie_simple():
     tExt = np.array([1 for i in range(10)])
     tInt = np.array(list(range(10)))
     pInt = np.array([0 for i in range(10)])
-    g = Grille(cInt, T, tExt, tInt, pInt)
+    g = Arbre(cInt, T, tExt, tInt, pInt)
     f1 = g.racine
     f2 = Feuille()
     p = f1.ajoutFils(f2, forme="serie")
@@ -93,7 +97,7 @@ def test_creationSimulation_complexe():
     tExt = [1 for i in range(10)]
     tInt = list(range(10))
     pInt = [0 for i in range(10)]
-    g = Grille(cInt, T, tExt, tInt, pInt)
+    g = Arbre(cInt, T, tExt, tInt, pInt)
     f1 = g.racine
     f2 = Feuille()
     sA = f1.ajoutFils(f2, forme="serie")
@@ -141,7 +145,7 @@ def test_simulation_coherence():
     tExt = [1 for i in range(10)]
     tInt = list(range(10))
     pInt = [0 for i in range(10)]
-    g = Grille(cInt, T, tExt, tInt, pInt)
+    g = Arbre(cInt, T, tExt, tInt, pInt)
     f1 = g.racine
     f2 = Feuille()
     sA = f1.ajoutFils(f2, forme="serie")
@@ -176,7 +180,7 @@ def test_simulation_score():
     tExt = [1 for i in range(10)]
     tInt = list(range(10))
     pInt = [0 for i in range(10)]
-    g = Grille(cInt, T, tExt, tInt, pInt)
+    g = Arbre(cInt, T, tExt, tInt, pInt)
     f1 = g.racine
     f2 = Feuille()
     sA = f1.ajoutFils(f2, forme="serie")

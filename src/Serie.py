@@ -12,11 +12,11 @@ from SunRiseException import NonFeuilleException, ImageTropPetite
 class Serie(Noeud):
     """docstring for Serie."""
 
-    def __init__(self, grille=None, parent=None):
+    def __init__(self, arbre=None, parent=None):
         self.capacites = []
         # self.valeurCapaciteDefaut = 1 # Obsolete, remplacé par une propriété
         # Attacher fait référence à capacites et le constructeur parent fait référence à attacher, donc il faut forcément appeller le constructeur parent en dernier.
-        super(Serie, self).__init__(grille=grille, parent=parent)
+        super(Serie, self).__init__(arbre=arbre, parent=parent)
 
     # Note : les propriétés ne sont pas héritées en python...
     @property
@@ -141,7 +141,7 @@ class Serie(Noeud):
         return curseur
 
     def suppressionFils(self, index):
-        # On met à jour la forme de la grille en détachant le noeud désigné.
+        # On met à jour la forme de l'arbre en détachant le noeud désigné.
         self.fils[index].detacher()
         # IndexError si index est trop grand pour self.fils
         del self.fils[index]
@@ -152,8 +152,8 @@ class Serie(Noeud):
             del self.capacites[-1]
         else:
             del self.capacites[index]
-        # On met à jour le nombre de condensateurs dans la grille
-        self.grille.nbCondensateurs -= 1
+        # On met à jour le nombre de condensateurs dans l'arbre
+        self.arbre.nbCondensateurs -= 1
 
         if taille < 2:
             # S'il ne reste plus qu'un seul bloc fils il prend la place du bloc serie. Il faut juste faire attention à la mémoïzation de la profondeur
@@ -184,8 +184,8 @@ class Serie(Noeud):
                 self.capacites.append(self.valeurCapaciteDefaut)
             else:
                 self.capacites.insert(index, self.valeurCapaciteDefaut)
-            # On met à jour le nombre de condensateurs dans la grille.
-            self.grille.nbCondensateurs += 1
+            # On met à jour le nombre de condensateurs dans l'arbre.
+            self.arbre.nbCondensateurs += 1
 
         # On insère le noeud dans la liste des fils.
         if index == len(self.fils):
@@ -194,8 +194,8 @@ class Serie(Noeud):
             self.fils.insert(index, nouveauFils)
         # On met à jour la généalogie du noeud ajouté.
         nouveauFils.parent = self
-        # On attache le nouveau noeud à la grille
-        nouveauFils.attacher(self.grille)
+        # On attache le nouveau noeud à l'arbre
+        nouveauFils.attacher(self.arbre)
         # On garde notre place dans l'arbre, on se renvoie donc soi-même
         return self
 
@@ -212,8 +212,8 @@ class Serie(Noeud):
         for fils in self.fils:
             # On se note comme parent dans chacun des nouveaux fils
             fils.parent = self
-            # On attache le nouveau fils à la grille
-            fils.attacher(self.grille)
+            # On attache le nouveau fils à l'arbre
+            fils.attacher(self.arbre)
         # En plus de cela, il faut gérer la variation du nombre de condensateurs.
         nouveauNbCondensateurs = len(self.fils) - 1
         differenceCapacites = nouveauNbCondensateurs - len(self.capacites)
@@ -226,8 +226,8 @@ class Serie(Noeud):
                 self.valeurCapaciteDefaut for i in range(differenceCapacites)
             ]
             self.capacites += nouvellesCapacites
-        # Enfin, il faut remettre à jour le nombre de capacités de la grille.
-        self.grille.nbCondensateurs += differenceCapacites
+        # Enfin, il faut remettre à jour le nombre de capacités de l'arbre.
+        self.arbre.nbCondensateurs += differenceCapacites
 
     # L'algorithme de copie du sous arbre est évidemment récursif
     def sousArbre(self):
@@ -240,30 +240,30 @@ class Serie(Noeud):
             copieNoeud.capacites.append(valeurCapacite)
         return copieNoeud
 
-    def attacher(self, grille):
-        if grille is not self.grille:
-            self.grille = grille
-            if self.profondeur + 1 == len(self.grille.forme):
-                # Comme un noeud série a forcément des enfants, il faut ajouter un niveau à la forme de la grille
-                self.grille.forme.append(0)
-            self.grille.forme[self.profondeur] += 1
+    def attacher(self, arbre):
+        if arbre is not self.arbre:
+            self.arbre = arbre
+            if self.profondeur + 1 == len(self.arbre.forme):
+                # Comme un noeud série a forcément des enfants, il faut ajouter un niveau à la forme de l'arbre
+                self.arbre.forme.append(0)
+            self.arbre.forme[self.profondeur] += 1
             # Il faut aussi prendre en compte toutes les capacités que l'on ajoute à l'arbre.
-            self.grille.nbCondensateurs += len(self.capacites)
+            self.arbre.nbCondensateurs += len(self.capacites)
             for fils in self.fils:
-                fils.attacher(grille)
+                fils.attacher(arbre)
 
     def detacher(self, perdreParent=True):
-        self.grille.forme[self.profondeur] -= 1
+        self.arbre.forme[self.profondeur] -= 1
         # On détache récursivement tous les fils pour bien prendre en compte l'influence sur la forme.
         for fils in self.fils:
             fils.detacher(perdreParent=False)
         # On décompte toutes les capacités de ce noeud.
-        self.grille.nbCondensateurs -= len(self.capacites)
-        if self.grille.forme[self.profondeur + 1] == 0:
-            # i.e. on a détaché tous les noeuds qui étaient à la profondeur suivante (qui est par construction la dernière de l'arbre), alors il faut l'enlever de la forme de la grille pour éviter les 0 inutiles
-            self.grille.forme.pop()
-        # On ne perd la référence à la grille qu'à la toute fin de la fonction car on la référence au dessus
-        self.grille = None
+        self.arbre.nbCondensateurs -= len(self.capacites)
+        if self.arbre.forme[self.profondeur + 1] == 0:
+            # i.e. on a détaché tous les noeuds qui étaient à la profondeur suivante (qui est par construction la dernière de l'arbre), alors il faut l'enlever de la forme de l'arbre pour éviter les 0 inutiles
+            self.arbre.forme.pop()
+        # On ne perd la référence à l'arbre qu'à la toute fin de la fonction car on la référence au dessus
+        self.arbre = None
         # On perd aussi la mémoïzation de la profondeur pour éviter de la réutiliser si on est à l'intérieur d'un sous arbre qui est déplacé
         self._profondeur = None
         if perdreParent:
@@ -280,7 +280,7 @@ class Serie(Noeud):
         largeur = int((coinBasDroiteX - coinHautGaucheX) / nombreDivisions)
         if largeur == 0:
             raise ImageTropPetite(
-                f"La largeur d'une liaison série écrite à la profondeur {self.profondeur} serait 0, la forme de la grille est {self.grille.forme}"
+                f"La largeur d'une liaison série écrite à la profondeur {self.profondeur} serait 0, la forme de l'arbre est {self.arbre.forme}"
             )
         # On appelle récursivement la méthode dessiner sur les enfants
         for i in range(nombreDivisions - 1):
@@ -313,7 +313,7 @@ class Serie(Noeud):
         largeur = int((coinBasDroiteX - coinHautGaucheX) / nombreDivisions)
         if largeur == 0:
             raise ImageTropPetite(
-                f"La largeur d'une liaison série écrite à la profondeur {self.profondeur} serait 0, la forme de la grille est {self.grille.forme}"
+                f"La largeur d'une liaison série écrite à la profondeur {self.profondeur} serait 0, la forme de l'arbre est {self.arbre.forme}"
             )
         # On appelle récursivement la méthode dessiner sur les enfants
         for i in range(nombreDivisions - 1):
@@ -354,7 +354,7 @@ class Serie(Noeud):
         largeur = int((coinBasDroiteX - coinHautGaucheX) / nombreDivisions)
         if largeur == 0:
             raise ImageTropPetite(
-                f"La largeur d'une liaison série écrite à la profondeur {self.profondeur} serait 0, la forme de la grille est {self.grille.forme}"
+                f"La largeur d'une liaison série écrite à la profondeur {self.profondeur} serait 0, la forme de l'arbre est {self.arbre.forme}"
             )
         # On appelle récursivement la méthode dessiner sur les enfants
         for i in range(nombreDivisions - 1):

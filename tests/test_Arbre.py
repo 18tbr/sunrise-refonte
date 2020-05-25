@@ -6,17 +6,21 @@ import sys
 # Il faut ajouter src au PYTHONPATH avant tout, sinon les modules n'auront pas accès à leurs propres imports.
 sys.path.append(f"{os.getcwd()}/src")
 
-from Grille import Grille, Noeud, Feuille, Parallele, Serie
+from Arbre import Arbre
+from Noeud import Noeud
+from Feuille import Feuille
+from Parallele import Parallele
+from Serie import Serie
 
 # Test des fonctions sur les noeuds en parallèles
 
 
 def test_creation_arbre_minimal():
     """Test if [...]"""
-    g = Grille(None, None, None, None, None)
+    g = Arbre(None, None, None, None, None)
     assert g.forme == [1]
     f = g.racine
-    assert f.grille == g
+    assert f.arbre == g
     assert f.parent is None
     assert f.profondeur == 0
     assert g.forme == [1]
@@ -45,7 +49,7 @@ def test_ajout_parallele_existant():
     f3 = Feuille()
     p.ajoutFils(f3, index=1)
     assert g.forme == [1, 3]
-    assert f3.grille is g
+    assert f3.arbre is g
     assert f3.parent is p
     assert p.fils == [f1, f3, f2]
     return g, p
@@ -77,7 +81,7 @@ def test_ajout_parallele_existant_rang_superieur():
     p2 = f3.ajoutFils(f4, forme="parallele")
     assert type(p2) == Parallele
     assert p2.fils == [f3, f4]
-    assert p2.grille is g
+    assert p2.arbre is g
     assert f3.parent is p2
     assert f4.parent is p2
     assert p2.parent is p
@@ -90,7 +94,7 @@ def test_suppression_parallele_existant_rang_superieur():
     f3, f4 = p2.fils
     f = p2.suppressionFils(1)
     assert f is f3
-    assert f.grille is g
+    assert f.arbre is g
     assert f3.parent is p
     assert g.forme == [1, 3]
     return g, p
@@ -124,7 +128,7 @@ def test_ajout_serie_existant():
     f3 = Feuille()
     p.ajoutFils(f3, index=1)
     assert g.forme == [1, 3]
-    assert f3.grille is g
+    assert f3.arbre is g
     assert f3.parent is p
     assert p.fils == [f1, f3, f2]
     assert len(p.capacites) == 2
@@ -161,7 +165,7 @@ def test_ajout_serie_existant_rang_superieur():
     p2 = f3.ajoutFils(f4, forme="serie")
     assert type(p2) == Serie
     assert p2.fils == [f3, f4]
-    assert p2.grille is g
+    assert p2.arbre is g
     assert len(p2.capacites) == 1
     assert len(p.capacites) == 2
     assert g.nbCondensateurs == 4
@@ -177,7 +181,7 @@ def test_suppression_serie_existant_rang_superieur():
     f3, f4 = p2.fils
     f = p2.suppressionFils(1)
     assert f is f3
-    assert f.grille is g
+    assert f.arbre is g
     assert f3.parent is p
     assert g.forme == [1, 3]
     assert len(p.capacites) == 2
@@ -195,7 +199,7 @@ def test_ajout_serie_sur_parallele():
     p2 = f3.ajoutFils(f4, forme="serie")
     assert type(p2) == Serie
     assert p2.fils == [f3, f4]
-    assert p2.grille is g
+    assert p2.arbre is g
     assert len(p2.capacites) == 1
     assert type(p) is Parallele
     assert g.nbCondensateurs == 2
@@ -213,7 +217,7 @@ def test_ajout_parallele_sur_serie():
     p2 = f3.ajoutFils(f4, forme="parallele")
     assert type(p2) == Parallele
     assert p2.fils == [f3, f4]
-    assert p2.grille is g
+    assert p2.arbre is g
     assert len(p.capacites) == 2
     assert type(p) is Serie
     assert g.nbCondensateurs == 3
@@ -225,7 +229,7 @@ def test_ajout_parallele_sur_serie():
 
 
 def test_complexe_creation():
-    g = Grille(None, None, None, None, None)
+    g = Arbre(None, None, None, None, None)
     f1 = g.racine
     f2 = Feuille()
     sA = f1.ajoutFils(f2, forme="serie")
@@ -279,10 +283,10 @@ def test_complexe_destruction():
     assert g.forme == [1, 2]
     # On vérifie aussi que pB et ses fils ont bien été détachés
     assert pB.parent is None
-    assert pB.grille is None
-    assert f1.grille is None
-    assert f5.grille is None
-    assert f4.grille is None
+    assert pB.arbre is None
+    assert f1.arbre is None
+    assert f5.arbre is None
+    assert f4.arbre is None
     f3t = sA.suppressionFils(1)
     assert f3t is f3
     assert g.racine is f3
@@ -323,21 +327,21 @@ def test_sousArbre():
     f3s = f3.sousArbre()
     assert f3s is not f3
     assert f3s.parent is None
-    assert f3s.grille is None
+    assert f3s.arbre is None
     assert f3s.H == f3s.H
     # Test de sousArbre sur une liaison parallèle
     pBs = pB.sousArbre()
     f1s, f5s, f4s = pBs.fils
     assert pBs is not pB
     assert pBs.parent is None
-    assert pBs.grille is None
-    assert f1s.grille is None
+    assert pBs.arbre is None
+    assert f1s.arbre is None
     assert f1s.parent is pBs
     assert f1s.H == f1.H
-    assert f5s.grille is None
+    assert f5s.arbre is None
     assert f5s.parent is pBs
     assert f5s.H == f5.H
-    assert f4s.grille is None
+    assert f4s.arbre is None
     assert f4s.parent is pBs
     assert f4s.H == f4.H
     # Test de sousArbre sur une liaison série
@@ -345,11 +349,11 @@ def test_sousArbre():
     f2s, f6s = sCs.fils
     assert sCs is not sC
     assert sCs.parent is None
-    assert sCs.grille is None
-    assert f2s.grille is None
+    assert sCs.arbre is None
+    assert f2s.arbre is None
     assert f2s.parent is sCs
     assert f2s.H == f2.H
-    assert f6s.grille is None
+    assert f6s.arbre is None
     assert f6s.parent is sCs
     assert f6s.H == f6.H
     return g
@@ -368,8 +372,8 @@ def test_substituer_serie():
     assert sA.fils == [f6r, pBr]
     assert f6r.parent is sA
     assert pBr.parent is sA
-    assert f6r.grille is g
-    assert pBr.grille is g
+    assert f6r.arbre is g
+    assert pBr.arbre is g
     assert sA.capacites == ancienCondensateurs[:1]
     assert g.forme == [1, 2, 3]
     assert g.nbCondensateurs == 2
@@ -388,8 +392,8 @@ def test_substituer_parallele():
     assert pB.fils == [f6r, sCr]
     assert f6r.parent is pB
     assert sCr.parent is pB
-    assert f6r.grille is g
-    assert sCr.grille is g
+    assert f6r.arbre is g
+    assert sCr.arbre is g
     assert g.forme == [1, 3, 4, 2]
     assert g.nbCondensateurs == 5
     return g

@@ -9,8 +9,8 @@ from SunRiseException import NonFeuilleException, ImageTropPetite
 class Parallele(Noeud):
     """docstring for Parallele."""
 
-    def __init__(self, grille=None, parent=None):
-        super(Parallele, self).__init__(grille=grille, parent=parent)
+    def __init__(self, arbre=None, parent=None):
+        super(Parallele, self).__init__(arbre=arbre, parent=parent)
 
     # Note : les propriétés ne sont pas héritées en python...
     @property
@@ -78,7 +78,7 @@ class Parallele(Noeud):
         return curseur
 
     def suppressionFils(self, index):
-        # On met à jour la forme de la grille en détachant le noeud désigné.
+        # On met à jour la forme de l'arbre en détachant le noeud désigné.
         self.fils[index].detacher()
         # IndexError out of range si index est trop grand pour self.fils
         del self.fils[index]
@@ -111,8 +111,8 @@ class Parallele(Noeud):
             self.fils.insert(index, nouveauFils)
         # On met à jour la généalogie du noeud ajouté.
         nouveauFils.parent = self
-        # On attache le nouveau noeud à la grille
-        nouveauFils.attacher(self.grille)
+        # On attache le nouveau noeud à l'arbre
+        nouveauFils.attacher(self.arbre)
         # On garde notre place dans l'arbre, donc on renvoie self
         return self
 
@@ -125,8 +125,8 @@ class Parallele(Noeud):
         for fils in self.fils:
             # On se note comme parent dans chacun des nouveaux fils
             fils.parent = self
-            # On attache le nouveau fils à la grille
-            fils.attacher(self.grille)
+            # On attache le nouveau fils à l'arbre
+            fils.attacher(self.arbre)
 
     # L'algorithme de copie du sous arbre est évidemment récursif
     def sousArbre(self):
@@ -137,26 +137,26 @@ class Parallele(Noeud):
             copieNoeud.fils.append(copieFils)
         return copieNoeud
 
-    def attacher(self, grille):
-        if grille is not self.grille:
-            self.grille = grille
-            if self.profondeur + 1 == len(self.grille.forme):
-                # Comme un noeud parallèle a forcément des enfants, il faut ajouter un niveau à la forme de la grille
-                self.grille.forme.append(0)
-            self.grille.forme[self.profondeur] += 1
+    def attacher(self, arbre):
+        if arbre is not self.arbre:
+            self.arbre = arbre
+            if self.profondeur + 1 == len(self.arbre.forme):
+                # Comme un noeud parallèle a forcément des enfants, il faut ajouter un niveau à la forme de l'arbre
+                self.arbre.forme.append(0)
+            self.arbre.forme[self.profondeur] += 1
             for fils in self.fils:
-                fils.attacher(grille)
+                fils.attacher(arbre)
 
     def detacher(self, perdreParent=True):
-        self.grille.forme[self.profondeur] -= 1
+        self.arbre.forme[self.profondeur] -= 1
         # On détache récursivement tous les fils pour bien prendre en compte l'influence sur la forme.
         for fils in self.fils:
             fils.detacher(perdreParent=False)
-        if self.grille.forme[self.profondeur + 1] == 0:
-            # i.e. on a détaché tous les noeuds qui étaient à la profondeur suivante (qui est par construction la dernière de l'arbre), alors il faut l'enlever de la forme de la grille pour éviter les 0 inutiles
-            self.grille.forme.pop()
-        # On ne perd la référence à la grille qu'à la toute fin de la fonction car on la référence au dessus
-        self.grille = None
+        if self.arbre.forme[self.profondeur + 1] == 0:
+            # i.e. on a détaché tous les noeuds qui étaient à la profondeur suivante (qui est par construction la dernière de l'arbre), alors il faut l'enlever de la forme de l'arbre pour éviter les 0 inutiles
+            self.arbre.forme.pop()
+        # On ne perd la référence à l'arbre qu'à la toute fin de la fonction car on la référence au dessus
+        self.arbre = None
         # On perd aussi la mémoïzation de la profondeur pour éviter de la réutiliser si on est à l'intérieur d'un sous arbre qui est déplacé
         self._profondeur = None
         if perdreParent:
@@ -173,7 +173,7 @@ class Parallele(Noeud):
         hauteur = int((coinBasDroiteY - coinHautGaucheY) / nombreDivisions)
         if hauteur == 0:
             raise ImageTropPetite(
-                f"La hauteur d'une liaison parallèle écrite à la profondeur {self.profondeur} serait 0, la forme de la grille est {self.grille.forme}"
+                f"La hauteur d'une liaison parallèle écrite à la profondeur {self.profondeur} serait 0, la forme de l'arbre est {self.arbre.forme}"
             )
         # On appelle récursivement la méthode dessiner sur les enfants
         for i in range(nombreDivisions - 1):
@@ -211,7 +211,7 @@ class Parallele(Noeud):
         hauteur = int((coinBasDroiteY - coinHautGaucheY) / nombreDivisions)
         if hauteur == 0:
             raise ImageTropPetite(
-                f"La hauteur d'une liaison parallèle lue à la profondeur {self.profondeur} serait 0, la forme de la grille est {self.grille.forme}"
+                f"La hauteur d'une liaison parallèle lue à la profondeur {self.profondeur} serait 0, la forme de l'arbre est {self.arbre.forme}"
             )
         # Dans la mesure où l'autoencodeur ne renvoie pas la même valeur de capacité à droite pour tous les fils, nous devons en faire la moyenne ici pour conserver la cohérence par rapport à l'image et ne pas en favoriser une partie.
         # On appelle récursivement la méthode dessiner sur les enfants
@@ -254,7 +254,7 @@ class Parallele(Noeud):
         hauteur = int((coinBasDroiteY - coinHautGaucheY) / nombreDivisions)
         if hauteur == 0:
             raise ImageTropPetite(
-                f"La hauteur d'une liaison parallèle normalisée à la profondeur {self.profondeur} serait 0, la forme de la grille est {self.grille.forme}"
+                f"La hauteur d'une liaison parallèle normalisée à la profondeur {self.profondeur} serait 0, la forme de l'arbre est {self.arbre.forme}"
             )
         # Dans la mesure où l'autoencodeur ne renvoie pas la même valeur de capacité à droite pour tous les fils, nous devons en faire la moyenne ici pour conserver la cohérence par rapport à l'image et ne pas en favoriser une partie.
         # On appelle récursivement la méthode dessiner sur les enfants

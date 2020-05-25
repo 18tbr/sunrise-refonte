@@ -10,18 +10,18 @@ partout dans cette classe.
 class Noeud(object):
     """Classe pour les noeuds."""
 
-    def __init__(self, grille=None, parent=None):
+    def __init__(self, arbre=None, parent=None):
         # IMPORTANT : il est presque toujours meilleur d'appeler le constructeur
         # sans argument et de laisser ajoutFils s'occuper de tout.
         super(Noeud, self).__init__()
         self.parent = parent
-        self.grille = None
+        self.arbre = None
         self.fils = []
         self._profondeur = None
         # IMPORTANT : il faut toujours attacher en dernier, car attacher peut
         # faire référence à d'autres attributs de la classe.
-        if grille is not None:
-            self.attacher(grille)
+        if arbre is not None:
+            self.attacher(arbre)
 
     def suppressionFils(self, index):
         """Méthode abstraite, on supprime le fils à l'index i.
@@ -95,41 +95,41 @@ class Noeud(object):
             # parent
             indexParent = self.parent.fils.index(self)
             self.parent.fils[indexParent] = nouveau
-        elif self.grille is not None:
+        elif self.arbre is not None:
             # Autre cas important à traiter : on est en train de changer la
             # racine de l'arbre
-            self.grille.racine = nouveau
+            self.arbre.racine = nouveau
         else:
             raise IndexError(
                 "L'indivdu selectionné n'a pas de parent et n'est pas la racine d'un arbre, il n'y a donc nulle part où le remplacer."
             )
         nouveau.parent = self.parent
-        # On attache le nouvel élément à la grille
-        nouveau.attacher(self.grille)
+        # On attache le nouvel élément à la arbre
+        nouveau.attacher(self.arbre)
         # Dans la mesure où l'on a perdu notre place dans l'arbre, il faut s'en
         # détacher.
         self.detacher()
 
     def sousArbre(self):
         """Méthode abstraite, utile pour la fusion d'arbres. Renvoie une copie
-        de tout le sousArbre qui se trouve au dela de cette grille, mais sans
-        parent pour ce noeud et sans grille associée.
+        de tout le sousArbre qui se trouve au dela de cet arbre, mais sans
+        parent pour ce noeud et sans arbre associé.
         """
         raise NotImplementedError(
             "La création d'un sous-arbre à partir d'un noeud n'a pas été implémentée."
         )
 
-    def attacher(self, grille):
+    def attacher(self, arbre):
         """Méthode abstraite, attache un noeud et tous ses fils récursivement à
-        une grille, en mettant au passage à jour les caractéristiques de la
-        grille.
+        un arbre, en mettant au passage à jour les caractéristiques de la
+        arbre.
 
         Doit être appelé après avoir donné un parent au noeud considéré. Cette
-        étape est utile pour garder des grilles cohérentes après les étapes de
+        étape est utile pour garder des arbres cohérents après les étapes de
         fusion.
         """
         raise NotImplementedError(
-            "L'attachement d'un noeud à une grille n'a pas été implémentée."
+            "L'attachement d'un noeud à un arbre n'a pas été implémentée."
         )
 
     def detacher(self, perdreParent=True):
@@ -143,7 +143,7 @@ class Noeud(object):
         judicieux de ne pas passer d'argument.
         """
         raise NotImplementedError(
-            "Le détachement d'un noeud d'une grille n'a pas été implémenté."
+            "Le détachement d'un noeud d'un arbre n'a pas été implémenté."
         )
 
     def dessiner(self, image, coinHautGauche, coinBasDroite):

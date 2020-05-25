@@ -6,7 +6,7 @@ problèmes de dépendances circulaires.
 """
 
 import random
-from Grille import Grille, Feuille, Serie, Parallele, Noeud
+from Arbre import Arbre, Feuille, Serie, Parallele, Noeud
 
 
 class GenerateurArbres(object):
@@ -26,7 +26,7 @@ class GenerateurArbres(object):
     ---------
     population : list
         Liste des individus de la population. Chaque élément est un individu de
-        type `Grille`.
+        type `Arbre`.
     Cint : float
         Capacité thermique associée à l'air intérieur.
     T : list
@@ -125,7 +125,7 @@ class GenerateurArbres(object):
         )
 
         # On initialise l'individu que l'on va créer.
-        individu = Grille(self.Cint, self.T, self.Text, self.Tint, self.Pint)
+        individu = Arbre(self.Cint, self.T, self.Text, self.Tint, self.Pint)
         # On tire aléatoirement la profondeur qu'aura notre individu.
         profondeur = random.randint(1, GenerateurArbres.PROFONDEUR_MAX_ARBRE)
 

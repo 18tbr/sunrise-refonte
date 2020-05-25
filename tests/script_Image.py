@@ -9,7 +9,7 @@ import numpy as np
 # Il faut ajouter src au PYTHONPATH avant tout, sinon les modules n'auront pas accès à leurs propres imports.
 sys.path.append(f"{os.getcwd()}/src")
 
-from Grille import Grille, Noeud, Feuille, Parallele, Serie, SimulationException
+from Arbre import Arbre, Noeud, Feuille, Parallele, Serie, SimulationException
 import Coefficients
 
 
@@ -25,7 +25,7 @@ def test_representation_image_complexe():
     # compteur = 0
     # for i in range(iterations):
     #     try:
-    #         g = Grille(Cint, T, Text, Tint, Pint)
+    #         g = Arbre(Cint, T, Text, Tint, Pint)
     #         f1 = g.racine
     #         f2 = Feuille()
     #         sA = f1.ajoutFils(f2, forme="serie")
@@ -46,7 +46,7 @@ def test_representation_image_complexe():
     # plt.show()
     # dist = []
     for i in range(iterations):
-        g = Grille(Cint, T, Text, Tint, Pint)
+        g = Arbre(Cint, T, Text, Tint, Pint)
         f1 = g.racine
         f2 = Feuille()
         sA = f1.ajoutFils(f2, forme="serie")

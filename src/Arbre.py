@@ -11,7 +11,7 @@ from scipy.special import (
     logit,
 )  # Une implémentation de la fonction sigmoïde utilisée pour normaliser les valeurs des coefficients pour les mettre dans les images. Logit est la fonction inverse de expit.
 
-# Notez que pour importer ces classes dans les autres modules, il est préférable de faire "from Grille import Noeud, ..." plutôt que d'importer directement les fichiers concernés.
+# Notez que pour importer ces classes dans les autres modules, il est préférable de faire "from Arbre import Noeud, ..." plutôt que d'importer directement les fichiers concernés.
 from Noeud import Noeud
 from Feuille import Feuille
 from SunRiseException import (
@@ -27,16 +27,16 @@ import Coefficients
 from math import ceil
 
 
-class Grille(object):
-    """docstring for Grille."""
+class Arbre(object):
+    """docstring for Arbre."""
 
-    # Quelque valeurs statiques d'ordre de grandeur de capacité thermique, coefficient de transmission thermique et (pour avoir une symétrie dans le code) une valeur de référence pour l'erreur propagée qui doit rester à 100. Le fait de partager ces valeurs pour tous les obets de la classe Grille permet de comparer plusieurs images obtenues simplement et de simplifier le travail de l'autoencodeur.
+    # Quelque valeurs statiques d'ordre de grandeur de capacité thermique, coefficient de transmission thermique et (pour avoir une symétrie dans le code) une valeur de référence pour l'erreur propagée qui doit rester à 100. Le fait de partager ces valeurs pour tous les obets de la classe Arbre permet de comparer plusieurs images obtenues simplement et de simplifier le travail de l'autoencodeur.
     referenceConductance = Coefficients.referenceH
     referenceCapacite = Coefficients.referenceC
     referenceErreur = Coefficients.referenceE
 
     def __init__(self, cint, T, Text, Tint, Pint, racine=None):
-        super(Grille, self).__init__()
+        super(Arbre, self).__init__()
         # Capacité thermique associée à l'air intérieur
         self.cint = cint
         # Nombre de condensateurs dans le réseau, il doit au moins y avoir cint
@@ -59,7 +59,7 @@ class Grille(object):
             self.Pint = interp1d(T, Pint, kind="linear")
         else:
             self.Pint = lambda t: 0
-        # IMPORTANT : ne pas ajouter une feuille avant d'avoir défini la forme de la grille
+        # IMPORTANT : ne pas ajouter une feuille avant d'avoir défini la forme de l'arbre
         # La racine de l'arbre. Cet argument optionnel a été ajouté pour simplifier la syntaxe de la fonction fusion.
         if racine is None:
             self.racine = Feuille(self)
@@ -291,13 +291,13 @@ class Grille(object):
 
         # La plupart des autoencodeurs préfèrent travailler avec des coefficients dans 0,1 plutôt que dans 0, 255 donc on n'a pas besoin de passer nos valeurs sous forme d'entiers.
         sigRouge = np.vectorize(
-            lambda t: expit(t / Grille.referenceConductance), otypes=[float],
+            lambda t: expit(t / Arbre.referenceConductance), otypes=[float],
         )
         sigVert = np.vectorize(
-            lambda t: expit(t / Grille.referenceCapacite), otypes=[float],
+            lambda t: expit(t / Arbre.referenceCapacite), otypes=[float],
         )
         sigBleu = np.vectorize(
-            lambda t: expit(t / Grille.referenceErreur), otypes=[float],
+            lambda t: expit(t / Arbre.referenceErreur), otypes=[float],
         )
 
         # print("Ecriture rouge:", np.mean(image[:, :, 0]))
@@ -321,13 +321,13 @@ class Grille(object):
         hauteur, largeur, couleurs = image.shape
         # Avant de donner l'image pour mettre à jour notre arbre, il faut repasser les valeurs (qui sont sur [0,1]) en valeurs réelles.
         invSigRouge = np.vectorize(
-            lambda t: logit(t) * Grille.referenceConductance, otypes=[float],
+            lambda t: logit(t) * Arbre.referenceConductance, otypes=[float],
         )
         invSigVert = np.vectorize(
-            lambda t: logit(t) * Grille.referenceCapacite, otypes=[float]
+            lambda t: logit(t) * Arbre.referenceCapacite, otypes=[float]
         )
         invSigBleu = np.vectorize(
-            lambda t: logit(t) * Grille.referenceErreur, otypes=[float]
+            lambda t: logit(t) * Arbre.referenceErreur, otypes=[float]
         )
 
         image[:, :, 0] = invSigRouge(image[:, :, 0])

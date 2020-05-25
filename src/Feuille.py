@@ -35,9 +35,9 @@ class Feuille(Noeud):
         propriété.
     """
 
-    def __init__(self, grille=None, parent=None):
+    def __init__(self, arbre=None, parent=None):
         """Initialisation de la classe."""
-        super(Feuille, self).__init__(grille=grille, parent=parent)
+        super(Feuille, self).__init__(arbre=arbre, parent=parent)
         self.H = conductance()
         self._marquage = (None, None, None)
 
@@ -59,7 +59,7 @@ class Feuille(Noeud):
     #
     @property
     def marquage(self):
-        """Utilisé pour colorer l'image, calculé à l'échelle de la grille par la
+        """Utilisé pour colorer l'image, calculé à l'échelle de l'arbre par la
         fonction marquage.
 
         On en fait une propriété pour éviter qu'il ne soit lu plusieurs fois
@@ -111,7 +111,7 @@ class Feuille(Noeud):
         elif forme == "parallele":
             nouveauNoeud = Parallele()
             # On remplace cette feuille par son nouveau parent dans la
-            # généalogie de l'arbre. Si besoin, la taille de la grille sera
+            # généalogie de l'arbre. Si besoin, la taille de l'arbre sera
             # changée automatiquement.
             self.remplacer(nouveauNoeud)
             nouveauNoeud.ajoutFils(self, index=0)
@@ -119,7 +119,7 @@ class Feuille(Noeud):
         elif forme == "serie":
             nouveauNoeud = Serie()
             # On remplace cette feuille par son nouveau parent dans la
-            # généalogie de l'arbre. Si besoin, la taille de la grille sera
+            # généalogie de l'arbre. Si besoin, la taille de l'arbre sera
             # changée automatiquement.
             self.remplacer(nouveauNoeud)
             nouveauNoeud.ajoutFils(self, index=0)
@@ -142,16 +142,16 @@ class Feuille(Noeud):
         copieNoeud.H = self.H
         return copieNoeud
 
-    def attacher(self, grille):
-        if grille is not self.grille:
-            self.grille = grille
-            self.grille.forme[self.profondeur] += 1
+    def attacher(self, arbre):
+        if arbre is not self.arbre:
+            self.arbre = arbre
+            self.arbre.forme[self.profondeur] += 1
             # Une feuille n'a pas de fils donc on n'a pas besoin d'appel
             # récursif ici.
 
     def detacher(self, perdreParent=True):
-        self.grille.forme[self.profondeur] -= 1
-        self.grille = None
+        self.arbre.forme[self.profondeur] -= 1
+        self.arbre = None
         if perdreParent:
             # On perd aussi la référence à son parent pour éviter les effets de
             # bord étranges
@@ -168,7 +168,7 @@ class Feuille(Noeud):
             or coinBasDroiteY <= coinHautGaucheY
         ):
             raise ImageTropPetite(
-                f"Il n'y a pas assez de place pour écrire une feuille à la profondeur {self.profondeur}, la forme de la grille est {self.grille.forme}"
+                f"Il n'y a pas assez de place pour écrire une feuille à la profondeur {self.profondeur}, la forme de l'arbre est {self.arbre.forme}"
             )
         # On colore d'abord les résistances
         image[
@@ -193,7 +193,7 @@ class Feuille(Noeud):
             or coinBasDroiteY <= coinHautGaucheY
         ):
             raise ImageTropPetite(
-                f"Il n'y a pas assez de place pour lire une feuille à la profondeur {self.profondeur}, la forme de la grille est {self.grille.forme}"
+                f"Il n'y a pas assez de place pour lire une feuille à la profondeur {self.profondeur}, la forme de l'arbre est {self.arbre.forme}"
             )
         # On calcule la moyenne des valeurs de coefficients de transmissions sur
         # la zone dédiée et on l'affecte à cette feuille.
@@ -234,7 +234,7 @@ class Feuille(Noeud):
             or coinBasDroiteY <= coinHautGaucheY
         ):
             raise ImageTropPetite(
-                f"Il n'y a pas assez de place pour normaliser une feuille à la profondeur {self.profondeur}, la forme de la grille est {self.grille.forme}"
+                f"Il n'y a pas assez de place pour normaliser une feuille à la profondeur {self.profondeur}, la forme de l'arbre est {self.arbre.forme}"
             )
         # On calcule la moyenne des valeurs de coefficients de transmissions sur
         # la zone dédiée on l'affecte à toute la zone.
@@ -277,5 +277,5 @@ class Feuille(Noeud):
             or coinBasDroiteY <= coinHautGaucheY
         ):
             raise ImageTropPetite(
-                f"Un problème est apparu dans l'implémentation de elaguerSousArbre, il n'y a pas assez de place pour mettre une feuille à la profondeur {self.profondeur}. La forme de la grille est {self.grille.forme}"
+                f"Un problème est apparu dans l'implémentation de elaguerSousArbre, il n'y a pas assez de place pour mettre une feuille à la profondeur {self.profondeur}. La forme de l'arbre est {self.arbre.forme}"
             )

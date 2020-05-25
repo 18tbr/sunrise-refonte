@@ -2,7 +2,7 @@
 from operator import itemgetter  # Pour trier des listes
 import random  # Pour introduire du hasard
 
-from Grille import Grille, Noeud, Feuille, Parallele, Serie
+from Arbre import Arbre, Noeud, Feuille, Parallele, Serie
 from GenerateurArbres import (
     GenerateurArbres,
 )  # Utilisé en interne pour créer une population d'arbres aléatoires.
@@ -44,7 +44,7 @@ class Genetique(object):
     ---------
     population : list
         Liste des individus de la population. Chaque élément est un individu de
-        type `Grille`.
+        type `Arbre`.
     Cint : float
         Capacité thermique associée à l'air intérieur.
     T : list
@@ -291,10 +291,10 @@ class Genetique(object):
             else:
                 sommet = pere.racine.sousArbre()
 
-            # On crée l'objet `Grille` qui acueille le sommet. Le constructeur
-            # de `Grille` dispose d'une syntaxe spéciale concue pour attacher
+            # On crée l'objet `Arbre` qui acueille le sommet. Le constructeur
+            # de `Arbre` dispose d'une syntaxe spéciale concue pour attacher
             # une racine direcetement.
-            enfant = Grille(
+            enfant = Arbre(
                 self.Cint,
                 self.T,
                 self.Text,
@@ -347,7 +347,7 @@ class Genetique(object):
                     largeur=self.imageLargeur, hauteur=self.imageHauteur
                 )
 
-            # On ajoute la grille créée à la population de descendants.
+            # On ajoute l'arbre créé à la population de descendants.
             enfants.append(enfant)
         # On renvoie la liste des enfants créés pour qu'ils soient ajoutés à la
         # population.
@@ -365,7 +365,7 @@ class Genetique(object):
         # On crée une copie du meilleur individu de la génération
         # (il risque d'être modifié par mutation).
         meilleurArbre = self.population[-1].racine.sousArbre()
-        meilleurIndividu = Grille(
+        meilleurIndividu = Arbre(
             self.Cint,
             self.T,
             self.Text,
