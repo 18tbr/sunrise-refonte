@@ -47,6 +47,7 @@ class AutoencodeurNonDeterministe(Autoencodeur):
     autoencodeur : modèle Keras
         Modèle choisi.
     """
+
     TAILLE_GROUPE = 10
     ECHEC_PERMIS = 0.1
 

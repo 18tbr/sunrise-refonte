@@ -56,6 +56,7 @@ class GenerateurArbres(object):
     PROFONDEUR_MAX_ARBRE = 100
     LARGEUR_MAX_ARBRE = 50
     BIAIS_ALTERNANCE = 0.2
+    SILENCE = True
 
     def __init__(
         self,
@@ -68,6 +69,7 @@ class GenerateurArbres(object):
         imageLargeur=32,
         imageHauteur=32,
         elaguageForce=True,
+        modeGraphique=False,
     ):
         """Initialisation de la classe."""
         super(GenerateurArbres, self).__init__()
@@ -81,13 +83,32 @@ class GenerateurArbres(object):
         self.imageLargeur = imageLargeur
         self.imageHauteur = imageHauteur
         self.elaguageForce = elaguageForce
-        # On initialise directement la population à partir du constructeur.
-        self.populationAleatoire()
+        # En mode graphique on initialise la population avec une fonction génératrice de sorte à obtenir une barre de progression.
+        if not modeGraphique:
+            # On initialise directement la population à partir du constructeur.
+            self.populationAleatoire()
 
     def populationAleatoire(self):
         """Génère une population aléatoire."""
         # On remet la population à zéro au cas où.
-        self.population = []
+        self.population.clear()
+        if not GenerateurArbres.SILENCE:
+            proportionsAffiche = []
+
+        for i in range(self.taillePopulation):
+            if not GenerateurArbres.SILENCE:
+                # La génération de population est assez longue, on affiche des
+                # messages pour maintenir l'utilisateur éveillé.
+                proportion = 100 * i // self.taillePopulation
+                if proportion % 5 == 0 and proportion not in proportionsAffiche:
+                    proportionsAffiche.append(proportion)
+                    print(f"{proportion}% de la population créé.")
+            self.population.append(self.individuAleatoire())
+
+    def populationAleatoireAnimee(self):
+        """Génère une population aléatoire. Variante pour faire une barre de progression dans l'interface graphique."""
+        # On remet la population à zéro au cas où.
+        self.population.clear()
         proportionsAffiche = []
 
         for i in range(self.taillePopulation):
@@ -96,7 +117,7 @@ class GenerateurArbres(object):
             proportion = 100 * i // self.taillePopulation
             if proportion % 5 == 0 and proportion not in proportionsAffiche:
                 proportionsAffiche.append(proportion)
-                print(f"{proportion}% de la population créé.")
+                yield proportion
             self.population.append(self.individuAleatoire())
 
     def individuAleatoire(self):

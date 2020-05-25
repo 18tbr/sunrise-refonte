@@ -90,6 +90,7 @@ class Genetique(object):
         imageLargeur=32,
         imageHauteur=32,
         autoencodeur=None,
+        modeGraphique=False,
     ):
         """Initialisation de la classe."""
         super(Genetique, self).__init__()
@@ -120,8 +121,8 @@ class Genetique(object):
             # fournie
             self.autoencodeur = autoencodeur
         # GénérateurArbres va automatiquement générer une population convenable
-        # lors de sa construction
-        generateur = GenerateurArbres(
+        # lors de sa construction sauf en mode graphique.
+        self.generateur = GenerateurArbres(
             self.Cint,
             self.T,
             self.Text,
@@ -131,9 +132,10 @@ class Genetique(object):
             self.imageLargeur,
             self.imageHauteur,
             Genetique.ELAGUAGE_FORCE,
+            modeGraphique,
         )
-        # On récupère la population crée.
-        self.population = generateur.population
+        # En mode graphique la population est initialisée plus tard avec la fonction génératrice de self.generateur (nommée populationAleatoireAnimee). Hors mode graphique, on récupère la population déjà initialisée.
+        self.population = self.generateur.population
 
     def scorePopulation(self):
         """Calcule le score de la population.
@@ -359,7 +361,8 @@ class Genetique(object):
         Renvoie quelques valeurs qui sont utiles pour l'affichage."""
 
         # SELECTION
-        print("Selection")
+        if not Genetique.SILENCE:
+            print("Selection")
         self.population, scores = self.selection()
 
         # On crée une copie du meilleur individu de la génération
@@ -376,15 +379,18 @@ class Genetique(object):
 
         # AMELIORATION
         if self.autoencodeur is not None:
-            print("Amelioration")
+            if not Genetique.SILENCE:
+                print("Amelioration")
             self.autoencodeur.ameliorerArbres(self.population)
 
         # MUTATION
-        print("Mutation")
+        if not Genetique.SILENCE:
+            print("Mutation")
         self.mutation()
 
         # FUSION
-        print("Fusion")
+        if not Genetique.SILENCE:
+            print("Fusion")
         self.population += self.fusion()
 
         # On renvoie des valeurs qui pourront être utiles pour l'affichage
@@ -399,7 +405,8 @@ class Genetique(object):
         génération. Une fois l'algorithme terminé, le résultat de l'algorithme
         est contenu dans les différents attributs de l'objet.
         """
-        generation = 0
+        # Pour que le premier generation renvoyé soit bien 0
+        generation = -1
         meilleurScore = 2 * self.objectif
         while (generation < self.generationMax) and (
             abs(meilleurScore) > self.objectif

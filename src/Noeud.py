@@ -7,6 +7,7 @@ implémentées dans les classes filles, d'où les NotImplementedError un peu
 partout dans cette classe.
 """
 
+
 class Noeud(object):
     """Classe pour les noeuds."""
 

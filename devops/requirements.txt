@@ -7,3 +7,4 @@ tensorflow-gpu
 black
 pytest
 flake8
+tkinter

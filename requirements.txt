@@ -3,3 +3,4 @@ scipy
 matplotlib
 tensorflow
 keras
+tkinter

@@ -8,8 +8,11 @@ from InterfaceGraphique import InterfaceGraphique
 
 
 def main():
-    interface = InterfaceGraphique()
+    interface = InterfaceGraphique(
+        "/home/roadelou/repos/mecatro/sunrise-refonte/blob/mesures/mesure0"
+    )
     interface.afficher()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
