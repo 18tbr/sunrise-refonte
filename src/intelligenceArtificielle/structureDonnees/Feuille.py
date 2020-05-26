@@ -3,19 +3,15 @@
 La documentation de toutes les méthodes des noeuds est disponible dans la classe
 parente.
 """
-from Noeud import Noeud, conversionIndice
+from intelligenceArtificielle.structureDonnees.Noeud import Noeud, conversionIndice
 
 # Les deux imports qui suivent sont utiles pour ajoutFils
-from Serie import Serie
-from Parallele import Parallele
+from intelligenceArtificielle.structureDonnees.Serie import Serie
+from intelligenceArtificielle.structureDonnees.Parallele import Parallele
 import numpy as np  # Utile pour np.mean dans la lecture d'image
-import Coefficients  # Utile pour s'assurer que les valeurs lues sont bien plus
-
-# grandes que les valeurs minimales
-from Coefficients import conductance  # Initialisation de coefficients H
-
-# aléatoires
-from SunRiseException import (
+import intelligenceArtificielle.structureDonnees.Coefficients as Coefficients  # Utile pour s'assurer que les valeurs lues sont bien plus grandes que les valeurs minimales
+from intelligenceArtificielle.structureDonnees.Coefficients import conductance  # Initialisation de coefficients H aléatoires
+from intelligenceArtificielle.structureDonnees.SunRiseException import (
     FeuilleException,
     NonMarqueException,
     ImageTropPetite,

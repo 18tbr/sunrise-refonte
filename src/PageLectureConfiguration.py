@@ -4,13 +4,11 @@ configuration."""
 import tkinter as tk
 import json  # Pour lire le fichier de configuration
 
-import Coefficients  # Pour modifier les valeurs globales des coefficients
-from Genetique import (
-    Genetique,
-)  # Pour modifier les paramètres de la classe Génétique
-from GenerateurArbres import (
-    GenerateurArbres,
-)  # Pour modifier les constantes sur la façon dont les arbres sont créés.
+import intelligenceArtificielle.structureDonnees.Coefficients as Coefficients  # Pour modifier les valeurs globales des coefficients
+from intelligenceArtificielle.Genetique import (
+    Genetique,  # Pour modifier les paramètres de la classe Génétique
+    GenerateurArbres,  # Pour modifier les constantes sur la façon dont les arbres sont créés
+)
 
 
 class PageLectureConfiguration(tk.Frame):

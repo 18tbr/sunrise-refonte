@@ -2,8 +2,8 @@
 
 from random import randrange  # Utile pour un élaguage aléatoire
 
-from Noeud import Noeud
-from SunRiseException import NonFeuilleException, ImageTropPetite
+from intelligenceArtificielle.structureDonnees.Noeud import Noeud
+from intelligenceArtificielle.structureDonnees.SunRiseException import NonFeuilleException, ImageTropPetite
 
 
 class Parallele(Noeud):
