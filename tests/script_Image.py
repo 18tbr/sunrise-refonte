@@ -9,8 +9,15 @@ import numpy as np
 # Il faut ajouter src au PYTHONPATH avant tout, sinon les modules n'auront pas accès à leurs propres imports.
 sys.path.append(f"{os.getcwd()}/src")
 
-from Arbre import Arbre, Noeud, Feuille, Parallele, Serie, SimulationException
-import Coefficients
+from intelligenceArtificielle.structureDonnees.Arbre import (
+    Arbre,
+    Noeud,
+    Feuille,
+    Parallele,
+    Serie,
+    SimulationException,
+)
+import intelligenceArtificielle.structureDonnees.Coefficients
 
 
 def test_representation_image_complexe():

@@ -4,7 +4,10 @@ autoencodeurs."""
 import numpy as np
 import os  # Utile pour les manipulations de fichiers
 from intelligenceArtificielle.GenerateurArbres import GenerateurArbres
-from intelligenceArtificielle.Outils import lireTableau, lireDossier  # Utile pour récupérer les mesures
+from intelligenceArtificielle.Outils import (
+    lireTableau,
+    lireDossier,
+)  # Utile pour récupérer les mesures
 
 
 def creationPopulationLectureDossier(

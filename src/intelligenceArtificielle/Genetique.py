@@ -2,7 +2,13 @@
 from operator import itemgetter  # Pour trier des listes
 import random  # Pour introduire du hasard
 
-from intelligenceArtificielle.structureDonnees.Arbre import Arbre, Noeud, Feuille, Parallele, Serie
+from intelligenceArtificielle.structureDonnees.Arbre import (
+    Arbre,
+    Noeud,
+    Feuille,
+    Parallele,
+    Serie,
+)
 from intelligenceArtificielle.GenerateurArbres import (
     GenerateurArbres,
 )  # Utilisé en interne pour créer une population d'arbres aléatoires.

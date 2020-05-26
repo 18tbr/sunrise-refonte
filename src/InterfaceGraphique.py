@@ -16,8 +16,9 @@ from PageAnimation import (
     PageAnimation,
 )  # La troisième page de l'interface graphique
 from PageResultats import (
-    PageResultats
-)   # La quatrième page de l'interface graphique
+    PageResultats,
+)  # La quatrième page de l'interface graphique
+
 
 class InterfaceGraphique(tk.Tk):
     """Classe pour l'interface graphique."""
@@ -99,5 +100,7 @@ class InterfaceGraphique(tk.Tk):
             self.pageCourante.destroy()
             T, Tint, Text, Pint = self.mesures
             # On passe à la dernière page de l'application
-            self.pageCourante = PageResultats(self, self.populationFinale, self.meilleurIndividu, T, Tint)
+            self.pageCourante = PageResultats(
+                self, self.populationFinale, self.meilleurIndividu, T, Tint
+            )
             # L'application se termine lorsque l'on ferme la quatrième page.

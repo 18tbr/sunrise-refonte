@@ -2,11 +2,17 @@
 
 from random import randrange  # Utile pour un élaguage aléatoire
 
-from intelligenceArtificielle.structureDonnees.Noeud import Noeud, conversionIndice
+from intelligenceArtificielle.structureDonnees.Noeud import (
+    Noeud,
+    conversionIndice,
+)
 from intelligenceArtificielle.structureDonnees.Coefficients import (
     capacite,
 )  # Détermination aléatoire des valeurs de capacités
-from intelligenceArtificielle.structureDonnees.SunRiseException import NonFeuilleException, ImageTropPetite
+from intelligenceArtificielle.structureDonnees.SunRiseException import (
+    NonFeuilleException,
+    ImageTropPetite,
+)
 
 
 class Serie(Noeud):

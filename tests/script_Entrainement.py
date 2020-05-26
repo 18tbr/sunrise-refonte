@@ -9,11 +9,16 @@ from keras.models import load_model
 # Il faut ajouter src au PYTHONPATH avant tout, sinon les modules n'auront pas accès à leurs propres imports.
 sys.path.append(f"{os.getcwd()}/src")
 
-import Coefficients
-from Genetique import Genetique
-from Entrainement import creationPopulationLectureDossier, lectureBlob
-from Autoencodeur import Autoencodeur
-from AutoencodeurDeterministe import AutoencodeurDeterministe
+import intelligenceArtificielle.structureDonnees.Coefficients
+from intelligenceArtificielle.Genetique import Genetique
+from intelligenceArtificielle.Entrainement import (
+    creationPopulationLectureDossier,
+    lectureBlob,
+)
+from intelligenceArtificielle.Autoencodeur import Autoencodeur
+from intelligenceArtificielle.AutoencodeurDeterministe import (
+    AutoencodeurDeterministe,
+)
 
 
 def test_entrainement():

@@ -9,10 +9,13 @@ matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
+
 class PageResultats(tk.Frame):
     """Classe pour la page d'affichage des résultats'."""
 
-    def __init__(self, interfaceParente, populationRecuperee, meilleurIndividu, T, Tint):
+    def __init__(
+        self, interfaceParente, populationRecuperee, meilleurIndividu, T, Tint
+    ):
         """Initialisation de la classe."""
         super(PageResultats, self).__init__(
             interfaceParente.fenetrePrincipale, bg="white"
@@ -40,10 +43,12 @@ class PageResultats(tk.Frame):
 
         # On remplit la première courbe pour afficher le Tint de référence et le Tint
         courbeTemperatures = self.figureResultats.add_subplot(211)
-        reference, = courbeTemperatures.plot(T, Tint, 'g')
-        calcul, = courbeTemperatures.plot(T, TintCalculee, 'r')
+        (reference,) = courbeTemperatures.plot(T, Tint, "g")
+        (calcul,) = courbeTemperatures.plot(T, TintCalculee, "r")
         courbeTemperatures.legend([reference, calcul], ["Mesure", "Simulation"])
-        courbeTemperatures.set_title("Comparaison du Tint obtenu par mesure et par le meilleur individu")
+        courbeTemperatures.set_title(
+            "Comparaison du Tint obtenu par mesure et par le meilleur individu"
+        )
 
         # On remplit la seconde courbe pour afficher les erreurs dans la population globale
         courbeErreurs = self.figureResultats.add_subplot(212)
@@ -52,4 +57,4 @@ class PageResultats(tk.Frame):
 
         # Il ne reste plus qu'à afficher le résultat dans un canevas dédié
         canevasCourbe = FigureCanvasTkAgg(self.figureResultats, self)
-        canevasCourbe.get_tk_widget().pack(fill='both', expand=True)
+        canevasCourbe.get_tk_widget().pack(fill="both", expand=True)
