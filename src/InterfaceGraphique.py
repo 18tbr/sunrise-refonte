@@ -15,7 +15,9 @@ from PageLectureConfiguration import (
 from PageAnimation import (
     PageAnimation,
 )  # La troisième page de l'interface graphique
-
+from PageResultats import (
+    PageResultats
+)   # La quatrième page de l'interface graphique
 
 class InterfaceGraphique(tk.Tk):
     """Classe pour l'interface graphique."""
@@ -51,6 +53,12 @@ class InterfaceGraphique(tk.Tk):
         # `Genetique`.
         self.constructeur = None
 
+        # On stocke ici la population obtenue à la fin de l'algorithme génétique
+        self.populationFinale = None
+
+        # On stocke ici le meilleur individu à la fin de l'interface graphique
+        self.meilleurIndividu = None
+
     def afficher(self):
         """Lance l'interface graphique."""
         self.mainloop()
@@ -79,6 +87,10 @@ class InterfaceGraphique(tk.Tk):
             self.pageCourante = PageAnimation(
                 self, self.mesures, self.constructeur
             )
+            # On récupère les valeurs intéressantes.
+            self.populationFinale = self.pageCourante.evolution.population
+            self.meilleurIndividu = self.pageCourante.meilleurIndividu
+
             # Il n'y a pas de bouton sur la troisième page, on doit donc passer
             # à la page suivante automatiquement
             self.pageSuivante()
@@ -86,5 +98,7 @@ class InterfaceGraphique(tk.Tk):
         else:
             # On efface ce qui est dans la fenêtre
             self.pageCourante.destroy()
-            # On arrête l'application
-            self.destroy()
+            T, Tint, Text, Pint = self.mesures
+            # On passe à la dernière page de l'application
+            self.pageCourante = PageResultats(self, self.populationFinale, self.meilleurIndividu, T, Tint)
+            # L'application se termine lorsque l'on ferme la quatrième page.

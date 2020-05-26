@@ -39,6 +39,9 @@ class PageAnimation(tk.Frame):
         # On récupère les données de mesure
         T, Tint, Text, Pint = donneesMesures
 
+        # On garde le meilleur individu en mémoire pour pouvoir l'utiliser dans la page suivante.
+        self.meilleurIndividu = None
+
         # On récupère les paramètres du constructeur
         (
             Cint,
@@ -183,12 +186,12 @@ class PageAnimation(tk.Frame):
         """
         (
             generation,
-            meilleurIndividu,
+            self.meilleurIndividu,
             meilleurScore,
         ) = argumentsAlgorithmeGenetique
         self.X.append(generation)
         self.Y.append(meilleurScore)
-        self.matrice = meilleurIndividu.ecritureImage(
+        self.matrice = self.meilleurIndividu.ecritureImage(
             largeur=self.imageLargeur, hauteur=self.imageHauteur
         )
         self.ligne.set_data(self.X, self.Y)
