@@ -12,11 +12,11 @@ def lancement_interface_graphique():
     # Le chemin d'où l'utilisateur a lancé le programme
     cheminUtilisateur = os.getcwd()
     # On essaie de trouver le chemin de ce fichier, qui devrait toujours fonctionner sauf si ce code est lancé par un autre script python avec le même interpréteur.
-    cheminSunRise = os.path.abspath(os.path.dirname(sys.argv[0]))
+    cheminSunRise = os.path.abspath(os.path.dirname(__file__))
     # On se place dans le dossier où se trouve ce script
     os.chdir(cheminSunRise)
     # Petite vérification, on vérifie que le présent script se trouve bien dans le dossier.
-    if not os.path.exists("sunrise-refonte.py"):
+    if not os.path.exists("sunrise.py"):
         raise FileNotFoundError(
             "Le script n'est pas parvenu à trouver la racine du module sunrise-refonte et ne peut donc pas lancer l'interface graphique."
         )
