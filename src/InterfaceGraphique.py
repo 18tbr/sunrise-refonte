@@ -1,4 +1,5 @@
-# Ce fichier contient la racine de l'interface graphique à laquelle toutes les pages sont attachées
+"""Ce fichier contient la racine de l'interface graphique à laquelle toutes les
+pages sont attachées."""
 
 import os  # Utile pour récupérer le dossier courant si besoin
 import tkinter as tk
@@ -17,20 +18,25 @@ from PageAnimation import (
 
 
 class InterfaceGraphique(tk.Tk):
-    """docstring for InterfaceGraphique."""
+    """Classe pour l'interface graphique."""
 
     def __init__(self, dossierCourant=None):
+        """Initialisation de la classe."""
         super(InterfaceGraphique, self).__init__()
-        # On donne une taille par défaut à notre fenêtre pour qu'elle apparaisse d'une façon plus harmonieuse
+        # On donne une taille par défaut à notre fenêtre pour qu'elle apparaisse
+        # d'une façon plus harmonieuse
         self.geometry("600x600")
 
-        # Le fait de mettre un niveau intermédiaire entre la fenêtre globale (self) et les pages qui vont changer permet de faire des transitions qui semblent subtilement plus fluides.
+        # Le fait de mettre un niveau intermédiaire entre la fenêtre globale
+        # (self) et les pages qui vont changer permet de faire des transitions
+        # qui semblent subtilement plus fluides.
         self.fenetrePrincipale = tk.Frame(self)
         # On demande à la fenetrePrincipale d'occuper tout l'espace disponible.
         self.fenetrePrincipale.place(relwidth=1, relheight=1)
 
         if dossierCourant is None:
-            # Si le dossier courant n'est pas précisé, on prend le dossier dans lequel le programme est en train de s'exécuter.
+            # Si le dossier courant n'est pas précisé, on prend le dossier dans
+            # lequel le programme est en train de s'exécuter.
             self.dossierCourant = os.getcwd()
         else:
             self.dossierCourant = dossierCourant
@@ -38,20 +44,21 @@ class InterfaceGraphique(tk.Tk):
         # On commence sur la première page de l'interface
         self.pageCourante = PageLectureDonnees(self)
 
-        # On va stocker les mesures données par l'utilisateur ici.
+        # On stocke ici les mesures données par l'utilisateur.
         self.mesures = None
 
-        # On stockera ici les paramètres utiles pour le constructeur de Genetique
+        # On stocke ici les paramètres utiles pour le constructeur de
+        # `Genetique`.
         self.constructeur = None
 
     def afficher(self):
-        # La fonction qui lance l'interface graphique.
+        """Lance l'interface graphique."""
         self.mainloop()
 
     def pageSuivante(self):
-        # Fonction qui, comme son nom l'indique, permet de passer à la page suivante.
+        """Comme son nom l'indique, permet de passer à la page suivante."""
         if type(self.pageCourante) is PageLectureDonnees:
-            # On récupère les données de mesure.
+            # On récupère les données de mesure
             self.mesures = (
                 self.pageCourante.T,
                 self.pageCourante.Tint,
@@ -64,7 +71,7 @@ class InterfaceGraphique(tk.Tk):
             self.pageCourante = PageLectureConfiguration(self)
 
         elif type(self.pageCourante) is PageLectureConfiguration:
-            # On récupère les paramètres du constructeur de Genetique
+            # On récupère les paramètres du constructeur de `Genetique`
             self.constructeur = self.pageCourante.valeursConstructeur
             # On efface ce qui est dans la fenêtre
             self.pageCourante.destroy()
@@ -72,7 +79,8 @@ class InterfaceGraphique(tk.Tk):
             self.pageCourante = PageAnimation(
                 self, self.mesures, self.constructeur
             )
-            # Il n'y a pas de bouton sur la troisième page, nous devons donc passer à la page suivante automatiquement
+            # Il n'y a pas de bouton sur la troisième page, on doit donc passer
+            # à la page suivante automatiquement
             self.pageSuivante()
 
         else:

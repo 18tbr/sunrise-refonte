@@ -1,4 +1,4 @@
-# L'implémentation de la troisième page de l'interface graphique
+"""Implémentation de la troisième page de l'interface graphique."""
 
 import numpy as np  # Utile pour estimer la taille à donner à la fenêtre de l'animation.
 import tkinter as tk
@@ -7,7 +7,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as anim
 
-# Configuration de matplotlib pour pouvoir intégrer les courbes dans l'interface graphique.
+# Configuration de matplotlib pour pouvoir intégrer les courbes dans l'interface
+# graphique.
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
@@ -19,20 +20,23 @@ from Genetique import (
 
 
 class PageAnimation(tk.Frame):
-    """docstring for PageAnimation."""
+    """Classe pour la page Animation."""
 
     def __init__(self, interfaceParente, donneesMesures, argumentsConstructeur):
+        """Initialisation de la classe."""
         super(PageAnimation, self).__init__(
             interfaceParente.fenetrePrincipale, bg="white"
         )
         self.interfaceParente = interfaceParente
         self.place(relwidth=1, relheight=1)
 
-        # On commence par initialiser l'objet Génétique qui va servir à faire l'algorithme.On commence par mettre certaines variables globales aux bonnes valeurs.
+        # On commence par initialiser l'objet `Genetique` qui va servir à faire
+        # l'algorithme. On commence par mettre certaines variables globales aux
+        # bonnes valeurs.
         Genetique.SILENCE = True
         GenerateurArbres.SILENCE = True
 
-        # On récupère les données de mesure.
+        # On récupère les données de mesure
         T, Tint, Text, Pint = donneesMesures
 
         # On récupère les paramètres du constructeur
@@ -46,7 +50,7 @@ class PageAnimation(tk.Frame):
             autoencodeur,
         ) = argumentsConstructeur
 
-        # On initialise notre objet Génétique en mode graphique
+        # On initialise notre objet `Genetique` en mode graphique
         self.evolution = Genetique(
             Cint,
             T,
@@ -74,7 +78,8 @@ class PageAnimation(tk.Frame):
         )
         self.explicationBarre.pack(pady=10)
 
-        # On crée une barre de progression qui servira à suivre la progression de l'initialisation.
+        # On crée une barre de progression qui servira à suivre la progression
+        # de l'initialisation.
         self.barreProgressionInitialisation = ttk.Progressbar(
             self, orient=tk.HORIZONTAL, length=100, mode="determinate"
         )
@@ -82,7 +87,8 @@ class PageAnimation(tk.Frame):
             expand=True, fill="both", padx=10, pady=10
         )
 
-        # On créé la figure qui contiendra l'animation principale de progression de l'algorithme.
+        # On créé la figure qui contiendra l'animation principale de progression
+        # de l'algorithme.
         self.figureAnimee = Figure(figsize=(5, 5), dpi=100)
         self.figureAnimee.subplots_adjust(hspace=0.5)
 
@@ -90,7 +96,8 @@ class PageAnimation(tk.Frame):
         limitesAbscisse = (0, generationMax)
         limitesOrdonnee = (estimationLimitesGraphe(Tint), 0)
 
-        # On créé deux nouvelles courbes : une pour la progression de la convergence et une pour l'image du meilleur individu
+        # On créé deux nouvelles courbes : une pour la progression de la
+        # convergence et une pour l'image du meilleur individu
         self.courbeAnimee = self.figureAnimee.add_subplot(
             211, xlim=limitesAbscisse, ylim=limitesOrdonnee
         )
@@ -116,7 +123,8 @@ class PageAnimation(tk.Frame):
         canevasCourbe = FigureCanvasTkAgg(self.figureAnimee, self)
         canevasCourbe.get_tk_widget().pack(side=tk.BOTTOM)
 
-        # On initialise la population en utilisant la méthode dédiée populationAleatoireAnimee
+        # On initialise la population en utilisant la méthode dédiée
+        # `populationAleatoireAnimee`
         generateurAnimeInitialisation = (
             self.evolution.generateur.populationAleatoireAnimee()
         )
@@ -128,7 +136,8 @@ class PageAnimation(tk.Frame):
                 )
                 self.update_idletasks()
             except StopIteration:
-                # On a fini d'initialiser notre population, le générateur est épuisé.
+                # On a fini d'initialiser notre population, le générateur est
+                # épuisé.
                 self.barreProgressionInitialisation["value"] = 100
                 break
 
@@ -148,12 +157,30 @@ class PageAnimation(tk.Frame):
             try:
                 argumentAnimation = next(self.generateurOptimisation)
                 self.fonctionAnimation(argumentAnimation)
-                # Ici on force les courbes à être retracées sur le thread principal au lieu du thread de l'interface, ce qui n'est pas une très bonne solution, mais je ne vois pas trop comment faire autrement.
+                # Ici on force les courbes à être retracées sur le thread
+                # principal au lieu du thread de l'interface, ce qui n'est pas
+                # une très bonne solution, mais je ne vois pas trop comment
+                # faire autrement.
                 canevasCourbe.draw()
             except StopIteration:
                 break
 
     def fonctionAnimation(self, argumentsAlgorithmeGenetique):
+        """Fonction d'amination.
+
+        Paramètres
+        ----------
+        argumentsAlgorithmeGenetique : (int, Arbre, float)
+            Contient pour chaque génération `generation` le numéro de cette
+            génération, son `Arbre` le plus performant et son score.
+
+        Renvoie
+        -------
+        ligne : courbe
+            Courbe à animer au cours du temps.
+        image : image
+            Image à animer au cours du temps.
+        """
         (
             generation,
             meilleurIndividu,
@@ -171,5 +198,5 @@ class PageAnimation(tk.Frame):
 
 
 def estimationLimitesGraphe(Tint):
-    # Fonction utilisée pour estimer les limites à donner au graphe utilisé pour l'animation
+    """Estime les limites à donner au graphe utilisé pour l'animation."""
     return -3 * np.mean(np.square(Tint), 0)

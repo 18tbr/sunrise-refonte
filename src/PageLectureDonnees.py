@@ -1,4 +1,4 @@
-# Ce fichier contient l'implémentation de la page de récupération des courbes de l'utilisateur.
+"""Implémentation de la page de récupération des courbes de l'utilisateur."""
 
 import tkinter as tk
 import numpy as np  # Utile pour lire les fichiers npy
@@ -7,7 +7,8 @@ import matplotlib  # Utile pour tracer les courbes
 # from matplotlib import style
 # from tkinter import filedialog, Text
 
-# Configuration de matplotlib pour pouvoir intégrer les courbes dans l'interface graphique.
+# Configuration de matplotlib pour pouvoir intégrer les courbes dans l'interface
+# graphique.
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
@@ -17,20 +18,22 @@ from Outils import (
 )  # Utile pour récupérer les mesures contenues dans un fichier.
 from SunRiseException import (
     FichierIncoherent,
-)  # Lancée lorsque les différentes bases de temps des fichiers ne sont pas les mêmes
+)  # Lorsque les différentes bases de temps des fichiers ne sont pas les mêmes
 
 
 class PageLectureDonnees(tk.Frame):
-    """docstring for PageLectureDonnees."""
+    """Classe pour la page de lecture des données."""
 
     def __init__(self, interfaceParente):
+        """Initialisation de la classe."""
         super(PageLectureDonnees, self).__init__(
             interfaceParente.fenetrePrincipale, bg="white"
         )
         self.interfaceParente = interfaceParente
         self.place(relwidth=1, relheight=1)
 
-        # Les conteneurs de T, Tint, Text et Pint qui permettront de récupérer les valeurs une fois que l'utilisateur les aura rentrées
+        # Les conteneurs de T, Tint, Text et Pint qui permettront de récupérer
+        # les valeurs une fois que l'utilisateur les aura rentrées
         self.T = None
         self.Tint = np.empty(0)
         self.Text = np.empty(0)
@@ -54,7 +57,7 @@ class PageLectureDonnees(tk.Frame):
         )
         self.boutonTint.place(relwidth=0.2, relheight=0.1, relx=0.1, rely=0.2)
 
-        # Le bouton pout la tempérautre extérieure
+        # Le bouton pour la température extérieure
         self.boutonText = tk.Button(
             self,
             text="Text",
@@ -64,6 +67,7 @@ class PageLectureDonnees(tk.Frame):
         )
         self.boutonText.place(relwidth=0.2, relheight=0.1, relx=0.1, rely=0.5)
 
+        # Le bouton pour la température intérieure
         self.boutonPint = tk.Button(
             self,
             text="Pint",
@@ -75,6 +79,7 @@ class PageLectureDonnees(tk.Frame):
         )
         self.boutonPint.place(relwidth=0.2, relheight=0.1, relx=0.1, rely=0.8)
 
+        # Le bouton de confirmation
         self.boutonConfirmation = tk.Button(
             self,
             text="Confirmer les mesures",
@@ -84,7 +89,8 @@ class PageLectureDonnees(tk.Frame):
         )
         self.boutonConfirmation.pack(side=tk.BOTTOM)
 
-    # Les alias de la fonction ajoutFichier avec les bons arguments pour les boutons.
+    # Les alias de la fonction `ajoutFichier` avec les bons arguments pour les*
+    # boutons.
     def ajoutFichierTint(self):
         self.ajoutFichier("Tint", 0.1)
 
@@ -95,7 +101,22 @@ class PageLectureDonnees(tk.Frame):
         self.ajoutFichier("Pint", 0.7)
 
     def ajoutFichier(self, choix, hauteurRelative):
-        # hauteurRelative désigne la hauteur du graphe qui sera tracé et choix est soit "Tint" soit "Text" soit "Pint". figure est la figure sur laquelle on doit tracer notre courbe.
+        """
+        Paramètres
+        ----------
+        choix
+            Soit `Tint`, soit `Text`, soit `Pint`.
+        hauteurRelative
+            Hauteur du graphe qui sera tracé.
+
+        Exceptions lancées
+        ------------------
+        FichierIncoherent
+            Lorsque les différentes bases de temps des fichiers ne sont pas les
+            mêmes.
+        ValueError
+            Lorsque `choix` n'est pas une valeur acceptée.
+        """
         nomFichier = tk.filedialog.askopenfilename(
             initialdir=self.interfaceParente.dossierCourant,
             title="Sélectionnez le fichier de valeurs",
@@ -106,14 +127,15 @@ class PageLectureDonnees(tk.Frame):
             ),
         )
 
-        # On transpose les valeurs recues pour pouvoir les séparer plus facilement
+        # On transpose les valeurs recues pour pouvoir les séparer plus
+        # facilement
         T, grandeur = lireTableau(nomFichier).T
 
         if self.T is None:
-            # Si on n'a pas encore de valeur pour T, on la récupère du fichier
+            # Si on n'a pas encore de valeur pour `T`, on la récupère du fichier
             self.T = T
         elif (self.T != T).any():
-            # Les données sont incohérentes, on a un problème avec la base de temps.
+            # Les données sont incohérentes, problème avec la base de temps.
             raise FichierIncoherent(
                 f"Les données dans le fichier {nomFichier} n'ont pas la même base de temps que celles présentes dans un autre fichier enregistré plus tôt."
             )
@@ -130,7 +152,8 @@ class PageLectureDonnees(tk.Frame):
                 f"Les seules valeurs possible pour choix sont Tint, Text et Pint. La valeur {choix} n'est pas reconnue."
             )
 
-        # On remplit la figure que l'on va afficher sur l'interface. On commence par créer la figure qui va contenir la courbe.
+        # On remplit la figure que l'on va afficher sur l'interface.
+        # On commence par créer la figure qui va contenir la courbe.
         figure = Figure(figsize=(5, 5), dpi=100)
 
         # On créé une nouvelle courbe
