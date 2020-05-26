@@ -1,6 +1,7 @@
 """Implémentation de la troisième page de l'interface graphique."""
 
 import numpy as np  # Utile pour estimer la taille à donner à la fenêtre de l'animation.
+import threading   # Utile pour lancer l'optimisation sans geler l'interface graphique
 import tkinter as tk
 import tkinter.ttk as ttk  # Contient le widget pour les barres de progression.
 import matplotlib
@@ -19,14 +20,17 @@ from intelligenceArtificielle.Genetique import (
 )  # On va réaliser l'algorithme génétique dans cette page.
 
 
-class PageAnimation(tk.Frame):
+# Notez que PageAnimation hérite de deux classes. Le threading.thread sert à créer un thread supplémentaire qui fera tourner l'algorithme génétique. Il s'agit d'une solution un peu étrange mais économe en code.
+class PageAnimation(tk.Frame, threading.Thread):
     """Classe pour la page Animation."""
 
     def __init__(self, interfaceParente, donneesMesures, argumentsConstructeur):
         """Initialisation de la classe."""
         super(PageAnimation, self).__init__(
-            interfaceParente.fenetrePrincipale, bg="white"
+            master=interfaceParente.fenetrePrincipale, bg="white"
         )
+        # Visiblement Tkinter ne support pas l'héritage multiple sur les objets de type Frame, ce qui m'oblige à utiliser cette syntaxe plus que douteuse pour initialiser le Thread (obligatoire pour lancer self.start)
+        threading.Thread.__init__(self)
         self.interfaceParente = interfaceParente
         self.place(relwidth=1, relheight=1)
 
@@ -35,6 +39,8 @@ class PageAnimation(tk.Frame):
         # bonnes valeurs.
         Genetique.SILENCE = True
         GenerateurArbres.SILENCE = True
+
+        # Notez que le fait de mettre des 'self' partout pour récupérer ces arguments n'est pas une très bonne pratique, mais ici cela simplifie le travail pour l'écriture de la fonction 'run'.
 
         # On récupère les données de mesure
         T, Tint, Text, Pint = donneesMesures
@@ -53,7 +59,7 @@ class PageAnimation(tk.Frame):
             autoencodeur,
         ) = argumentsConstructeur
 
-        # On initialise notre objet `Genetique` en mode graphique
+        # Keras n'est pas thread safe, donc on est obligé d'initialiser le modèle dans le thread principal, ce qui cause un délai sensible dans le chargement de la troisième.
         self.evolution = Genetique(
             Cint,
             T,
@@ -68,6 +74,7 @@ class PageAnimation(tk.Frame):
             autoencodeur,
             modeGraphique=True,
         )
+
 
         # On donne un titre à notre page
         self.titrePage = tk.Label(
@@ -123,19 +130,25 @@ class PageAnimation(tk.Frame):
         self.image = self.imageMeilleur.imshow(self.matrice)
 
         # Il ne reste plus qu'à afficher le résultat dans un canevas dédié
-        canevasCourbe = FigureCanvasTkAgg(self.figureAnimee, self)
-        canevasCourbe.get_tk_widget().pack(side=tk.BOTTOM)
+        self.canevasCourbe = FigureCanvasTkAgg(self.figureAnimee, self)
+        self.canevasCourbe.get_tk_widget().pack(side=tk.BOTTOM)
 
+        # On lance l'algorithme génétique dans un autre thread
+        self.start()
+
+    # Le nom de cette méthode est imposée par le module threading, c'est celle qui sera lancée en parallèle avec le self.start
+    def run(self):
         # On initialise la population en utilisant la méthode dédiée
         # `populationAleatoireAnimee`
-        generateurAnimeInitialisation = (
+        self.generateurAnimeInitialisation = (
             self.evolution.generateur.populationAleatoireAnimee()
         )
+
         # Tant que l'itérateur produit des valeurs.
         while True:
             try:
                 self.barreProgressionInitialisation["value"] = next(
-                    generateurAnimeInitialisation
+                    self.generateurAnimeInitialisation
                 )
                 self.update_idletasks()
             except StopIteration:
@@ -146,15 +159,6 @@ class PageAnimation(tk.Frame):
 
         # On lance ensuite l'algorithme d'optimisation
         self.generateurOptimisation = self.evolution.optimisation()
-        #
-        # # L'animation principale
-        # animationPrincipale = anim.FuncAnimation(
-        #     self.figureAnimee,
-        #     self.fonctionAnimation,
-        #     frames=self.evolution.optimisation,
-        #     blit=True,
-        #     repeat=False
-        # )
 
         while True:
             try:
@@ -164,9 +168,12 @@ class PageAnimation(tk.Frame):
                 # principal au lieu du thread de l'interface, ce qui n'est pas
                 # une très bonne solution, mais je ne vois pas trop comment
                 # faire autrement.
-                canevasCourbe.draw()
+                self.canevasCourbe.draw_idle()
             except StopIteration:
                 break
+
+        # Une fois l'algorithme terminé, on passe à la page suivante
+        self.interfaceParente.pageSuivante()
 
     def fonctionAnimation(self, argumentsAlgorithmeGenetique):
         """Fonction d'amination.

@@ -87,15 +87,14 @@ class InterfaceGraphique(tk.Tk):
             self.pageCourante = PageAnimation(
                 self, self.mesures, self.constructeur
             )
-            # On récupère les valeurs intéressantes.
+
+            # L'appel à page suivante est fait dès que le thread de l'algorithme génétique se termine.
+
+        else:
+            # On récupère les valeurs intéressantes de l'algorithme génétique
             self.populationFinale = self.pageCourante.evolution.population
             self.meilleurIndividu = self.pageCourante.meilleurIndividu
 
-            # Il n'y a pas de bouton sur la troisième page, on doit donc passer
-            # à la page suivante automatiquement
-            self.pageSuivante()
-
-        else:
             # On efface ce qui est dans la fenêtre
             self.pageCourante.destroy()
             T, Tint, Text, Pint = self.mesures
