@@ -7,9 +7,9 @@ from random import choices
 # Il faut ajouter src au PYTHONPATH avant tout, sinon les modules n'auront pas accès à leurs propres imports.
 sys.path.append(f"{os.getcwd()}/src")
 
-import Coefficients
-from Genetique import Genetique
-from Outils import (
+import intelligenceArtificielle.structureDonnees.Coefficients
+from intelligenceArtificielle.Genetique import Genetique
+from intelligenceArtificielle.Outils import (
     lireDossier,
 )  # Pour récupérer des valeurs crédibles sur lesquelles lancer l'algorithme.
 
