@@ -7,7 +7,8 @@ dossier "modele" et passer son nom au constructeur.
 """
 
 import os  # Utile pour les manipulations de fichiers.
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 import numpy as np  # Utile pour fournir des données à Keras.
 
 # On importe keras pour pouvoir utiliser notre autoencodeur.
@@ -15,7 +16,9 @@ from keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D
 from keras.models import Model, load_model
 from keras import backend as K
 
-from intelligenceArtificielle.structureDonnees.SunRiseException import ModeleIntrouvable
+from intelligenceArtificielle.structureDonnees.SunRiseException import (
+    ModeleIntrouvable,
+)
 from intelligenceArtificielle.Entrainement import (
     lectureBlob,
 )  # Utile pour entrainer une population très simplement.

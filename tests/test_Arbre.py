@@ -6,7 +6,13 @@ import sys
 # Il faut ajouter src au PYTHONPATH avant tout, sinon les modules n'auront pas accès à leurs propres imports.
 sys.path.append(f"{os.getcwd()}/src")
 
-from intelligenceArtificielle.structureDonnees.Arbre import Arbre, Noeud, Feuille, Parallele, Serie
+from intelligenceArtificielle.structureDonnees.Arbre import (
+    Arbre,
+    Noeud,
+    Feuille,
+    Parallele,
+    Serie,
+)
 
 # Test des fonctions sur les noeuds en parallèles
 

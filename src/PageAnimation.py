@@ -1,7 +1,7 @@
 """Implémentation de la troisième page de l'interface graphique."""
 
 import numpy as np  # Utile pour estimer la taille à donner à la fenêtre de l'animation.
-import threading   # Utile pour lancer l'optimisation sans geler l'interface graphique
+import threading  # Utile pour lancer l'optimisation sans geler l'interface graphique
 import tkinter as tk
 import tkinter.ttk as ttk  # Contient le widget pour les barres de progression.
 import matplotlib
@@ -74,7 +74,6 @@ class PageAnimation(tk.Frame, threading.Thread):
             autoencodeur,
             modeGraphique=True,
         )
-
 
         # On donne un titre à notre page
         self.titrePage = tk.Label(

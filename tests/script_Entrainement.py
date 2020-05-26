@@ -11,9 +11,14 @@ sys.path.append(f"{os.getcwd()}/src")
 
 import intelligenceArtificielle.structureDonnees.Coefficients
 from intelligenceArtificielle.Genetique import Genetique
-from intelligenceArtificielle.Entrainement import creationPopulationLectureDossier, lectureBlob
+from intelligenceArtificielle.Entrainement import (
+    creationPopulationLectureDossier,
+    lectureBlob,
+)
 from intelligenceArtificielle.Autoencodeur import Autoencodeur
-from intelligenceArtificielle.AutoencodeurDeterministe import AutoencodeurDeterministe
+from intelligenceArtificielle.AutoencodeurDeterministe import (
+    AutoencodeurDeterministe,
+)
 
 
 def test_entrainement():

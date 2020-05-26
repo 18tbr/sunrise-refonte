@@ -6,7 +6,13 @@ problèmes de dépendances circulaires.
 """
 
 import random
-from intelligenceArtificielle.structureDonnees.Arbre import Arbre, Feuille, Serie, Parallele, Noeud
+from intelligenceArtificielle.structureDonnees.Arbre import (
+    Arbre,
+    Feuille,
+    Serie,
+    Parallele,
+    Noeud,
+)
 
 
 class GenerateurArbres(object):
