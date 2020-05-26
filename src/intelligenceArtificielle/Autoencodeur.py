@@ -7,6 +7,7 @@ dossier "modele" et passer son nom au constructeur.
 """
 
 import os  # Utile pour les manipulations de fichiers.
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import numpy as np  # Utile pour fournir des données à Keras.
 
 # On importe keras pour pouvoir utiliser notre autoencodeur.
