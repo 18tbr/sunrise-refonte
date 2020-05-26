@@ -159,7 +159,6 @@ class PageAnimation(tk.Frame):
             meilleurIndividu,
             meilleurScore,
         ) = argumentsAlgorithmeGenetique
-        print(generation)
         self.X.append(generation)
         self.Y.append(meilleurScore)
         self.matrice = meilleurIndividu.ecritureImage(
