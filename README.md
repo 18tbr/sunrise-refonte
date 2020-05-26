@@ -26,6 +26,23 @@ Ce dépôt contient le travail d'une équipe d'étudiants des Mines de Paris sur
 
 La méthode développée ici est inhabituelle, et l'algorithme proposé tente de fournir une solution à l'inférence de paramètres en utilisant des __méthodes de Machine Learning__ :robot:
 
+## Package Python
+
+Ce projet utilise l'outil [Poetry](https://python-poetry.org) pour gérer les dépendances et faire un package pip utilisable plus facilement. Le package pip du projet se nomme [sunriseces](https://pypi.org/project/sunriseces/).
+
+Une fois le package installé, vous pourrez utiliser l'outil graphique en utilisant l'une des commandes :
+
+```sh
+# Si le dossier des modules exécutables python se trouve dans votre PATH
+sunrise
+
+# Sinon sous Linux
+python3 -m sunrise
+
+# De même sous Windows
+python -m sunrise
+```
+
 ## Contribution
 Si vous __souhaitez contribuer à ce dépôt :heart:__, nous vous invitons à consulter les différents documents du [dossier docs](https://github.com/18tbr/sunrise-refonte/tree/master/docs) qui détaillent les façons de contribuer au projet, les conventions de nommage, etc...
 
