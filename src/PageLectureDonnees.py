@@ -13,10 +13,10 @@ matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
-from Outils import (
+from intelligenceArtificielle.Outils import (
     lireTableau,
 )  # Utile pour récupérer les mesures contenues dans un fichier.
-from SunRiseException import (
+from intelligenceArtificielle.structureDonnees.SunRiseException import (
     FichierIncoherent,
 )  # Lorsque les différentes bases de temps des fichiers ne sont pas les mêmes
 

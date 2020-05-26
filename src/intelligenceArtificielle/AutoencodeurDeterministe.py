@@ -17,7 +17,7 @@ from keras.models import (
 )  # Outils pour manipuler facilement des modèles
 from keras import backend as K
 
-from Autoencodeur import (
+from intelligenceArtificielle.Autoencodeur import (
     Autoencodeur,
 )  # La classe que l'on cherche à implémenter
 

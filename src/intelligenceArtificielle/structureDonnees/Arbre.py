@@ -12,17 +12,17 @@ from scipy.special import (
 )  # Une implémentation de la fonction sigmoïde utilisée pour normaliser les valeurs des coefficients pour les mettre dans les images. Logit est la fonction inverse de expit.
 
 # Notez que pour importer ces classes dans les autres modules, il est préférable de faire "from Arbre import Noeud, ..." plutôt que d'importer directement les fichiers concernés.
-from Noeud import Noeud
-from Feuille import Feuille
-from SunRiseException import (
+from intelligenceArtificielle.structureDonnees.Noeud import Noeud
+from intelligenceArtificielle.structureDonnees.Feuille import Feuille
+from intelligenceArtificielle.structureDonnees.SunRiseException import (
     FeuilleException,
     NonFeuilleException,
     NonMarqueException,
     SimulationException,
 )
-from Serie import Serie
-from Parallele import Parallele
-import Coefficients
+from intelligenceArtificielle.structureDonnees.Serie import Serie
+from intelligenceArtificielle.structureDonnees.Parallele import Parallele
+import intelligenceArtificielle.structureDonnees.Coefficients as Coefficients
 
 from math import ceil
 

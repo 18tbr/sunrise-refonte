@@ -13,7 +13,7 @@ matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
-from Genetique import (
+from intelligenceArtificielle.Genetique import (
     Genetique,
     GenerateurArbres,
 )  # On va réaliser l'algorithme génétique dans cette page.

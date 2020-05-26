@@ -17,10 +17,10 @@ from keras.models import (
 )  # Outils pour manipuler des modèles Keras facilement
 from keras import backend as K
 
-from Entrainement import (
+from intelligenceArtificielle.Entrainement import (
     lectureBlob,
 )  # Des fonctions utiles pour simplifier l'entrainement non supervisé
-from Autoencodeur import (
+from intelligenceArtificielle.Autoencodeur import (
     Autoencodeur,
 )  # La classe que l'on cherche à implémenter
 

@@ -2,14 +2,14 @@
 from operator import itemgetter  # Pour trier des listes
 import random  # Pour introduire du hasard
 
-from Arbre import Arbre, Noeud, Feuille, Parallele, Serie
-from GenerateurArbres import (
+from intelligenceArtificielle.structureDonnees.Arbre import Arbre, Noeud, Feuille, Parallele, Serie
+from intelligenceArtificielle.GenerateurArbres import (
     GenerateurArbres,
 )  # Utilisé en interne pour créer une population d'arbres aléatoires.
-from Autoencodeur import (
+from intelligenceArtificielle.Autoencodeur import (
     Autoencodeur,
 )  # L'interface permettant de manipuler les autoencodeurs
-from AutoencodeurDeterministe import (
+from intelligenceArtificielle.AutoencodeurDeterministe import (
     AutoencodeurDeterministe,
 )  # Pour pouvoir instancier des autoencodeurs déterministes à partir de leurs noms.
 
