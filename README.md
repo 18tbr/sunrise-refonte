@@ -1,5 +1,6 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ![Python application](https://github.com/18tbr/sunrise-refonte/workflows/Python%20application/badge.svg)
+[![PyPI version](https://badge.fury.io/py/sunriseces.svg)](https://pypi.org/project/sunriseces/)
 [![License](https://img.shields.io/github/license/18tbr/sunrise-refonte)](https://github.com/18tbr/sunrise-refonte/blob/master/LICENSE)
 ![Windows Support](https://img.shields.io/badge/Windows-Support-brightgreen.svg)
 ![Linux Support](https://img.shields.io/badge/Linux-Support-brightgreen.svg)
