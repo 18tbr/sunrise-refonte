@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sunriseCES"
-version = "0.0.2"
+version = "0.0.3"
 description = "Outils d'inférence de paramètres pour thermique de bâtiments"
 authors = ["Voir GitHub"]
 license = "GPL-3.0-or-later"

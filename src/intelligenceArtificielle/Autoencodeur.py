@@ -79,7 +79,9 @@ class Autoencodeur(object):
                 cheminModele = nomDuModele
             else:
                 # On suppose que l'on se trouve dans la racine du dépôt git.
-                cheminModele = os.path.join("blob", "modeles", f"{nomDuModele}.md5")
+                cheminModele = os.path.join(
+                    "blob", "modeles", f"{nomDuModele}.md5"
+                )
             if os.path.exists(cheminModele):
                 self.autoencodeur = load_model(cheminModele)
             else:
