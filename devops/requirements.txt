@@ -3,7 +3,6 @@ scipy
 matplotlib
 tensorflow
 keras
-tensorflow-gpu
 black
 pytest
 flake8
