@@ -17,7 +17,7 @@ from intelligenceArtificielle.structureDonnees.Arbre import (
     Serie,
     SimulationException,
 )
-import intelligenceArtificielle.structureDonnees.Coefficients
+import intelligenceArtificielle.structureDonnees.Coefficients as Coefficients
 
 
 def test_representation_image_complexe():

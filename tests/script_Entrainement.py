@@ -9,7 +9,7 @@ from keras.models import load_model
 # Il faut ajouter src au PYTHONPATH avant tout, sinon les modules n'auront pas accès à leurs propres imports.
 sys.path.append(f"{os.getcwd()}/src")
 
-import intelligenceArtificielle.structureDonnees.Coefficients
+import intelligenceArtificielle.structureDonnees.Coefficients as Coefficients
 from intelligenceArtificielle.Genetique import Genetique
 from intelligenceArtificielle.Entrainement import (
     creationPopulationLectureDossier,
