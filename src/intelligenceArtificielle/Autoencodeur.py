@@ -76,7 +76,7 @@ class Autoencodeur(object):
             # sinon on charge le modèle demandé.
             # Pour que le package pip soit plus utilisable, on laisse aussi la possibiliter d'utiliser le chemin absolu du modèle que le souhaite utiliser. Pour différentier cela de l'autre option rapide, il faut mettre le .md5 à la fin du nom du modèle.
             if nomDuModele.endswith(".md5"):
-                cheminModele = os.path.abspath(nomDuModele)
+                cheminModele = nomDuModele
             else:
                 # On suppose que l'on se trouve dans la racine du dépôt git.
                 cheminModele = os.path.join("blob", "modeles", f"{nomDuModele}.md5")
