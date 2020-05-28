@@ -26,6 +26,8 @@ Ce dépôt contient le travail d'une équipe d'étudiants des Mines de Paris sur
 
 La méthode développée ici est inhabituelle, et l'algorithme proposé tente de fournir une solution à l'inférence de paramètres en utilisant des __méthodes de Machine Learning__ :robot:
 
+![SunRise démo](assets/demo.gif)
+
 ## Package Python
 
 Ce projet utilise l'outil [Poetry](https://python-poetry.org) pour gérer les dépendances et faire un package pip utilisable plus facilement. Le package pip du projet se nomme [sunriseces](https://pypi.org/project/sunriseces/).
