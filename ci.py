@@ -28,28 +28,11 @@ class ContinuousIntegration:
             "fini",
         ]
         self.membres = [
-            "alicia",
-            "arthur",
-            "camille",
-            "felipe",
-            "litao",
-            "lucie",
-            "maud",
-            "pierre",
-            "martin",
-            "shao-hen",
             "tbr",
             "theo",
-            "thibault",
-            "vitor",
         ]
         self.groupes = [
-            "AI",
-            "Animation",
-            "Arbre",
-            "Simulation",
             "SunRise",
-            "UI",
         ]
 
     def main(self):
