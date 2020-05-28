@@ -8,6 +8,7 @@ Le rôle du groupe DevOps est de __mettre à disposition des contributeurs du pr
 
 Le flux de travail proposé pour ce dépôt est assez simple _en théorie_.
 1. Les membres du projet ont __chacun une branche personnelle__ pour pouvoir __déposer :outbox_tray: leur code après une séance de travail__.
+> Note : à ce jour, nous avons trié les branches et gardé uniquement celles encore actives !
 2. Entre deux séances de travail :watch:, le groupe DevOps se charge de réaliser la __fusion des codes__ écrits sur la branche `devops` du dépôt.
 3. Enfin, une fois la fusion réalisée, il ne reste qu'à __remettre à jour__ :inbox_tray: la branche `master` du dépôt et les branches de tous les membres afin qu'ils puissent travailler normalement à la séance suivante.
 
@@ -15,7 +16,7 @@ Le principal avantage de cette approche est que __les membres du projet ne renco
 
 Le gros défaut de cette approche est que __la fusion des différentes branches entre les séances de travail est souvent très laborieuse__ :-1: Si l'usage de dépôt ne nécessite aucune connaissance de git pour les contributeurs, sa gestion par les membres du groupe DevOps en requiert au contraire une compréhension assez fine :expressionless:
 
-## `ci.py` pour le groupe DevOps
+## ci.py pour le groupe DevOps
 
 Le script `ci.py` comporte, en plus des fonctions documentées dans l'interface, un certain nombre de __fonctions destinées à l'usage du groupe DevOps__ :toolbox: _Il y a d'ailleurs plus de fonctions cachées que de fonctions publiques dans ce script_. Ces fonction cachées sont :
 - fusion
