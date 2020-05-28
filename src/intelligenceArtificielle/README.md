@@ -1,19 +1,19 @@
 # intelligenceArtificielle
 
-Ce dossier contient __l'implémentation de l'algorithme génétique et des autoencodeurs__ utilisés pour le projet. A la fin de ce README, vous trouverez aussi des informations sur l'usage des autoencodeurs dans le projet.
+Ce dossier contient __l'implémentation de l'algorithme génétique et des autoencodeurs__ utilisés pour le projet. A la fin de ce `README`, vous trouverez aussi des informations sur l'usage des autoencodeurs dans le projet.
 
 ## Genetique
 
-Le fichier Genetique contient l'implémentation de la classe Genetique, qui est responsable de __réaliser l'optimisation stochastique des arbres par un algorithme génétique__. Notez que l'initialisation nécessaire à l'algorithme n'est pas implémentée dans cette classe mais dans la classe GenerateurArbre, ce qui permet de la réutiliser pour l'entrainement des autoencodeurs.
+Le fichier `Genetique` contient l'implémentation de la classe `Genetique`, qui est responsable de la réalisation de __l'optimisation stochastique des arbres par un algorithme génétique__. Notez que l'initialisation nécessaire à l'algorithme n'est pas implémentée dans cette classe mais dans la classe `GenerateurArbre`, ce qui permet de la réutiliser pour l'entrainement des autoencodeurs.
 
 Les principales méthodes de cette classe sont :
- - optimisation : une méthode génératrice pour faire fonctionner l'algorithme d'optimisation.
+ - `optimisation` : une méthode génératrice pour faire fonctionner l'algorithme d'optimisation.
 
 ### Fonction Génératrice
 
-Les fonctions génératrices (et le générateurs en général) sont une syntaxe particulière de python dont la fonctionnement interne est sans doute très complexe mais l'usage est assez aisé. Une fonction génératrice __renvoie un objet itérable__ dit `generateur` qui va __à chaque itération reprendre le cours de la fonction__ là où l'opérateur `yield` l'aura laissée.
+Les fonctions génératrices (et les générateurs en général) sont une syntaxe particulière de python dont le fonctionnement interne est sans doute très complexe mais dont l'usage est assez aisé. Une fonction génératrice __renvoie un objet itérable__ dit `generateur` qui va __à chaque itération reprendre le cours de la fonction__ là où l'opérateur `yield` l'aura laissée.
 
-Par exemple dans le cas de optimisation :
+Par exemple dans le cas de `optimisation` :
 
 ```python
 # On suppose que evolution est un objet de la classe Genetique initialisé correctement.
@@ -21,7 +21,8 @@ Par exemple dans le cas de optimisation :
 # On commence par créer le générateur itérable qui sert à réaliser l'optimisation génétique :
 generateurGenetique = evolution.optimisation()
 
-# Ensuite, lorsque l'on appellera la fonction next sur le générateur, on réalisera une étape de l'algorithme génétique.
+# Ensuite, lorsque l'on appellera la fonction next sur le générateur,
+# on réalisera une étape de l'algorithme génétique.
 etape1 = next(generateurGenetique)
 
 # Les valeurs contenues dans etape1 sont les variables renvoyées par yield dans l'implémentation de optimisation
@@ -31,49 +32,49 @@ generation1, meilleurIndividu1, meilleurScore1 = etape1
 generation2, meilleurIndividu2, meilleurScore2 = next(generateurGenetique)
 ```
 
-__Lorsque la fonction optimisation a atteint sa dernière itération__ (c'est à dire que l'itérateur devient vide), utiliser la fonction next sur le generateur va __déclencher une exception de type StopIteration__. Notez qu'il est aussi sans doute possible d'itérer directement sur un générateur avec une boucle for.
+__Lorsque la fonction `optimisation` a atteint sa dernière itération__ (c'est à dire que l'itérateur devient vide), utiliser la fonction `next` sur le `generateur` va __déclencher une exception de type `StopIteration`__. Notez qu'il est aussi sans doute possible d'itérer directement sur un générateur avec une boucle `for`.
 
 ## GenerateurArbres
 
-GenerateurArbres contient l'objet qui sert à __initialiser automatiquement une population d'arbres__. Il est utilisé à la fois pour l'algorithme génétique et pour l'entrainement des autoencodeurs.
+`GenerateurArbres` contient l'objet qui sert à __initialiser automatiquement une population d'arbres__. Il est utilisé à la fois pour l'algorithme génétique et pour l'entrainement des autoencodeurs.
 
-Les méthodes importantes de la classe GenerateurArbres sont :
- - populationAleatoire : Méthode permettant de __créer une population aléatoire__. Cette population peut ensuite être récuperée dans l'attribut `population` de l'instance. Sauf en mode graphique, __cette méthode est appellée automatiquement par le constructeur de GenerateurArbres__.
- - populationAleatoireAnimee : Renvoie un generateur permettant de créer la population. Cette méthode a été __créée specialement pour la troisième page de l'interface graphique__.
+Les méthodes importantes de la classe `GenerateurArbres` sont :
+ - `populationAleatoire` : Méthode permettant de __créer une population aléatoire__. Cette population peut ensuite être récupérée dans l'attribut `population` de l'instance. Sauf en mode graphique, __cette méthode est appelée automatiquement par le constructeur de `GenerateurArbres`__.
+ - `populationAleatoireAnimee` : Renvoie un `generateur` permettant de créer la population. Cette méthode a été __créée specialement pour la troisième page de l'interface graphique__.
 
 ## Autoencodeur
 
-Ce fichier contient la classe abstraite Autoencodeur, dont héritent les implémentations AutoencodeurDeterministe et AutoencodeurNonDeterministe. Elle permet de manipuler un autoencodeur sans se soucier de son implémentation (et de partager beaucoup de code entre les différentes implémentations).
+Ce fichier contient la classe abstraite `Autoencodeur`, dont héritent les implémentations `AutoencodeurDeterministe` et `AutoencodeurNonDeterministe`. Elle permet de manipuler un autoencodeur sans se soucier de son implémentation (et de partager beaucoup de code entre les différentes implémentations).
 
-Les méthodes importantes de la classe Autoencodeur sont :
- - creation : Sert à créer un nouvel autoencodeur pour entrainement
- - entrainement : Sert à entrainer un autoencodeur en lui fournissant son entrée et sa sortie
- - ameliorerArbres : Améliore une population d'arbres fournie en argument
- - sauver : Sauvegarde le modèle entrainé dans un fichier .md5
+Les méthodes importantes de la classe `Autoencodeur` sont :
+ - `creation` : Sert à créer un nouvel autoencodeur pour `entrainement`
+ - `entrainement` : Sert à entrainer un autoencodeur en lui fournissant son entrée et sa sortie
+ - `ameliorerArbres` : Améliore une population d'arbres fournie en argument
+ - `sauver` : Sauvegarde le modèle entrainé dans un fichier `.md5`
 
 ### AutoencodeurDeterministe
 
-Implémentation de la classe Autoencodeur avec des autoencodeurs déterministes (classiques). Les méthodes principales sont celles de la classe Autoencodeur. L'implémentation de la méthode création correspond à la meilleure forme trouvée à la main par le groupe.
+Implémentation de la classe `Autoencodeur` avec des autoencodeurs déterministes (classiques). Les méthodes principales sont celles de la classe `Autoencodeur`. L'implémentation de la méthode création correspond à la meilleure forme trouvée à la main par le groupe.
 
 ### AutoencodeurNonDeterministe
 
-Implémentation de la classe Autoencodeur avec des autoencodeurs non deterministes (VAE). Les méthodes principales sont les mêmes que celles de la classe Autoencodeur.
+Implémentation de la classe `Autoencodeur` avec des autoencodeurs non deterministes (VAE). Les méthodes principales sont les mêmes que celles de la classe `Autoencodeur`.
 
 ## Outils
 
-Ce fichier contient les procédures permettant de lire les données de mesure dans des fichiers. Les types de fichiers supportés pour l'instant sont `csv`et `npy`.
+Ce fichier contient les procédures permettant de lire les données de mesure dans des fichiers. Les types de fichiers supportés pour l'instant sont `.csv`et `.npy`.
 
 Les fonctions principales définies dans le fichier Outils sont :
- - lireTableau : Lit les données présent dans un fichier proposé avec quelques vérifications sommaires.
- - LireDossier : Lit les fichiers `Tint.csv` `Text.csv` `Pint.csv` dans le dossier passé en argument s'ils existent. Cette fonction est utile surtout pour l'entrainement, où l'on sait à l'avance où se trouvent les données que l'on va utiliser.
+ - `lireTableau` : Lit les données présent dans un fichier proposé avec quelques vérifications sommaires
+ - `lireDossier` : Lit les fichiers `Tint.csv` `Text.csv` `Pint.csv` dans le dossier passé en argument s'ils existent. Cette fonction est utile surtout pour l'entrainement, où l'on sait à l'avance où se trouvent les données que l'on va utiliser
 
 ## Entrainement
 
 Ce fichier contient plusiers fonctions utiles pour simplifier l'entrainement des autoencodeurs.
 
 Les principales fonctions définies dans ce dossier sont :
- - creationPopulationLectureDossier : Lit les données présentes dans un dossier et initialise une population avec. Renvoie une liste d'arbres.
- - lectureBlob : Lit tous les dossiers présents dans blob/mesures et crée des populations à partir des données qui y sont présentes. Utile pour obtenir d'un seul coup une très grande population pour l'entrainement des autoencodeurs.
+ - `creationPopulationLectureDossier` : Lit les données présentes dans un dossier et initialise une population avec. Renvoie une liste d'arbres
+ - `lectureBlob` : Lit tous les dossiers présents dans `blob/mesures` et crée des populations à partir des données qui y sont présentes. Utile pour obtenir d'un seul coup une très grande population pour l'entrainement des autoencodeurs
 
 
 
@@ -119,7 +120,7 @@ Le problème est que __AE1 a été entrainé sur des images qui ne sont pas quel
 
 ### Formulation mathématique
 
-Pour formuler cela d'une façon plus mathématique, si on considère __E l'ensemble des images possibles__ et l'ensemble des images qui sont des __images d'arbre bien formées F__, on voit que F est inclut dans E mais E n'est pas égal à F.
+Pour formuler cela d'une façon plus mathématique, si on considère __E l'ensemble des images possibles__ et l'ensemble des images qui sont des __images d'arbre bien formées F__, on voit que F est inclus dans E mais E n'est pas égal à F.
 
 AE1 a été entrainé sur des images qui sont toutes dans F, et il est capable de les améliorer. Donc __AE1 est un opérateur défini de F sur E comme améliorant les images__. La confusion vient du fait que l'autoencodeur est en pratique capable de réaliser des calculs sur toutes les images sans rencontrer d'erreur au sens informatique. Cela signifie qu'en réalité la fonction AE1 est valuée de tout E dans tout E. Mais __rien ne laisse supposer que AE1 est bien améliorant sur E/F__ (en fait ce n'est probablement pas le cas).
 
@@ -127,11 +128,11 @@ Ainsi, si on veut que AE1 améliore le score d'une image, il faut forcément que
 
 Ainsi, __AE2 sera entrainé à imiter des opérateurs de la forme AE1 o NA o AE1__ qui sont à valeur de F dans E. L'abre utilisé pour faire chaque normalisation est celui utilisé pour créer l'image en premier lieu.
 
-## Pseudo code
+## Pseudo-code
 
-On propose ci dessous un pseudo-code (en python) pour __expliciter l'entrainement__ que nous avons décrit ci dessus. Notez que le pseudo code python écrit ci dessous n'est __pas contractuel du code vraiment utilisé__ (les noms de méthodes ne sont pas forcément les mêmes par exemple et toutes les variables ne sont pas définies rigoureusement).
+On propose ci-dessous un pseudo-code (en Python) pour __expliciter l'entrainement__ que nous avons décrit ci-dessus. Notez que le pseudo-code python écrit ci-dessous n'est __pas contractuel du code vraiment utilisé__ (les noms de méthodes ne sont pas forcément les mêmes par exemple et toutes les variables ne sont pas définies rigoureusement).
 
-Le pseudo code de l'entrainement de l'autoencodeur est :
+Le pseudo-code de l'entrainement de l'autoencodeur est :
 
 ```python
 # On commence par créer le VAE
@@ -145,7 +146,8 @@ populationFinale = VAE.ameliorerNonDeterministe(populationInitiale)
 AE1 = nouvelAutoEncodeur()
 AE1.entrainementSupervise(populationInitiale, populationFinale)
 
-# Maintenant que l'on dispose d'un autoencodeur déterministe permettant d'améliorer notre population, on peut itérativement créer notre meilleur autoencodeur
+# Maintenant que l'on dispose d'un autoencodeur déterministe permettant d'améliorer notre population,
+# on peut itérativement créer notre meilleur autoencodeur
 AEActuel = AE1
 for iteration in range(nombreIterationsSouhaite):
   # On génère une population aléatoire
