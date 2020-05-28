@@ -62,6 +62,14 @@ La commande pour utiliser `black` sur un fichier comme le ferait `ci.py` est :
 python3 -m black -l 80 $FICHIER
 ```
 
+## flake8
+
+[flake8](https://github.com/pycqa/flake8) est un outil qui permet de __detecter certaines erreurs de codes__ (erreurs de syntaxe, variables non déclarées) sans lancer le code. C'est une des __étapes de vérification programmées sur GitHub__. La syntaxe pour lancer la vérification sur votre machine comme le ferait GitHub est _(en se plaçant dans le dossier de ci.py)_ :
+
+```sh
+flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+```
+
 ## Conclusion
 
 Avec toutes ces informations, vous devriez être __prêts à gérer le dépôt GitHub du projet SunRise__ :smiley: N'hésitez pas à relire les documents présents dans [docs](https://github.com/18tbr/sunrise-refonte/tree/tbr/docs) pour les avoir bien en mémoire lorsque vous ferez les revues de code.

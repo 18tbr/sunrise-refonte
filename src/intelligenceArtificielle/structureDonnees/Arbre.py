@@ -242,7 +242,7 @@ class Arbre(object):
             E, gauche=None, droite=0, curseur=0, capaciteDroite=self.cint
         )
 
-    # Effectue un parcours en profondeur de l'arbre sous la racine jusqu'à atteindre le index ième noeud à la profondeur donnée. Renvoie le noeud trouvé.
+    # Effectue un parcours en largeur de l'arbre sous la racine jusqu'à atteindre le index ième noeud à la profondeur donnée. Renvoie le noeud trouvé.
     def inspecter(self, profondeur, index):
         if profondeur >= len(self.forme):
             raise IndexError(

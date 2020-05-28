@@ -188,5 +188,5 @@ class Autoencodeur(object):
         """
 
         # On suppose que le programme est lancé depuis la racine du dépôt git.
-        cheminModele = os.path.join("src", "modeles", f"{nomDuModele}.md5")
+        cheminModele = os.path.join("blob", "modeles", f"{nomDuModele}.md5")
         self.autoencodeur.save(cheminModele)

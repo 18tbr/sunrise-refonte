@@ -38,3 +38,20 @@ def test_multiplieFonction():
 ## Lancer les tests
 
 Pour lancer les tests, utiliser la fonctionnalité `test` du `ci.py`.
+
+
+## Fichiers de script
+
+Dans la mesure où nous étions __contraints par le temps__ pour cette année, nous n'avons __pas écrit des tests pour tous les modules__ et nous sommes parfois contentés de vérifier qu'ils marchaient sur des __script simples__. Pour différentier ces scripts des tests, nous avons fait commmencer leur nom par `script\_`.
+
+__Ces scripts ne se substituent pas aux tests__, il faudra à terme écrire des tests pour ce qui manque. Nous avons tout de même laissé ces script dans le dépôt pour __aider à comprendre un peu comment le code est censé être utilisé__.
+
+Notez que tous ces scripts sont censés être lancés depuis la racine du dépôt, c'est à dire avec une commande comme :
+
+```sh
+# Sous Linux
+python3 tests/script\_$nom
+
+# De même sous Windows
+python tests/script\_$nom 
+```
