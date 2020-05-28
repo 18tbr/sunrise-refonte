@@ -1,9 +1,11 @@
-# Import modules
+"""Tests concernant la structure des arbres."""
+
 import numpy as np
 import os
 import sys
 
-# Il faut ajouter src au PYTHONPATH avant tout, sinon les modules n'auront pas accès à leurs propres imports.
+# Il faut ajouter src au PYTHONPATH avant tout, sinon les modules n'auront pas
+# accès à leurs propres imports.
 sys.path.append(f"{os.getcwd()}/src")
 
 from intelligenceArtificielle.structureDonnees.Arbre import (
@@ -14,11 +16,10 @@ from intelligenceArtificielle.structureDonnees.Arbre import (
     Serie,
 )
 
-# Test des fonctions sur les noeuds en parallèles
+# Test des fonctions sur les noeuds en parallèle
 
 
 def test_creation_arbre_minimal():
-    """Test if [...]"""
     g = Arbre(None, None, None, None, None)
     assert g.forme == [1]
     f = g.racine
@@ -102,7 +103,7 @@ def test_suppression_parallele_existant_rang_superieur():
     return g, p
 
 
-# Test des fonctions pour les noeuds Serie
+# Test des fonctions pour les noeuds en série
 
 
 def test_ajout_fils_feuille_serie():
@@ -191,7 +192,7 @@ def test_suppression_serie_existant_rang_superieur():
     return g, p
 
 
-# Tests mixtes de Parallèle et Série
+# Tests mixtes de parallèle et série
 
 
 def test_ajout_serie_sur_parallele():

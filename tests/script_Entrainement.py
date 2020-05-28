@@ -1,3 +1,5 @@
+"""Tests sur l'éntrainement des autoencodeurs."""
+
 import matplotlib.pyplot as plt
 import os
 import sys

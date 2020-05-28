@@ -1,3 +1,5 @@
+"""Tests sur l'algorithme gééntique."""
+
 import matplotlib.pyplot as plt
 import os
 import sys

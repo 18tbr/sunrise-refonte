@@ -1,12 +1,14 @@
-# Import modules
+"""Tests des simulations."""
+
 import numpy as np
 import os
 import sys
 import matplotlib.pyplot as plt
 
-# Il faut ajouter src au PYTHONPATH avant tout, sinon les modules n'auront pas accès à leurs propres imports.
+# Il faut ajouter src au PYTHONPATH avant tout, sinon les modules n'auront pas
+# accès à leurs propres imports.
 sys.path.append(f"{os.getcwd()}/src")
-# Import from package
+
 from intelligenceArtificielle.structureDonnees.Arbre import (
     Arbre,
     Noeud,
@@ -14,10 +16,6 @@ from intelligenceArtificielle.structureDonnees.Arbre import (
     Parallele,
     Serie,
 )
-
-
-# ===== Test functions for Simulation ===== #
-
 
 def test_creationSimulation_minimal():
     Cint = 0.5
@@ -117,11 +115,14 @@ def test_creationSimulation_complexe():
     pE = f2.ajoutFils(f8, forme="parallele")
     f9 = Feuille()
     pE.ajoutFils(f9, index=2)
-    # Oui, c'est un exemple assez compliqué, c'est parce que j'essaie de tester l'implémentation de curseur, qui n'intervient que dans des cas assez importants.
+    # Oui, c'est un exemple assez compliqué, c'est parce que j'essaie de tester
+    # l'implémentation de curseur, qui n'intervient que dans des cas assez
+    # importants.
     cA, cB = sA.capacites
     cC = sD.capacites[0]
     cD, cE = sC.capacites
-    # Pour proposer les solutions qui suivent j'ai suivi l'algorithme à la main sur un tableau.
+    # Pour proposer les solutions qui suivent j'ai suivi l'algorithme à la main
+    # sur un tableau.
     solA = np.array(
         [
             [f4.H + f5.H, 0, -f4.H, 0, 0, -f5.H],
@@ -172,7 +173,8 @@ def test_simulation_coherence():
     for temperature in sol.y:
         assert temperature[0] == tExt[0]
     assert len(x) == len(y)
-    # C'est à peu près tout ce que l'on peut vérifier simplement sur la cohérence de la simulation...
+    # C'est à peu près tout ce que l'on peut vérifier simplement sur la
+    # cohérence de la simulation...
     return g
 
 

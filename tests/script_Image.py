@@ -1,4 +1,4 @@
-# Tests de la représentation sous forme d'image
+"""Tests de la représentation sous forme d'image."""
 
 import matplotlib.pyplot as plt
 import os
@@ -6,7 +6,8 @@ import sys
 from math import log
 import numpy as np
 
-# Il faut ajouter src au PYTHONPATH avant tout, sinon les modules n'auront pas accès à leurs propres imports.
+# Il faut ajouter src au PYTHONPATH avant tout, sinon les modules n'auront pas
+# accès à leurs propres imports.
 sys.path.append(f"{os.getcwd()}/src")
 
 from intelligenceArtificielle.structureDonnees.Arbre import (
