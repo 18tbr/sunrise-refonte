@@ -61,6 +61,12 @@ python -m sunrise
 ## Contribution
 Si vous __souhaitez contribuer à ce dépôt :heart:__, nous vous invitons à consulter les différents documents du [dossier docs](https://github.com/18tbr/sunrise-refonte/tree/master/docs) qui détaillent les façons de contribuer au projet, les conventions de nommage, etc...
 
+## Vidéos de travail
+
+Un certain nombre de __vidéos :movie_camera: ont été filmées pendant la conception du code source__. Même si elles ne sont __plus forcément en phase avec l'implémentation__, elles permettent sans doute de __comprendre :bulb: le principe de l'outil__ et _certaines subtilités de son implémentation_.
+
+Toutes les vidéos de travail sont disponible publiquement :+1: sous la licence "_Creative Commons_" sur [YouTube](https://www.youtube.com/channel/UCJJFF_SMw4H7YDuy-jOA1-Q).
+
 ## License
 Le code de ce dépôt est _sauf contre-indication_ mis à disposition sous license [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
